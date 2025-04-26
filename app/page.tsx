@@ -2,17 +2,26 @@ import { supabase } from "@/supabase/createClient";
 import Link from "next/link";
 
 export default async function HomePage() {
-  const { data: articles, error } = await supabase()
-    .from("articles")
-    .select("*")
-    .overrideTypes<Article[]>();
+  let articles: Article[] = [];
 
-  if (error)
+  try {
+    const { data: fetchedArticles, error } = await supabase()
+      .from("articles")
+      .select("*")
+      .overrideTypes<Article[], { merge: false }>();
+
+    if (error) throw new Error("Error loading articles");
+
+    articles = fetchedArticles;
+  } catch (error) {
+    console.error(error);
+
     return (
       <main className="flex justify-center items-center min-h-screen">
-        <h1>Erro</h1>
+        <h1>Wops, ocorreu um erro inesperado.</h1>
       </main>
     );
+  }
 
   return (
     <main className="max-w-7xl mx-auto grid grid-rows-[100px_1fr] justify-center items-center mt-20">

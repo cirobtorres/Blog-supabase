@@ -38,11 +38,13 @@ describe("HomePage", () => {
         expect(article).toBeInTheDocument();
       });
     });
-
-    expect(screen.queryByText("Erro")).not.toBeInTheDocument();
   });
 
   it("renders error when there is an error to the supabase query", async () => {
+    const consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
     // Simulates supabase().from().select().overrideTypes() chaining API return.
     // In other words, it returns a select and overrideTypes mocking.
     const mockFrom = {
@@ -60,7 +62,13 @@ describe("HomePage", () => {
 
     render(await HomePage());
 
-    expect(screen.getByText("Erro")).toBeInTheDocument();
+    expect(
+      screen.getByText("Wops, ocorreu um erro inesperado.")
+    ).toBeInTheDocument();
+
+    expect(consoleErrorSpy).toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
   });
 
   it("renders 'No article' when there is no article", async () => {
