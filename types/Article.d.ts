@@ -1,6 +1,6 @@
 type Article = {
   id: string;
-  user_id: string | null;
+  authors: Authors | null;
   title: string;
   body: string;
   private: boolean;

@@ -3,74 +3,109 @@
 exports[`HomePage matches the snapshot 1`] = `
 <DocumentFragment>
   <main
-    class="max-w-7xl mx-auto grid grid-rows-[100px_1fr] justify-center items-center mt-20"
+    class="max-w-7xl mx-auto min-h-screen bg-slate-900"
   >
-    <div
-      class="h-full flex items-center"
+    <section
+      class="grid grid-rows-[32px_100px_1fr] py-10 mx-10 bg-slate-800"
     >
-      <h1>
-        Feed
-      </h1>
-    </div>
-    <ul
-      class="flex flex-col [&_li]:not-last:mb-10"
-    >
-      <li
-        id="b0421256-86a3-4e0a-9682-3cf5bee102e1"
+      <div
+        class="flex justify-between mx-4 bg-slate-950"
       >
-        <a
-          href="/"
+        <div
+          class="flex items-center gap-2"
         >
-          <h2>
-            Admiratio facilis sonitus dolorum vinco occaecati venio.
-          </h2>
+          <a
+            class="w-fit py-1 px-2 bg-slate-700"
+            href="/sign-in"
+          >
+            Sign In
+          </a>
+          <a
+            class="w-fit py-1 px-2 bg-slate-700"
+            href="/sign-up"
+          >
+            Sign Up
+          </a>
+        </div>
+        <a
+          class="w-fit py-1 px-2 bg-slate-700"
+          href="/articles/create-article"
+        >
+          Create Article
         </a>
-      </li>
-      <li
-        id="f7963e90-958e-45e9-80eb-f22eb1cceb10"
+      </div>
+      <div
+        class="flex items-center mx-4 bg-slate-800"
       >
-        <a
-          href="/"
-        >
-          <h2>
-            Casus tam autus nobis voluntarius tyrannus.
-          </h2>
-        </a>
-      </li>
-      <li
-        id="a8e41bce-e039-4ff8-bea6-798ee6f22280"
+        <h1>
+          Feed
+        </h1>
+      </div>
+      <ul
+        class="flex flex-col mx-4 [&_li]:not-last:mb-10 bg-slate-700"
       >
-        <a
-          href="/"
+        <li
+          class="w-fit hover:underline"
+          id="b0421256-86a3-4e0a-9682-3cf5bee102e1"
         >
-          <h2>
-            A voluptatibus cotidie voluptate pecco tricesimus necessitatibus quisquam circumvenio ocer.
-          </h2>
-        </a>
-      </li>
-      <li
-        id="e4137b33-d693-4187-b298-a2c38c05dd8d"
-      >
-        <a
-          href="/"
+          <a
+            href="articles/b0421256-86a3-4e0a-9682-3cf5bee102e1"
+          >
+            <h2>
+              Admiratio facilis sonitus dolorum vinco occaecati venio.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="f7963e90-958e-45e9-80eb-f22eb1cceb10"
         >
-          <h2>
-            Adaugeo cornu unus stultus studio audio decimus nobis vox.
-          </h2>
-        </a>
-      </li>
-      <li
-        id="161acbc5-d6da-4210-b171-0c6b7777c6e0"
-      >
-        <a
-          href="/"
+          <a
+            href="articles/f7963e90-958e-45e9-80eb-f22eb1cceb10"
+          >
+            <h2>
+              Casus tam autus nobis voluntarius tyrannus.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="a8e41bce-e039-4ff8-bea6-798ee6f22280"
         >
-          <h2>
-            Cornu damno doloremque vigilo adaugeo sunt vallum acsi enim comparo.
-          </h2>
-        </a>
-      </li>
-    </ul>
+          <a
+            href="articles/a8e41bce-e039-4ff8-bea6-798ee6f22280"
+          >
+            <h2>
+              A voluptatibus cotidie voluptate pecco tricesimus necessitatibus quisquam circumvenio ocer.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="e4137b33-d693-4187-b298-a2c38c05dd8d"
+        >
+          <a
+            href="articles/e4137b33-d693-4187-b298-a2c38c05dd8d"
+          >
+            <h2>
+              Adaugeo cornu unus stultus studio audio decimus nobis vox.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="161acbc5-d6da-4210-b171-0c6b7777c6e0"
+        >
+          <a
+            href="articles/161acbc5-d6da-4210-b171-0c6b7777c6e0"
+          >
+            <h2>
+              Cornu damno doloremque vigilo adaugeo sunt vallum acsi enim comparo.
+            </h2>
+          </a>
+        </li>
+      </ul>
+    </section>
   </main>
 </DocumentFragment>
 `;

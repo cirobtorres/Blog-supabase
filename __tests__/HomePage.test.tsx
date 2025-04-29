@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import { createMockArticles } from "@/__mocks__/mockArticles";
-import { supabase } from "../supabase/createClient";
+import { supabase } from "../supabase/client";
 import HomePage from "../app/page";
 import { faker } from "@faker-js/faker";
 
@@ -9,7 +9,7 @@ faker.seed(1); // In order to maintain snapshots consistencies
 
 const mockArticles = createMockArticles();
 
-jest.mock("@/supabase/createClient", () => ({
+jest.mock("@/supabase/client", () => ({
   supabase: jest.fn(),
 }));
 
@@ -63,7 +63,7 @@ describe("HomePage", () => {
     render(await HomePage());
 
     expect(
-      screen.getByText("Wops, ocorreu um erro inesperado.")
+      screen.getByText("Wops, an error has occurred.")
     ).toBeInTheDocument();
 
     expect(consoleErrorSpy).toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe("HomePage", () => {
 
     render(await HomePage());
 
-    expect(screen.getByText("Nenhum artigo")).toBeInTheDocument();
+    expect(screen.getByText("No article yet =|")).toBeInTheDocument();
   });
 
   it("matches the snapshot", async () => {
