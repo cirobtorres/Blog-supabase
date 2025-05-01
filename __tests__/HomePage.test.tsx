@@ -1,39 +1,81 @@
 import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
-import { createMockArticles } from "@/__mocks__/mockArticles";
-import { supabase } from "../supabase/client";
-import HomePage from "../app/page";
 import { faker } from "@faker-js/faker";
+import { createMockArticles } from "@/__mocks__/mockArticles";
+import { createBrowserAppClient } from "../supabase/client";
+import HomePage from "../app/page";
 
-faker.seed(1); // In order to maintain snapshots consistencies
+faker.seed(1); // Snapshots consistency
 
-const mockArticles = createMockArticles();
+const mockArticlesUserOff = createMockArticles();
+const mockArticlesUserOn = createMockArticles({ isAuthorNull: false });
+
+jest.mock("next/headers", () => ({
+  cookies: jest.fn(() => ({
+    setAll: () => [],
+    getAll: () => [],
+  })),
+}));
 
 jest.mock("@/supabase/client", () => ({
-  supabase: jest.fn(),
+  createBrowserAppClient: jest.fn(),
+}));
+
+jest.mock("@/supabase/server", () => ({
+  createServerAppClient: jest.fn(() => ({
+    auth: {
+      getUser: jest.fn(() => ({
+        data: { user: { user_metadata: { displayName: "UserTest" } } },
+      })),
+    },
+  })),
 }));
 
 describe("HomePage", () => {
-  it("renders in the document", async () => {
-    // Simulates supabase().from().select().overrideTypes() chaining API return.
-    // In other words, it returns a select and overrideTypes mocking.
+  it("renders in the document (user off)", async () => {
+    // Returns a select and overrideTypes mocking.
     const mockFrom = {
       select: jest.fn().mockReturnValue({
         overrideTypes: jest.fn().mockReturnValue({
-          data: mockArticles,
+          data: mockArticlesUserOff,
           error: null,
         }),
       }),
     };
 
-    (supabase as jest.Mock).mockReturnValue({
+    (createBrowserAppClient as jest.Mock).mockReturnValue({
       from: jest.fn().mockReturnValue(mockFrom),
     });
 
     render(await HomePage());
 
     await waitFor(() => {
-      mockArticles.forEach((articleMock) => {
+      mockArticlesUserOff.forEach((articleMock) => {
+        const article = screen.getByText(articleMock.title);
+        expect(article).toBeInTheDocument();
+      });
+    });
+  });
+
+  it("renders in the document (user on)", async () => {
+    // Returns a select and overrideTypes mocking.
+    const mockFrom = {
+      select: jest.fn().mockReturnValue({
+        overrideTypes: jest.fn().mockReturnValue({
+          data: mockArticlesUserOn,
+          error: null,
+        }),
+      }),
+    };
+
+    (createBrowserAppClient as jest.Mock).mockReturnValue({
+      from: jest.fn().mockReturnValue(mockFrom),
+    });
+
+    render(await HomePage());
+
+    await waitFor(() => {
+      mockArticlesUserOn.forEach((articleMock) => {
         const article = screen.getByText(articleMock.title);
         expect(article).toBeInTheDocument();
       });
@@ -45,8 +87,7 @@ describe("HomePage", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    // Simulates supabase().from().select().overrideTypes() chaining API return.
-    // In other words, it returns a select and overrideTypes mocking.
+    // Returns a select and overrideTypes mocking.
     const mockFrom = {
       select: jest.fn().mockReturnValue({
         overrideTypes: jest.fn().mockReturnValue({
@@ -56,7 +97,7 @@ describe("HomePage", () => {
       }),
     };
 
-    (supabase as jest.Mock).mockReturnValue({
+    (createBrowserAppClient as jest.Mock).mockReturnValue({
       from: jest.fn().mockReturnValue(mockFrom),
     });
 
@@ -72,8 +113,7 @@ describe("HomePage", () => {
   });
 
   it("renders 'No article' when there is no article", async () => {
-    // Simulates supabase().from().select().overrideTypes() chaining API return.
-    // In other words, it returns a select and overrideTypes mocking.
+    // Returns a select and overrideTypes mocking.
     const mockFrom = {
       select: jest.fn().mockReturnValue({
         overrideTypes: jest.fn().mockReturnValue({
@@ -83,7 +123,7 @@ describe("HomePage", () => {
       }),
     };
 
-    (supabase as jest.Mock).mockReturnValue({
+    (createBrowserAppClient as jest.Mock).mockReturnValue({
       from: jest.fn().mockReturnValue(mockFrom),
     });
 
@@ -93,18 +133,17 @@ describe("HomePage", () => {
   });
 
   it("matches the snapshot", async () => {
-    // Simulates supabase().from().select().overrideTypes() chaining API return.
-    // In other words, it returns a select and overrideTypes mocking.
+    // Returns a select and overrideTypes mocking.
     const mockFrom = {
       select: jest.fn().mockReturnValue({
         overrideTypes: jest.fn().mockReturnValue({
-          data: mockArticles,
+          data: mockArticlesUserOn,
           error: null,
         }),
       }),
     };
 
-    (supabase as jest.Mock).mockReturnValue({
+    (createBrowserAppClient as jest.Mock).mockReturnValue({
       from: jest.fn().mockReturnValue(mockFrom),
     });
 

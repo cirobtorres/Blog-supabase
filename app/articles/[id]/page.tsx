@@ -1,5 +1,12 @@
+import { DeleteArticleButton } from "@/components/Buttons/client";
 import { ReturnToHome } from "@/components/ReturnToHome";
-import { supabase } from "@/supabase/client";
+import { createBrowserAppClient } from "@/supabase/client";
+
+interface ArticleWithAuthor extends Article {
+  authors?: {
+    display_name: string | null;
+  };
+}
 
 export default async function ArticlePage({
   params,
@@ -8,24 +15,37 @@ export default async function ArticlePage({
 }) {
   const { id } = await params;
 
-  const { data: article, error: articleError } = await supabase()
+  const supabase = createBrowserAppClient();
+
+  const { data: article, error: articleError } = await supabase
     .from("articles")
     .select("*, authors (display_name)")
     .eq("id", id)
-    .single<Article>();
+    .single<ArticleWithAuthor>();
 
   if (!article || article.private || articleError)
     return (
-      <main className="max-w-7xl min-h-screen mx-auto flex justify-center items-center bg-slate-900">
+      <main className="max-w-7xl min-h-screen mx-auto flex justify-center items-center">
         <section className="mx-10 bg-slate-800">
           <h1>Não encontrado.</h1>
         </section>
       </main>
     );
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: author } = await supabase
+    .from("authors")
+    .select("id, user_id")
+    .eq("user_id", user?.id)
+    .single();
+  const isTheAuthor = author?.id;
+
   return (
-    <main className="max-w-7xl min-h-screen mx-auto flex justify-center bg-slate-900">
-      <section className="py-10 mx-10 bg-slate-800">
+    <main className="max-w-7xl min-h-screen mx-auto flex justify-center">
+      <section className="w-full py-10 mx-10">
         <ReturnToHome />
         <div className="mb-4">
           <h1>{article.title}</h1>
@@ -41,6 +61,7 @@ export default async function ArticlePage({
           dangerouslySetInnerHTML={{ __html: article.body }}
           className="flex flex-col gap-4"
         />
+        {isTheAuthor && <DeleteArticleButton {...article} />}
       </section>
     </main>
   );

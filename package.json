@@ -8,14 +8,22 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:updateSnapshot": "jest --updateSnapshot"
+    "test:updateSnapshot": "jest --updateSnapshot --detectOpenHandles"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
+    "@tiptap/extension-document": "^2.11.9",
+    "@tiptap/extension-heading": "^2.11.9",
+    "@tiptap/extension-paragraph": "^2.11.9",
+    "@tiptap/extension-text": "^2.11.9",
+    "@tiptap/pm": "^2.11.9",
+    "@tiptap/react": "^2.11.9",
     "next": "15.3.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "undici": "^7.8.0",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

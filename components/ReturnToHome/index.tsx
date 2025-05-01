@@ -4,7 +4,7 @@ export const ReturnToHome = () => {
   return (
     <Link
       href="/"
-      className="w-fit text-sm flex gap-2 items-center uppercase mb-6 bg-slate-900"
+      className="w-fit text-sm flex gap-2 items-center uppercase mb-6"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

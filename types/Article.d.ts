@@ -1,9 +1,9 @@
 type Article = {
   id: string;
-  authors: Authors | null;
+  author_id: string | null;
   title: string;
   body: string;
   private: boolean;
-  updated_at: Date;
+  updated_at: Date | null;
   created_at: Date;
 };

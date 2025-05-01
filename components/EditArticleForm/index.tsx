@@ -8,19 +8,32 @@ import {
   TitleFieldset,
 } from "@/components/Fieldsets";
 import { ReturnToHome } from "@/components/ReturnToHome";
-import { postArticle } from "@/services/article";
+import { putArticle } from "@/services/article";
 import { useActionState, useState } from "react";
 
-export default function CreateArticlePage() {
+export const EditArticleForm = ({
+  id,
+  title,
+  body,
+}: {
+  id: string;
+  title: string;
+  body: string;
+}) => {
   const [htmlTitle, setHtmlTitle] = useState("");
   const [htmlBody, setHtmlBody] = useState("");
 
   const [state, action] = useActionState(
     () => {
       const formData = new FormData();
-      formData.set(getTitleFormDataValue, htmlTitle);
-      formData.set(getEditorFormDataValue, htmlBody);
-      return postArticle({ success: null, error: null }, formData);
+
+      const contentHTMLTitle = htmlTitle.replace(/<p>(\s|&nbsp;)*<\/p>/g, ""); // Remove empty <p></p>
+      const contentHTMLBody = htmlBody.replace(/<p>(\s|&nbsp;)*<\/p>/g, ""); // Remove empty <p></p>
+
+      formData.set(getTitleFormDataValue, contentHTMLTitle);
+      formData.set(getEditorFormDataValue, contentHTMLBody);
+
+      return putArticle(id, { success: null, error: null }, formData);
     },
     {
       success: null,
@@ -33,8 +46,8 @@ export default function CreateArticlePage() {
       <div className="max-w-xl w-full p-4">
         <ReturnToHome />
         <form action={action} className="flex flex-col gap-2">
-          <TitleFieldset setVal={setHtmlTitle} />
-          <EditorFieldset setVal={setHtmlBody} />
+          <TitleFieldset setVal={setHtmlTitle} defaultValue={title} />
+          <EditorFieldset setVal={setHtmlBody} defaultValue={body} />
           <ConfirmFormButton label="Create" />
         </form>
         {state.error && <p>Error: {state.error}</p>}
@@ -42,4 +55,4 @@ export default function CreateArticlePage() {
       </div>
     </main>
   );
-}
+};

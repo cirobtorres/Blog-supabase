@@ -37,7 +37,7 @@ export async function updateSession(request: NextRequest) {
   const url = request.nextUrl.clone();
   const currentPath = url.pathname;
 
-  if (!user && protectedRoutes.includes(currentPath)) {
+  if (!user && protectedRoutes.some((regex) => regex.test(currentPath))) {
     url.pathname = "/sign-in";
     return NextResponse.redirect(url);
   }

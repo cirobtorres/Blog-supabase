@@ -3,9 +3,6 @@
 import type { Config } from "jest";
 import nextJest from "next/jest.js";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(global as any).IS_REACT_ACT_ENVIRONMENT = true;
-
 const createJestConfig = nextJest({
   dir: "./",
 });
