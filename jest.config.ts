@@ -16,7 +16,8 @@ const config: Config = {
     "^@/(.*)$": "<rootDir>/$1",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
-  testEnvironment: "jsdom",
+  // testEnvironment: "jsdom",
+  testEnvironment: "jest-fixed-jsdom",
 };
 
 const asyncConfig = createJestConfig(config);

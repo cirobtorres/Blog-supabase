@@ -1,11 +1,8 @@
-import {
-  DeleteArticleButton,
-  EditArticleButton,
-  LogoutButton,
-} from "@/components/Buttons/client";
 import { createBrowserAppClient } from "@/supabase/client";
 import { createServerAppClient } from "@/supabase/server";
-import Link from "next/link";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { ArticleFeedGrid } from "@/components/ArticleFeedGrid";
 
 export default async function HomePage() {
   let articles: Article[] = [];
@@ -30,6 +27,7 @@ export default async function HomePage() {
   }
 
   const supabase = await createServerAppClient();
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -42,69 +40,20 @@ export default async function HomePage() {
   const isTheAuthor = author?.id;
 
   return (
-    <main className="max-w-7xl mx-auto min-h-screen">
-      <section className="grid grid-rows-[32px_100px_1fr] py-10 mx-10">
-        <div className="flex justify-end mx-4">
-          {user ? (
-            <div className="flex items-center gap-4">
-              <p>TODO: profile display_name</p>
-              <LogoutButton />
-              <Link
-                href="/articles/create-article"
-                className="w-fit p-1 bg-neutral-700"
-              >
-                Create Article
-              </Link>
-            </div>
-          ) : (
-            <div className="flex items-center gap-4">
-              <Link href="/sign-in" className="w-fit py-1">
-                Sign In
-              </Link>
-              <Link href="/sign-up" className="w-fit py-1">
-                Sign Up
-              </Link>
-            </div>
-          )}
-        </div>
-        <div className="flex items-center mx-4">
-          <h1>Feed</h1>
-        </div>
-        {articles.length > 0 ? (
-          <ul className="flex flex-col mx-4 [&_li]:not-last:mb-10">
-            {articles.map(
-              (article) =>
-                !article.private && (
-                  <li
-                    key={article.id}
-                    id={article.id}
-                    className="flex flex-col"
-                  >
-                    <Link
-                      href={`articles/${article.id}`}
-                      className="hover:underline"
-                    >
-                      <h2
-                        className="inline"
-                        dangerouslySetInnerHTML={{ __html: article.title }}
-                      />
-                    </Link>
-                    {article.author_id === isTheAuthor && (
-                      <div>
-                        <EditArticleButton {...article} />
-                        <DeleteArticleButton {...article} />
-                      </div>
-                    )}
-                  </li>
-                )
-            )}
-          </ul>
-        ) : (
-          <div className="mx-4">
-            <h2>No article yet =|</h2>
+    <>
+      <Header user={user} />
+      <main
+        className="mt-20" // header h-20
+      >
+        <section className="w-full h-96 bg-neutral-900"></section>
+        <section className="max-w-7xl mx-auto min-h-screen grid grid-rows-[auto_1fr] items-start py-10 px-4 md:px-10">
+          <div className="flex items-center mx-4 pb-10">
+            <h1 className="text-3xl font-bold">Últimos Artigos</h1>
           </div>
-        )}
-      </section>
-    </main>
+          <ArticleFeedGrid articles={articles} isTheAuthor={isTheAuthor} />
+        </section>
+      </main>
+      <Footer />
+    </>
   );
 }

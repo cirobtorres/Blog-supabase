@@ -1,4 +1,4 @@
-import { EditArticleForm } from "@/components/EditArticleForm";
+import { EditArticleForm } from "@/components/Forms";
 import { createBrowserAppClient } from "@/supabase/client";
 import { redirect } from "next/navigation";
 

@@ -70,10 +70,10 @@ export const PasswordFieldset = ({ placeholder }: { placeholder?: string }) => {
 };
 
 export const TitleFieldset = ({
-  defaultValue,
+  value,
   setVal,
 }: {
-  defaultValue?: string;
+  value?: string;
   setVal: Dispatch<SetStateAction<string>>;
 }) => {
   return (
@@ -85,12 +85,46 @@ export const TitleFieldset = ({
       >
         Title
       </label>
-      <Tiptap
+      <input
         id={getTitleFormDataValue}
+        name={getTitleFormDataValue}
+        type="text"
+        autoComplete="new-password"
         autoFocus
-        setVal={setVal}
-        typography="heading"
-        defaultValue={defaultValue}
+        value={value}
+        maxLength={128}
+        onChange={(e) => setVal(e.target.value)}
+        className="py-1 bg-neutral-900"
+      />
+    </fieldset>
+  );
+};
+
+export const SubtitleFieldset = ({
+  value,
+  setVal,
+}: {
+  value?: string;
+  setVal: Dispatch<SetStateAction<string>>;
+}) => {
+  return (
+    <fieldset className="flex flex-col">
+      <label
+        id={labelId("Subtitle")}
+        htmlFor={getSubtitleFormDataValue}
+        className="py-1"
+      >
+        Subtitle
+      </label>
+      <input
+        id={getSubtitleFormDataValue}
+        name={getSubtitleFormDataValue}
+        type="text"
+        autoComplete="new-password"
+        value={value}
+        maxLength={256}
+        onChange={(e) => setVal(e.target.value)}
+        className="py-1 bg-neutral-900"
       />
     </fieldset>
   );
@@ -116,7 +150,6 @@ export const EditorFieldset = ({
         id={getEditorFormDataValue}
         setVal={setVal}
         defaultValue={defaultValue}
-        height="[&_.tiptap.ProseMirror]:min-h-[calc(1.5rem_*_10)]"
       />
     </fieldset>
   );
@@ -125,5 +158,6 @@ export const EditorFieldset = ({
 export const getDisplayNameFormDataValue = inputId("Display Name");
 export const getEmailFormDataValue = inputId("E-mail");
 export const getPasswordFormDataValue = inputId("Password");
-export const getTitleFormDataValue = inputId("Display Name");
+export const getTitleFormDataValue = inputId("Title");
+export const getSubtitleFormDataValue = inputId("Subtitle");
 export const getEditorFormDataValue = inputId("Body");

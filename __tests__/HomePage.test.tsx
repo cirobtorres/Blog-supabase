@@ -35,10 +35,12 @@ describe("HomePage", () => {
   it("renders in the document (user off)", async () => {
     // Returns a select and overrideTypes mocking.
     const mockFrom = {
-      select: jest.fn().mockReturnValue({
-        overrideTypes: jest.fn().mockReturnValue({
-          data: mockArticlesUserOff,
-          error: null,
+      from: jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          overrideTypes: jest.fn().mockReturnValue({
+            data: mockArticlesUserOff,
+            error: null,
+          }),
         }),
       }),
     };

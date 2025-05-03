@@ -2,7 +2,6 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
-import Heading from "@tiptap/extension-heading";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import { Dispatch, SetStateAction, useEffect } from "react";
@@ -10,36 +9,19 @@ import { Dispatch, SetStateAction, useEffect } from "react";
 const Tiptap = ({
   id,
   setVal,
-  typography = "paragraph",
   defaultValue,
   autoFocus = false,
-  height,
 }: {
   id: string;
   setVal: Dispatch<SetStateAction<string>>;
-  typography?: "heading" | "paragraph";
   defaultValue?: string;
   autoFocus?: boolean;
-  height?: string;
 }) => {
-  const defaultContent =
-    defaultValue || (typography === "heading" ? "<h2></h2>" : "<p></p>");
-
   const editor = useEditor({
     immediatelyRender: false,
-    extensions: [
-      Document,
-      Text,
-      ...(typography === "paragraph"
-        ? [Paragraph]
-        : [
-            Heading.configure({
-              levels: [2],
-            }),
-          ]),
-    ],
+    extensions: [Document, Text, Paragraph],
     autofocus: autoFocus,
-    content: defaultContent,
+    content: defaultValue,
     onUpdate: ({ editor }) => setVal(editor.getHTML()),
   });
 
@@ -67,7 +49,7 @@ const Tiptap = ({
       onFocus={() => {
         editor.chain().focus().setTextSelection(lastCharacterIndex).run();
       }}
-      className={"bg-neutral-900 ".concat(height || "")}
+      className="[&_.tiptap.ProseMirror]:min-h-[calc(1.5rem_*_10)] bg-neutral-900"
     />
   );
 };

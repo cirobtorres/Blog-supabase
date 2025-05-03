@@ -33,6 +33,7 @@ export const createMockArticle = (options?: {
     id: faker.string.uuid(),
     author_id: isAuthorNull ? null : faker.string.uuid(),
     title: faker.lorem.sentence(faker.number.int({ min: 5, max: 10 })),
+    sub_title: faker.lorem.sentence(faker.number.int({ min: 5, max: 10 })),
     body: faker.lorem.sentences(faker.number.int({ min: 3, max: 6 })),
     private: isPrivate || false,
     updated_at: isUpdatedAtNull

@@ -1,19 +1,21 @@
 "use server";
 
-import {
-  getEditorFormDataValue,
-  getTitleFormDataValue,
-} from "@/components/Fieldsets";
-import { createServerAppClient } from "@/supabase/server";
-import { slugify } from "@/utils/strings";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createServerAppClient } from "@/supabase/server";
+import {
+  getEditorFormDataValue,
+  getSubtitleFormDataValue,
+  getTitleFormDataValue,
+} from "@/components/Fieldsets";
+import { slugify } from "@/utils/strings";
 
 export const postArticle = async (
   prevState: { success: string | null; error: string | null },
   formData: FormData
 ): Promise<{ success: string | null; error: string | null }> => {
   const title = formData.get(getTitleFormDataValue);
+  const subTitle = formData.get(getSubtitleFormDataValue);
   const body = formData.get(getEditorFormDataValue);
 
   if (!title || !body)
@@ -45,10 +47,11 @@ export const postArticle = async (
   const author_id = author?.id;
 
   const slug = slugify(title as string);
+  const sub_title = subTitle === "" ? null : subTitle;
 
   const { error: articleError } = await supabase
     .from("articles")
-    .insert([{ title, slug, body, author_id }]);
+    .insert([{ title, slug, sub_title, body, author_id }]);
 
   if (articleError) {
     console.error(articleError);
@@ -65,6 +68,7 @@ export const putArticle = async (
   formData: FormData
 ): Promise<{ success: string | null; error: string | null }> => {
   const title = formData.get(getTitleFormDataValue);
+  const subTitle = formData.get(getSubtitleFormDataValue);
   const body = formData.get(getEditorFormDataValue);
 
   if (!title || !body)
@@ -74,8 +78,28 @@ export const putArticle = async (
 
   const { error } = await supabase
     .from("articles")
-    .update({ title, body })
+    .update({
+      title,
+      sub_title: subTitle === "" ? null : subTitle,
+      body,
+    })
     .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    return { success: null, error: error.message };
+  }
+
+  revalidatePath("/");
+  return { success: "Article updated!", error: null };
+};
+
+export const putPrivateArticle = async (id: string) => {
+  const supabase = await createServerAppClient();
+
+  const { error } = await supabase.rpc("toggle_article_privacy", {
+    article_id: id,
+  });
 
   if (error) {
     console.error(error);
