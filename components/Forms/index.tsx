@@ -1,6 +1,10 @@
 "use client";
 
-import { ConfirmFormButton, ReturnToHome } from "@/components/Buttons";
+import {
+  PublishArticleButton,
+  ReturnToHome,
+  SaveArticleButton,
+} from "@/components/Buttons";
 import { ProvidersRowButtons } from "@/components/Buttons/client";
 import {
   DisplayNameFieldset,
@@ -32,7 +36,7 @@ export const SignUpForm = () => {
         <PasswordFieldset />
         <p className="text-red-500">TODO: checkboxes</p>
         <p className="text-red-500">TODO: captcha</p>
-        <ConfirmFormButton label="Confirmar" />
+        <PublishArticleButton label="Confirmar" />
         {state && <p>{state.error}</p>}
       </form>
       <ProvidersRowButtons />
@@ -58,7 +62,7 @@ export const SignInForm = () => {
       <form action={action} className="flex flex-col gap-2">
         <EmailFieldset />
         <PasswordFieldset />
-        <ConfirmFormButton label="Confirmar" />
+        <PublishArticleButton label="Confirmar" />
         {state && <p>{state.error}</p>}
       </form>
       <ProvidersRowButtons />
@@ -121,7 +125,7 @@ export const EditArticleForm = ({
             setVal={setHtmlDescription}
           />
           <EditorFieldset setVal={setHtmlBody} defaultValue={htmlBody} />
-          <ConfirmFormButton label="Salvar" />
+          <PublishArticleButton label="Salvar" />
         </form>
         {state.error && <p>Error: {state.error}</p>}
         {state.success && <p>Success: {state.success}</p>}
@@ -150,17 +154,25 @@ export const CreateArticleForm = () => {
   );
 
   return (
-    <main className="max-w-7xl min-h-screen mx-auto flex justify-center items-center">
-      <div className="max-w-xl w-full p-4">
+    <main className="mt-20 mx-4 flex justify-center items-center">
+      <div className="w-full max-w-7xl mx-auto">
         <ReturnToHome />
-        <form action={action} className="flex flex-col gap-2">
-          <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
-          <SubtitleFieldset
-            value={htmlDescription}
-            setVal={setHtmlDescription}
-          />
-          <EditorFieldset setVal={setHtmlBody} />
-          <ConfirmFormButton label="Criar" />
+        <form
+          action={action}
+          className="grid gap-2 grid-cols-1 md:grid-cols-[1fr_300px]"
+        >
+          <div className="flex flex-col gap-2">
+            <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
+            <SubtitleFieldset
+              value={htmlDescription}
+              setVal={setHtmlDescription}
+            />
+            <EditorFieldset setVal={setHtmlBody} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <PublishArticleButton label="Publicar" />
+            <SaveArticleButton label="Salvar" />
+          </div>
         </form>
         {state.error && <p>Error: {state.error}</p>}
         {state.success && <p>Success: {state.success}</p>}

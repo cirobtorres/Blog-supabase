@@ -1,1 +1,1 @@
-export const protectedRoutes = [/\/articles\/create-article(\/.*)?/];
+export const protectedRoutes = [/\/articles\/create-article(\/.*)?/, /\/admin/];

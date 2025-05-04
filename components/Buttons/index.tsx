@@ -1,12 +1,22 @@
 import Link from "next/link";
 
-export const ConfirmFormButton = ({ label }: { label: string }) => {
-  return (
-    <button type="submit" className="py-1 cursor-pointer bg-neutral-700">
-      {label}
-    </button>
-  );
-};
+export const PublishArticleButton = ({ label }: { label: string }) => (
+  <button
+    type="submit"
+    className="h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800"
+  >
+    {label}
+  </button>
+);
+
+export const SaveArticleButton = ({ label }: { label: string }) => (
+  <button
+    type="submit"
+    className="h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800"
+  >
+    {label}
+  </button>
+);
 
 export const ReturnToHome = () => {
   return (

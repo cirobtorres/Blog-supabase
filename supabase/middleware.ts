@@ -38,8 +38,9 @@ export async function updateSession(request: NextRequest) {
   const currentPath = url.pathname;
 
   if (!user && protectedRoutes.some((regex) => regex.test(currentPath))) {
-    url.pathname = "/sign-in";
-    return NextResponse.redirect(url);
+    return NextResponse.error();
+    // url.pathname = "/";
+    // return NextResponse.redirect(url);
   }
 
   // http://supabase.com/docs/guides/auth/server-side/nextjs

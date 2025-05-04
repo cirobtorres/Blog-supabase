@@ -85,16 +85,15 @@ export const TitleFieldset = ({
       >
         Title
       </label>
-      <input
+      <textarea
         id={getTitleFormDataValue}
         name={getTitleFormDataValue}
-        type="text"
-        autoComplete="new-password"
         autoFocus
         value={value}
+        rows={2}
         maxLength={128}
         onChange={(e) => setVal(e.target.value)}
-        className="py-1 bg-neutral-900"
+        className="p-2 resize-none rounded border border-neutral-700 bg-neutral-800"
       />
     </fieldset>
   );
@@ -116,15 +115,14 @@ export const SubtitleFieldset = ({
       >
         Subtitle
       </label>
-      <input
+      <textarea
         id={getSubtitleFormDataValue}
         name={getSubtitleFormDataValue}
-        type="text"
-        autoComplete="new-password"
         value={value}
+        rows={2}
         maxLength={256}
         onChange={(e) => setVal(e.target.value)}
-        className="py-1 bg-neutral-900"
+        className="p-2 resize-none rounded border border-neutral-700 bg-neutral-800"
       />
     </fieldset>
   );

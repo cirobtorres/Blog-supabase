@@ -10,7 +10,7 @@ export default async function AdminPage() {
   return (
     <>
       <Header user={user} />
-      <main className="mt-20 max-w-7xl mx-auto min-h-screen">
+      <main className="mt-20 max-w-7xl mx-auto">
         <Link href="/admin/create-article">Criar Artigo</Link>
       </main>
     </>
