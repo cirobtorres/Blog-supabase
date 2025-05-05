@@ -1,5 +1,5 @@
 import { EditArticleForm } from "@/components/Forms";
-import { Header } from "@/components/Header";
+import { StaticHeader } from "@/components/Header";
 import { createBrowserAppClient } from "@/supabase/client";
 import { redirect } from "next/navigation";
 
@@ -28,7 +28,7 @@ export default async function EditArticle({ params }: { params: Params }) {
 
   return (
     <>
-      <Header user={user} />
+      <StaticHeader user={user} />
       <EditArticleForm {...article} />;
     </>
   );

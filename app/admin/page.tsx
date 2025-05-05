@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Header } from "../../components/Header";
+import { StaticHeader } from "../../components/Header";
 import { createServerAppClient } from "../../supabase/server";
 
 export default async function AdminPage() {
@@ -9,8 +9,8 @@ export default async function AdminPage() {
   } = await supabase.auth.getUser();
   return (
     <>
-      <Header user={user} />
-      <main className="mt-20 max-w-7xl mx-auto">
+      <StaticHeader user={user} />
+      <main className="mt-[var(--header-height)] max-w-7xl mx-auto">
         <Link href="/admin/create-article">Criar Artigo</Link>
       </main>
     </>

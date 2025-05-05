@@ -1,6 +1,6 @@
 import { createBrowserAppClient } from "@/supabase/client";
 import { createServerAppClient } from "@/supabase/server";
-import { Header } from "@/components/Header";
+import { StaticHeader } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArticleFeedGrid } from "@/components/ArticleFeedGrid";
 import { ArticleCover } from "@/components/ArticleCover";
@@ -42,10 +42,8 @@ export default async function HomePage() {
 
   return (
     <>
-      <Header user={user} />
-      <main
-        className="mt-20" // header h-20
-      >
+      <StaticHeader user={user} />
+      <main className="">
         <ArticleCover />
         <section className="max-w-7xl mx-auto min-h-screen grid grid-rows-[auto_1fr] items-start py-10 px-4 md:px-10">
           <div className="flex items-center mx-4 pb-10">

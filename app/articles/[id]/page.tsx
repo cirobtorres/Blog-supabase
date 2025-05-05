@@ -1,5 +1,5 @@
 import { ReturnToHome } from "@/components/Buttons";
-import { Header } from "../../../components/Header";
+import { FixedHeader } from "../../../components/Header";
 import { Footer } from "../../../components/Footer";
 import { createServerAppClient } from "../../../supabase/server";
 import { BackToTopButton } from "../../../components/Buttons/client";
@@ -42,9 +42,9 @@ export default async function ArticlePage({
 
   return (
     <>
-      <Header user={user} />
-      <main className="flex flex-col items-center mt-20">
-        <section className="w-full bg-neutral-900 border-y border-neutral-800">
+      <FixedHeader user={user} />
+      <main className="flex flex-col items-center mt-[var(--header-height)]">
+        <section className="w-full bg-neutral-900 border-b border-neutral-800">
           <div className="max-w-7xl mx-auto">
             <div className="py-10 mx-4">
               <ReturnToHome />

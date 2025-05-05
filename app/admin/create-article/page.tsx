@@ -1,5 +1,5 @@
 import { CreateArticleForm } from "@/components/Forms";
-import { Header } from "../../../components/Header";
+import { StaticHeader } from "../../../components/Header";
 import { createServerAppClient } from "../../../supabase/server";
 
 export default async function CreateArticlePage() {
@@ -9,7 +9,7 @@ export default async function CreateArticlePage() {
   } = await supabase.auth.getUser();
   return (
     <>
-      <Header user={user} />
+      <StaticHeader user={user} />
       <CreateArticleForm />
     </>
   );

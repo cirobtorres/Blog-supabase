@@ -27,7 +27,7 @@ import Link from "next/link";
 export const SignUpForm = () => {
   const [state, action] = useActionState(signUp, { error: null });
   return (
-    <div className="max-w-xl w-full mx-auto p-4 my-20">
+    <div className="max-w-xl w-full mx-auto p-4 my-[var(--header-height)]">
       <ReturnToHome />
       <h1>Create Account</h1>
       <form action={action} className="flex flex-col gap-2">
@@ -56,7 +56,7 @@ export const SignUpForm = () => {
 export const SignInForm = () => {
   const [state, action] = useActionState(signIn, { error: null });
   return (
-    <div className="max-w-xl w-full mx-auto p-4 my-20">
+    <div className="max-w-xl w-full mx-auto p-4 my-[var(--header-height)]">
       <ReturnToHome />
       <h1>Login</h1>
       <form action={action} className="flex flex-col gap-2">
@@ -115,7 +115,7 @@ export const EditArticleForm = ({
   );
 
   return (
-    <main className="mt-20 mx-4 flex justify-center items-center">
+    <main className="mt-[var(--header-height)] mx-4 flex justify-center items-center">
       <div className="w-full max-w-7xl mx-auto">
         <ReturnToHome />
         <form
@@ -162,7 +162,7 @@ export const CreateArticleForm = () => {
   );
 
   return (
-    <main className="mt-20 mx-4 flex justify-center items-center">
+    <main className="mt-[var(--header-height)] mx-4 flex justify-center items-center">
       <div className="w-full max-w-7xl mx-auto">
         <ReturnToHome />
         <form
