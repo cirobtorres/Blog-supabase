@@ -4,6 +4,7 @@ import { Footer } from "../../../components/Footer";
 import { createServerAppClient } from "../../../supabase/server";
 import { BackToTopButton } from "../../../components/Buttons/client";
 import { faker } from "@faker-js/faker";
+import { ArticleCover } from "@/components/ArticleCover";
 
 interface ArticleWithAuthor extends Article {
   authors?: {
@@ -43,28 +44,32 @@ export default async function ArticlePage({
     <>
       <Header user={user} />
       <main className="flex flex-col items-center mt-20">
-        <section className="w-full bg-neutral-900 border-y border-neutral-800 py-10 px-4">
+        <section className="w-full bg-neutral-900 border-y border-neutral-800">
           <div className="max-w-7xl mx-auto">
-            <ReturnToHome />
-            <div className="mb-4">
-              <h1 className="text-4xl font-bold">{article.title}</h1>
-            </div>
-            <div className="mb-4">
-              <p className="text-2xl text-neutral-500">{article.sub_title}</p>
-            </div>
-            <div className="flex gap-2 items-center mb-4">
-              <p>Autor: {article.authors?.display_name ?? "Removido"}</p>
-              <p className="flex gap-2">Criado: {String(article.created_at)}</p>
-              {article.updated_at && (
-                <p>Atualizado: {String(article.updated_at)}</p>
-              )}
+            <div className="py-10 mx-4">
+              <ReturnToHome />
+              <div className="mb-4">
+                <h1 className="text-4xl font-bold">{article.title}</h1>
+              </div>
+              <div className="mb-4">
+                <p className="text-2xl text-neutral-500">{article.sub_title}</p>
+              </div>
+              <div className="flex gap-2 items-center mb-4">
+                <p>Autor: {article.authors?.display_name ?? "Removido"}</p>
+                <p className="flex gap-2">
+                  Criado: {String(article.created_at)}
+                </p>
+                {article.updated_at && (
+                  <p>Atualizado: {String(article.updated_at)}</p>
+                )}
+              </div>
             </div>
           </div>
         </section>
-        <section className="w-full h-96 shrink-0 border-b border-neutral-800 bg-[image:repeating-linear-gradient(315deg,_#262626_0,_#262626_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed" />
-        <section className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-[200px_auto_80px] gap-4 mx-4">
-            <article className="text-sm py-10">
+        <ArticleCover />
+        <section className="w-full max-w-7xl mx-auto py-10">
+          <div className="grid grid-rows-1 md:grid-cols-[200px_1fr] lg:grid-cols-[200px_1fr_80px] gap-4 mx-4">
+            <article className="text-sm">
               <nav>
                 <ul>
                   <li>{faker.lorem.sentence()}</li>
@@ -76,13 +81,13 @@ export default async function ArticlePage({
                 </ul>
               </nav>
             </article>
-            <article id={article.id} className="py-10">
+            <article id={article.id}>
               <div
                 dangerouslySetInnerHTML={{ __html: article.body }}
                 className="article-content"
               />
             </article>
-            <article className="py-10">
+            <article className="hidden lg:block">
               <BackToTopButton articleId={article.id} />
             </article>
           </div>

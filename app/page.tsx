@@ -3,6 +3,7 @@ import { createServerAppClient } from "@/supabase/server";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArticleFeedGrid } from "@/components/ArticleFeedGrid";
+import { ArticleCover } from "@/components/ArticleCover";
 
 export default async function HomePage() {
   let articles: Article[] = [];
@@ -45,7 +46,7 @@ export default async function HomePage() {
       <main
         className="mt-20" // header h-20
       >
-        <section className="w-full h-96 bg-neutral-900"></section>
+        <ArticleCover />
         <section className="max-w-7xl mx-auto min-h-screen grid grid-rows-[auto_1fr] items-start py-10 px-4 md:px-10">
           <div className="flex items-center mx-4 pb-10">
             <h1 className="text-3xl font-bold">Últimos Artigos</h1>

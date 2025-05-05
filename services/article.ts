@@ -82,6 +82,7 @@ export const putArticle = async (
       title,
       sub_title: subTitle === "" ? null : subTitle,
       body,
+      updated_at: new Date().toISOString(),
     })
     .eq("id", id);
 

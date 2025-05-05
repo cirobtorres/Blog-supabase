@@ -115,17 +115,25 @@ export const EditArticleForm = ({
   );
 
   return (
-    <main className="max-w-7xl min-h-screen mx-auto flex justify-center items-center">
-      <div className="max-w-xl w-full p-4">
+    <main className="mt-20 mx-4 flex justify-center items-center">
+      <div className="w-full max-w-7xl mx-auto">
         <ReturnToHome />
-        <form action={action} className="flex flex-col gap-2">
-          <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
-          <SubtitleFieldset
-            value={htmlDescription}
-            setVal={setHtmlDescription}
-          />
-          <EditorFieldset setVal={setHtmlBody} defaultValue={htmlBody} />
-          <PublishArticleButton label="Salvar" />
+        <form
+          action={action}
+          className="grid gap-2 grid-cols-1 md:grid-cols-[1fr_300px]"
+        >
+          <div className="flex flex-col gap-2">
+            <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
+            <SubtitleFieldset
+              value={htmlDescription}
+              setVal={setHtmlDescription}
+            />
+            <EditorFieldset setVal={setHtmlBody} defaultValue={htmlBody} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <PublishArticleButton label="Publicar" />
+            <SaveArticleButton label="Salvar" />
+          </div>
         </form>
         {state.error && <p>Error: {state.error}</p>}
         {state.success && <p>Success: {state.success}</p>}

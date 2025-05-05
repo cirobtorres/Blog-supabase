@@ -9,18 +9,18 @@ export const ArticleFeedGrid = ({
   isTheAuthor: string;
 }) =>
   articles.length > 0 ? (
-    <ul className="grid grid-cols-[repeat(3,1fr)] gap-2 mx-4">
+    <ul className="grid gap-2 mx-4 xl:grid-cols-[repeat(3,1fr)] md:grid-cols-[repeat(2,1fr)] ">
       {articles.map(
         (article) =>
           !article.is_private && (
             <li
               key={article.id}
               id={article.id}
-              className={"grid gap-1".concat(
-                isTheAuthor && " grid-rows-[1fr_30px]"
+              className={"".concat(
+                isTheAuthor ? " grid gap-1 grid-rows-[1fr_30px]" : " pb-[30px]"
               )}
             >
-              <div className="grid grid-rows-[auto_34px] border border-neutral-800 p-3 rounded">
+              <div className="h-full grid grid-rows-[auto_34px] border border-neutral-800 p-3 rounded">
                 <div className="flex flex-col">
                   <small className="text-neutral-500">
                     <time dateTime={String(article.created_at)}>

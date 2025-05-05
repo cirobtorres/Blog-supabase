@@ -1,4 +1,5 @@
 import { EditArticleForm } from "@/components/Forms";
+import { Header } from "@/components/Header";
 import { createBrowserAppClient } from "@/supabase/client";
 import { redirect } from "next/navigation";
 
@@ -21,5 +22,14 @@ export default async function EditArticle({ params }: { params: Params }) {
     redirect("/");
   }
 
-  return <EditArticleForm {...article} />;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return (
+    <>
+      <Header user={user} />
+      <EditArticleForm {...article} />;
+    </>
+  );
 }
