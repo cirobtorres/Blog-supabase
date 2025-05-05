@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { EditOrDeleteArticleButtons } from "../Buttons/client";
+import { convertToLargeDate } from "@/utils/dates";
 
 export const ArticleFeedGrid = ({
   articles,
@@ -20,11 +21,11 @@ export const ArticleFeedGrid = ({
                 isTheAuthor ? " grid gap-1 grid-rows-[1fr_30px]" : " pb-[30px]"
               )}
             >
-              <div className="h-full grid grid-rows-[auto_34px] border border-neutral-800 p-3 rounded">
+              <div className="h-full grid grid-rows-[auto_34px] border border-neutral-800 p-2 rounded">
                 <div className="flex flex-col">
                   <small className="text-neutral-500">
-                    <time dateTime={String(article.created_at)}>
-                      {String(article.created_at)}
+                    <time dateTime={convertToLargeDate(article.created_at)}>
+                      {convertToLargeDate(article.created_at)}
                     </time>
                   </small>
                   <div className="pb-2">

@@ -5,6 +5,8 @@ import { createServerAppClient } from "../../../supabase/server";
 import { BackToTopButton } from "../../../components/Buttons/client";
 import { faker } from "@faker-js/faker";
 import { ArticleCover } from "@/components/ArticleCover";
+import { convertToLargeDate } from "@/utils/dates";
+import Image from "next/image";
 
 interface ArticleWithAuthor extends Article {
   authors?: {
@@ -54,14 +56,48 @@ export default async function ArticlePage({
               <div className="mb-4">
                 <p className="text-2xl text-neutral-500">{article.sub_title}</p>
               </div>
-              <div className="flex gap-2 items-center mb-4">
-                <p>Autor: {article.authors?.display_name ?? "Removido"}</p>
-                <p className="flex gap-2">
-                  Criado: {String(article.created_at)}
+              <div className="flex flex-wrap gap-6 items-center mb-4">
+                <div className="flex gap-2 items-center">
+                  <Image
+                    src="/images/not-authenticated.png"
+                    alt={`Avatar de ${
+                      article.authors?.display_name ?? "Excluído"
+                    }`}
+                    width={32}
+                    height={32}
+                  />
+                  <p>{article.authors?.display_name ?? "Excluído"}</p>
+                </div>
+                <p className="flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-clock-icon lucide-clock"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <time dateTime={convertToLargeDate(article.created_at)}>
+                    {convertToLargeDate(article.created_at)}
+                  </time>
                 </p>
-                {article.updated_at && (
-                  <p>Atualizado: {String(article.updated_at)}</p>
-                )}
+                {/* {article.updated_at && (
+                    <p>
+                      Atualizado:{" "}
+                      <time
+                        dateTime={convertToLargeDate(article.updated_at)}
+                      >
+                        {convertToLargeDate(article.updated_at)}
+                      </time>
+                    </p>
+                  )} */}
               </div>
             </div>
           </div>
