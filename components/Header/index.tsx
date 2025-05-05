@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { LogoutButton } from "../Buttons/client";
 import { User } from "@supabase/supabase-js";
+import { ProgressBar } from "../ProgressBar";
 
 export const Header = ({ user }: { user: User | null }) => {
   return (
     <header className="fixed top-0 w-full h-20 backdrop-blur-sm bg-neutral-950/50">
-      <div className="max-w-7xl mx-auto h-full">
+      <div className="relative max-w-7xl mx-auto h-full">
         <div className="h-full mx-4 flex justify-between">
           <div className="flex items-center">
             <Link href="/">HOME</Link>
@@ -28,6 +29,7 @@ export const Header = ({ user }: { user: User | null }) => {
             </div>
           )}
         </div>
+        <ProgressBar />
       </div>
     </header>
   );
