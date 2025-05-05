@@ -26,6 +26,18 @@
   }
 }
 
+[aria-current="page"] {
+  color: oklch(70.4% 0.14 182.503);
+}
+
+[aria-current="page"]:after {
+  background-color: oklch(70.4% 0.14 182.503);
+}
+
+[aria-current="page"]:hover {
+  color: white;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

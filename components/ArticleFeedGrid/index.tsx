@@ -17,8 +17,9 @@ export const ArticleFeedGrid = ({
             <li
               key={article.id}
               id={article.id}
-              className={"".concat(
-                isTheAuthor ? " grid gap-1 grid-rows-[1fr_30px]" : " pb-[30px]"
+              className={"h-[400px] ".concat(
+                // TODO: title/sub_title overflow
+                isTheAuthor ? "grid gap-1 grid-rows-[1fr_30px]" : "pb-[30px]"
               )}
             >
               <div className="h-full grid grid-rows-[auto_34px] border border-neutral-800 p-2 rounded">

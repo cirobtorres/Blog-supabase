@@ -162,8 +162,8 @@ export const CreateArticleForm = () => {
   );
 
   return (
-    <main className="mt-[var(--header-height)] mx-4 flex justify-center items-center">
-      <div className="w-full max-w-7xl mx-auto">
+    <main className="w-full max-w-7xl mx-auto flex justify-center items-center">
+      <div className="w-full py-10 mx-4">
         <ReturnToHome />
         <form
           action={action}

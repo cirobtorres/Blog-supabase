@@ -33,7 +33,7 @@ export const FixedHeader = ({ user }: { user: User | null }) => {
       ) {
         if (headerRef.current) headerRef.current.style.top = "0"; // Show
       } else {
-        if (headerRef.current) headerRef.current.style.top = "-48px"; // Hide
+        if (headerRef.current) headerRef.current.style.top = "-64px"; // Hide
       }
       if (currScrollPos > prevScrollPos) {
         // scrollingDownRef.current keeps header static for a certain amout of scrolling down before hiding it

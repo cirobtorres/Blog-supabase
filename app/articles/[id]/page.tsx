@@ -3,10 +3,11 @@ import { FixedHeader } from "../../../components/Header";
 import { Footer } from "../../../components/Footer";
 import { createServerAppClient } from "../../../supabase/server";
 import { BackToTopButton } from "../../../components/Buttons/client";
-import { faker } from "@faker-js/faker";
 import { ArticleCover } from "@/components/ArticleCover";
 import { convertToLargeDate } from "@/utils/dates";
 import Image from "next/image";
+import { AnchorTracker } from "@/components/StickyNavBar";
+import { ArticleBody } from "@/components/ArticleBody";
 
 interface ArticleWithAuthor extends Article {
   authors?: {
@@ -106,22 +107,10 @@ export default async function ArticlePage({
         <section className="w-full max-w-7xl mx-auto py-10">
           <div className="grid grid-rows-1 md:grid-cols-[200px_1fr] lg:grid-cols-[200px_1fr_80px] gap-4 mx-4">
             <article className="text-sm">
-              <nav>
-                <ul>
-                  <li>{faker.lorem.sentence()}</li>
-                  <li>{faker.lorem.sentence()}</li>
-                  <li>{faker.lorem.sentence()}</li>
-                  <li>{faker.lorem.sentence()}</li>
-                  <li>{faker.lorem.sentence()}</li>
-                  <li>{faker.lorem.sentence()}</li>
-                </ul>
-              </nav>
+              <AnchorTracker articleId={article.id} />
             </article>
             <article id={article.id}>
-              <div
-                dangerouslySetInnerHTML={{ __html: article.body }}
-                className="article-content"
-              />
+              <ArticleBody body={article.body} />
             </article>
             <article className="hidden lg:block">
               <BackToTopButton articleId={article.id} />

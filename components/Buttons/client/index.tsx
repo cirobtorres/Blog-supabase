@@ -217,7 +217,7 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
             strokeWidth={`${strokeWidth}px`}
             strokeDasharray={circunference.current}
             style={{ strokeDashoffset: circunference.current }}
-            className="w-fit h-fit fill-none stroke-teal-500 blur-sm"
+            className="w-fit h-fit fill-none stroke-teal-500 blur-xs"
           />
         </svg>
         <svg

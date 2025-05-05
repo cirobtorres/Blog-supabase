@@ -12,6 +12,7 @@ export default async function HomePage() {
     const { data: fetchedArticles, error } = await createBrowserAppClient()
       .from("articles")
       .select("*")
+      .order("created_at", { ascending: false })
       .overrideTypes<Article[], { merge: false }>();
 
     if (error) throw new Error("Error loading articles");
