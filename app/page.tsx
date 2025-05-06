@@ -39,14 +39,14 @@ export default async function HomePage() {
     .select("id, user_id")
     .eq("user_id", user?.id)
     .single();
-  const isTheAuthor = author?.id;
+  const isTheAuthor: string | null = author?.id;
 
   return (
     <>
       <StaticHeader user={user} />
       <main className="">
         <ArticleCover />
-        <section className="max-w-7xl mx-auto min-h-screen grid grid-rows-[auto_1fr] items-start py-10 px-4 md:px-10">
+        <section className="max-w-7xl mx-auto min-h-screen grid grid-rows-[auto_1fr] items-start py-10">
           <div className="flex items-center mx-4 pb-10">
             <h1 className="text-3xl font-bold">Últimos Artigos</h1>
           </div>

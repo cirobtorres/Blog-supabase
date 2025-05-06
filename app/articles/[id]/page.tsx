@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ReturnToHome } from "@/components/Buttons";
 import { FixedHeader } from "../../../components/Header";
 import { Footer } from "../../../components/Footer";
@@ -5,9 +6,10 @@ import { createServerAppClient } from "../../../supabase/server";
 import { BackToTopButton } from "../../../components/Buttons/client";
 import { ArticleCover } from "@/components/ArticleCover";
 import { convertToLargeDate } from "@/utils/dates";
-import Image from "next/image";
 import { AnchorTracker } from "@/components/StickyNavBar";
 import { ArticleBody } from "@/components/ArticleBody";
+import { RelatedArticles } from "@/components/RelatedArticles";
+import { HazardBorder } from "@/components/HazardBorder";
 
 interface ArticleWithAuthor extends Article {
   authors?: {
@@ -43,11 +45,18 @@ export default async function ArticlePage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data: lastArticles } = await supabase
+    .from("articles")
+    .select("*")
+    .neq("id", id)
+    .range(0, 5);
+
   return (
     <>
       <FixedHeader user={user} />
       <main className="flex flex-col items-center mt-[var(--header-height)]">
-        <section className="w-full bg-neutral-900 border-b border-neutral-800">
+        <HazardBorder border="b" />
+        <section className="w-full bg-neutral-900">
           <div className="max-w-7xl mx-auto">
             <div className="py-10 mx-4">
               <ReturnToHome />
@@ -89,20 +98,11 @@ export default async function ArticlePage({
                     {convertToLargeDate(article.created_at)}
                   </time>
                 </p>
-                {/* {article.updated_at && (
-                    <p>
-                      Atualizado:{" "}
-                      <time
-                        dateTime={convertToLargeDate(article.updated_at)}
-                      >
-                        {convertToLargeDate(article.updated_at)}
-                      </time>
-                    </p>
-                  )} */}
               </div>
             </div>
           </div>
         </section>
+        <HazardBorder border="y" />
         <ArticleCover />
         <section className="w-full max-w-7xl mx-auto py-10">
           <div className="grid grid-rows-1 md:grid-cols-[200px_1fr] lg:grid-cols-[200px_1fr_80px] gap-4 mx-4">
@@ -117,8 +117,16 @@ export default async function ArticlePage({
             </article>
           </div>
         </section>
+        <HazardBorder border="y" />
+        <RelatedArticles articles={lastArticles ?? []} />
+        <HazardBorder border="y" />
+        <Comments />
       </main>
       <Footer />
     </>
   );
 }
+
+const Comments = () => {
+  return <section className="py-8"></section>;
+};

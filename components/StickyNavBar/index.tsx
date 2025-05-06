@@ -9,15 +9,16 @@ export const AnchorTracker = ({ articleId }: { articleId: string }) => {
   const anchorListRef = useRef<HTMLDivElement>(null);
 
   const generatePaddingForSessions = (text: { [x: string]: string }) => {
-    return Object.values(text)[0].match(/<h[1][^>]*>(.*?)<\/h[1]>/gi) // Flag g (global): all occurrencies; // Flag i: case-insensitive
+    // Flag g (global): all occurrencies; // Flag i: case-insensitive
+    return Object.values(text)[0].match(/<h[1][^>]*>(.*?)<\/h[1]>/gi)
       ? "pl-0"
-      : Object.values(text)[0].match(/<h[2][^>]*>(.*?)<\/h[2]>/gi) // Flag g (global): all occurrencies; // Flag i: case-insensitive
+      : Object.values(text)[0].match(/<h[2][^>]*>(.*?)<\/h[2]>/gi)
       ? "pl-3"
-      : Object.values(text)[0].match(/<h[3][^>]*>(.*?)<\/h[3]>/gi) // Flag g (global): all occurrencies; // Flag i: case-insensitive
+      : Object.values(text)[0].match(/<h[3][^>]*>(.*?)<\/h[3]>/gi)
       ? "pl-6"
-      : Object.values(text)[0].match(/<h[4][^>]*>(.*?)<\/h[4]>/gi) // Flag g (global): all occurrencies; // Flag i: case-insensitive
+      : Object.values(text)[0].match(/<h[4][^>]*>(.*?)<\/h[4]>/gi)
       ? "pl-9"
-      : Object.values(text)[0].match(/<h[5][^>]*>(.*?)<\/h[5]>/gi) // Flag g (global): all occurrencies; // Flag i: case-insensitive
+      : Object.values(text)[0].match(/<h[5][^>]*>(.*?)<\/h[5]>/gi)
       ? "pl-12"
       : "pl-[3.75rem]";
   };
@@ -97,10 +98,10 @@ export const AnchorTracker = ({ articleId }: { articleId: string }) => {
                 aria-label={`Ir para ${Object.values(text)[0]}`}
                 aria-current={index === 0 ? "page" : "false"} // When pages load, the first anchor is supposed to be the colored one
                 className={
-                  `flex text-sm transition-colors duration-500 break-words hover:text-white` +
+                  `flex text-sm text-neutral-400 transition-colors duration-500 break-words hover:text-white` +
                   ` ${generatePaddingForSessions(text)}` +
                   ` after:absolute after:left-0 aria-current:after:bg-teal-500` +
-                  ` after:transition-all after:duration-500 after:w-0.5 after:h-full after:bg-transparent` +
+                  ` after:w-0.5 after:h-full after:bg-transparent` +
                   ` rounded focus-visible:outline-2 focus-visible:outline-white` +
                   ` focus-visible:text-white focus-visible:bg-neutral-800/50`
                 }
