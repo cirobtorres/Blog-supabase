@@ -206,7 +206,7 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
             strokeWidth={`${strokeWidth}px`}
             strokeDasharray={circunference.current}
             style={{ strokeDashoffset: circunference.current }}
-            className="w-fit h-fit fill-none stroke-teal-500"
+            className="w-fit h-fit fill-none stroke-theme-color"
           />
           <circle
             id="progress-circle-blur"
@@ -217,7 +217,7 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
             strokeWidth={`${strokeWidth}px`}
             strokeDasharray={circunference.current}
             style={{ strokeDashoffset: circunference.current }}
-            className="w-fit h-fit fill-none stroke-teal-500 blur-xs"
+            className="w-fit h-fit fill-none stroke-theme-color blur-xs"
           />
         </svg>
         <svg

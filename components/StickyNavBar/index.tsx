@@ -9,16 +9,16 @@ export const AnchorTracker = ({ articleId }: { articleId: string }) => {
   const anchorListRef = useRef<HTMLDivElement>(null);
 
   const generatePaddingForSessions = (text: { [x: string]: string }) => {
-    // Flag g (global): all occurrencies; // Flag i: case-insensitive
-    return Object.values(text)[0].match(/<h[1][^>]*>(.*?)<\/h[1]>/gi)
+    const heading = Object.values(text)[0];
+    return heading.match(/<h[1][^>]*>(.*?)<\/h[1]>/gi)
       ? "pl-0"
-      : Object.values(text)[0].match(/<h[2][^>]*>(.*?)<\/h[2]>/gi)
+      : heading.match(/<h[2][^>]*>(.*?)<\/h[2]>/gi)
       ? "pl-3"
-      : Object.values(text)[0].match(/<h[3][^>]*>(.*?)<\/h[3]>/gi)
+      : heading.match(/<h[3][^>]*>(.*?)<\/h[3]>/gi)
       ? "pl-6"
-      : Object.values(text)[0].match(/<h[4][^>]*>(.*?)<\/h[4]>/gi)
+      : heading.match(/<h[4][^>]*>(.*?)<\/h[4]>/gi)
       ? "pl-9"
-      : Object.values(text)[0].match(/<h[5][^>]*>(.*?)<\/h[5]>/gi)
+      : heading.match(/<h[5][^>]*>(.*?)<\/h[5]>/gi)
       ? "pl-12"
       : "pl-[3.75rem]";
   };
@@ -27,6 +27,9 @@ export const AnchorTracker = ({ articleId }: { articleId: string }) => {
     const linkAnchorsListener = () => {
       // Select article content
       const contentElement = document.getElementById(articleId);
+      const header = document.getElementById("floating-header");
+      const headerHeight = header?.offsetHeight ?? 0;
+
       if (!contentElement) return;
 
       // Retrieve all sections
@@ -43,12 +46,12 @@ export const AnchorTracker = ({ articleId }: { articleId: string }) => {
       if (sections && sections.length > 0) {
         sections.forEach((section, index) => {
           const sectionRect = section.getBoundingClientRect();
-          const sectionTop = sectionRect.top + window.scrollY;
-          if (window.scrollY >= sectionTop - 1) {
+          const sectionTop = sectionRect.top + window.scrollY - headerHeight;
+          if (window.scrollY >= sectionTop) {
             currentSectionIndex = index;
           }
         });
-        const links = anchorListRef.current?.querySelectorAll("li a");
+        const links = anchorListRef.current?.querySelectorAll("li");
 
         links?.forEach((link, index) => {
           if (index === currentSectionIndex) {
@@ -80,7 +83,7 @@ export const AnchorTracker = ({ articleId }: { articleId: string }) => {
       <nav
         className={
           "w-full" +
-          " self-start max-w-72 sticky top-14 mb-4 col-start-1 max-[800px]:col-start-auto" +
+          " self-start max-w-72 sticky top-20 mb-4 col-start-1 max-[800px]:col-start-auto" +
           " max-[800px]:self-auto max-[800px]:max-w-full max-[800px]:static max-[800px]:pt-0"
         }
       >
@@ -89,30 +92,31 @@ export const AnchorTracker = ({ articleId }: { articleId: string }) => {
         </p>
         <div
           ref={anchorListRef}
-          className="py-1 max-h-[50vh] relative before:absolute before:top-0 before:left-0 before:bottom-0 before:my-2 before:w-0.5 before:bg-neutral-800"
+          className="max-h-[50vh] relative py-1 before:absolute before:top-0 before:left-0 before:bottom-0 before:my-1 before:w-0.5 before:bg-neutral-800"
         >
-          {anchorList.map((text, index) => (
-            <li key={index} className="list-none relative pl-2 pr-1 mb-1">
-              <Link
-                href={`#${Object.keys(text)}`}
-                aria-label={`Ir para ${Object.values(text)[0]}`}
-                aria-current={index === 0 ? "page" : "false"} // When pages load, the first anchor is supposed to be the colored one
-                className={
-                  `flex text-sm text-neutral-400 transition-colors duration-500 break-words hover:text-white` +
-                  ` ${generatePaddingForSessions(text)}` +
-                  ` after:absolute after:left-0 aria-current:after:bg-teal-500` +
-                  ` after:w-0.5 after:h-full after:bg-transparent` +
-                  ` rounded focus-visible:outline-2 focus-visible:outline-white` +
-                  ` focus-visible:text-white focus-visible:bg-neutral-800/50`
-                }
+          {anchorList.map((text, index) => {
+            const ariaLabel = Object.values(text)[0].replace(
+              /<\/?h[1-6][^>]*>/gi,
+              ""
+            ); // Replaces <h2>Example Title</h2> to Example Title
+            return (
+              <li
+                key={index}
+                aria-current={index === 0 ? "page" : "false"} // When page loads, the first link is supposed to be the colored one
+                aria-label={`Ir até a sessão: ${ariaLabel}`}
+                className="relative list-none pl-2 pr-1 after:absolute after:top-0 after:left-0 after:w-0.5 after:h-full after:bg-transparent"
               >
-                {
-                  Object.values(text)[0].replace(/<\/?h[1-6][^>]*>/gi, "")
-                  // Replaces <h2>Example Title</h2> to Example Title
-                }
-              </Link>
-            </li>
-          ))}
+                <Link
+                  href={`#${Object.keys(text)}`}
+                  className={`flex text-sm transition-colors duration-500 break-words rounded hover:text-white focus-visible:outline-2 focus-visible:outline-white focus-visible:text-white focus-visible:bg-neutral-800/50 ${generatePaddingForSessions(
+                    text
+                  )}`}
+                >
+                  {ariaLabel}
+                </Link>
+              </li>
+            );
+          })}
         </div>
       </nav>
     )
@@ -122,12 +126,10 @@ export const AnchorTracker = ({ articleId }: { articleId: string }) => {
 const extractAnchors = (htmlString: string): { [key: string]: string }[] => {
   const anchorList: { [key: string]: string }[] = [];
   const regex = /<(h[1-6])([^>]*)>(.*?)<\/\1>/gi;
-
   let match;
 
   while ((match = regex.exec(htmlString)) !== null) {
     const [, tag, attributes, content] = match;
-
     // Skip if content has HTML tags like <b> <strong> <i> <strike> <u>
     // Ex: <h1>Example <b>1</b></h1>
     if (/<[^>]+>/.test(content)) continue;
@@ -140,11 +142,4 @@ const extractAnchors = (htmlString: string): { [key: string]: string }[] => {
   }
 
   return anchorList;
-};
-
-export const addIdsToHeadings = (htmlString: string) => {
-  return htmlString.replace(/<(h[1-6])>(.*?)<\/\1>/g, (match, tag, content) => {
-    const id = slugify(content);
-    return `<${tag} id="${id}" tabIndex="0">${content}</${tag}>`;
-  });
 };

@@ -21,7 +21,7 @@ export const RelatedArticles = ({ articles }: { articles: Article[] | [] }) => {
   } = usePrevNextButtons(emblaApi);
 
   return (
-    <section className="w-full py-8 bg-neutral-900">
+    <section className="w-full py-8">
       <div className="relative w-full max-w-4xl m-auto ">
         <div className="mb-4 mx-4">
           <h3 className="text-3xl">Leia também</h3>

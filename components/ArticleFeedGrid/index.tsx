@@ -47,7 +47,7 @@ export const ArticleGridElement = ({
   sub_title: string | null;
   created_at: Date;
 }) => (
-  <div className="h-full grid grid-rows-[auto_34px] border border-neutral-800 p-2 rounded bg-neutral-950">
+  <div className="h-full grid grid-rows-[auto_34px] border border-neutral-800 p-2 rounded-lg bg-neutral-950">
     <div className="flex flex-col">
       <small className="text-neutral-500">
         <time dateTime={convertToLargeDate(created_at)}>

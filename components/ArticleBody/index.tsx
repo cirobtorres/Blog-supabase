@@ -1,9 +1,10 @@
 "use client";
 
-import { addIdsToHeadings } from "../StickyNavBar";
+import { transformHeadings } from "@/utils/articles";
 
 export const ArticleBody = ({ body }: { body: string }) => {
-  const bodyWithIds = addIdsToHeadings(body);
+  // const bodyWithIds = addIdsToHeadings(body);
+  const bodyWithIds = transformHeadings(body);
 
   return (
     <div

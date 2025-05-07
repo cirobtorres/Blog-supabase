@@ -80,7 +80,7 @@ const HeaderContent = ({ id: userId }: { id?: string }) => {
       </div>
       {userId ? (
         <div className="flex items-center gap-4">
-          <Link href="/admin" className="w-fit p-1 text-sm text-teal-500">
+          <Link href="/admin" className="w-fit p-1 text-sm text-theme-color">
             display_name
           </Link>
           <LogoutButton label="Sair" />

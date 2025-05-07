@@ -9,7 +9,6 @@ import { convertToLargeDate } from "@/utils/dates";
 import { AnchorTracker } from "@/components/StickyNavBar";
 import { ArticleBody } from "@/components/ArticleBody";
 import { RelatedArticles } from "@/components/RelatedArticles";
-import { HazardBorder } from "@/components/HazardBorder";
 
 interface ArticleWithAuthor extends Article {
   authors?: {
@@ -55,54 +54,7 @@ export default async function ArticlePage({
     <>
       <FixedHeader user={user} />
       <main className="flex flex-col items-center mt-[var(--header-height)]">
-        <HazardBorder border="b" />
-        <section className="w-full bg-neutral-900">
-          <div className="max-w-7xl mx-auto">
-            <div className="py-10 mx-4">
-              <ReturnToHome />
-              <div className="mb-4">
-                <h1 className="text-4xl font-bold">{article.title}</h1>
-              </div>
-              <div className="mb-4">
-                <p className="text-2xl text-neutral-500">{article.sub_title}</p>
-              </div>
-              <div className="flex flex-wrap gap-6 items-center mb-4">
-                <div className="flex gap-2 items-center">
-                  <Image
-                    src="/images/not-authenticated.png"
-                    alt={`Avatar de ${
-                      article.authors?.display_name ?? "Excluído"
-                    }`}
-                    width={32}
-                    height={32}
-                  />
-                  <p>{article.authors?.display_name ?? "Excluído"}</p>
-                </div>
-                <p className="flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-clock-icon lucide-clock"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  <time dateTime={convertToLargeDate(article.created_at)}>
-                    {convertToLargeDate(article.created_at)}
-                  </time>
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-        <HazardBorder border="y" />
+        <ArticleTitle {...article} />
         <ArticleCover />
         <section className="w-full max-w-7xl mx-auto py-10">
           <div className="grid grid-rows-1 md:grid-cols-[200px_1fr] lg:grid-cols-[200px_1fr_80px] gap-4 mx-4">
@@ -117,15 +69,65 @@ export default async function ArticlePage({
             </article>
           </div>
         </section>
-        <HazardBorder border="y" />
         <RelatedArticles articles={lastArticles ?? []} />
-        <HazardBorder border="y" />
         <Comments />
       </main>
       <Footer />
     </>
   );
 }
+
+const ArticleTitle = ({
+  title,
+  sub_title,
+  authors,
+  created_at,
+}: ArticleWithAuthor) => (
+  <section className="w-full border-b border-neutral-800 bg-neutral-900">
+    <div className="max-w-7xl mx-auto">
+      <div className="py-10 mx-4">
+        <ReturnToHome />
+        <div className="mb-4">
+          <h1 className="text-4xl font-bold">{title}</h1>
+        </div>
+        <div className="mb-4">
+          <p className="text-2xl text-neutral-500">{sub_title}</p>
+        </div>
+        <div className="flex flex-wrap gap-6 items-center mb-4">
+          <div className="flex gap-2 items-center">
+            <Image
+              src="/images/not-authenticated.png"
+              alt={`Avatar de ${authors?.display_name ?? "Excluído"}`}
+              width={32}
+              height={32}
+            />
+            <p>{authors?.display_name ?? "Excluído"}</p>
+          </div>
+          <p className="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-clock-icon lucide-clock"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <time dateTime={convertToLargeDate(created_at)}>
+              {convertToLargeDate(created_at)}
+            </time>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+);
 
 const Comments = () => {
   return <section className="py-8"></section>;

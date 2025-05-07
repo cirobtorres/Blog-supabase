@@ -59,14 +59,14 @@ export const ProgressBar = () => {
           id="progress-bar-blur"
           data-testid="progress-bar-blur"
           style={{ width: "0%" }}
-          className="h-full col-start-1 row-start-1 bg-gradient-to-r from-transparent to-teal-500 blur-xl rounded-full hidden max-lg:block"
+          className="h-full col-start-1 row-start-1 bg-gradient-to-r from-transparent to-theme-color blur-xl rounded-full hidden max-lg:block"
         />
         <div
           ref={progressBarBlurRef}
           id="progress-bar"
           data-testid="progress-bar"
           style={{ width: "0%" }}
-          className="h-full col-start-1 row-start-1 bg-gradient-to-r from-transparent to-teal-500 rounded-full hidden max-lg:block"
+          className="h-full col-start-1 row-start-1 bg-gradient-to-r from-transparent to-theme-color rounded-full hidden max-lg:block"
         />
         <span id="progressbar-label" className="sr-only">
           Progresso de rolagem da página

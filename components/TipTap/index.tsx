@@ -60,7 +60,7 @@ const Tiptap = ({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 2 }).run()
             }
-            className={"flex justify-center items-center size-9 cursor-pointer rounded border border-neutral-700".concat(
+            className={"flex justify-center items-center size-7 cursor-pointer rounded border border-neutral-700".concat(
               editor.isActive("heading", { level: 2 })
                 ? " bg-neutral-700"
                 : " bg-neutral-800"
@@ -68,8 +68,8 @@ const Tiptap = ({
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -89,7 +89,7 @@ const Tiptap = ({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 3 }).run()
             }
-            className={"flex justify-center items-center size-9 cursor-pointer rounded border border-neutral-700".concat(
+            className={"flex justify-center items-center size-7 cursor-pointer rounded border border-neutral-700".concat(
               editor.isActive("heading", { level: 3 })
                 ? " bg-neutral-700"
                 : " bg-neutral-800"
@@ -97,8 +97,8 @@ const Tiptap = ({
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -119,7 +119,7 @@ const Tiptap = ({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 4 }).run()
             }
-            className={"flex justify-center items-center size-9 cursor-pointer rounded border border-neutral-700".concat(
+            className={"flex justify-center items-center size-7 cursor-pointer rounded border border-neutral-700".concat(
               editor.isActive("heading", { level: 4 })
                 ? " bg-neutral-700"
                 : " bg-neutral-800"
@@ -127,8 +127,8 @@ const Tiptap = ({
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -147,14 +147,14 @@ const Tiptap = ({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={"flex justify-center items-center size-9 cursor-pointer rounded border border-neutral-700".concat(
+            className={"flex justify-center items-center size-7 cursor-pointer rounded border border-neutral-700".concat(
               editor.isActive("bold") ? " bg-neutral-700" : " bg-neutral-800"
             )}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"

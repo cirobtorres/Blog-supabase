@@ -6,8 +6,10 @@
 }
 
 @theme {
+  --color-theme-color: hsl(30, 85%, 65%);
+  --color-theme-color-backdrop: hsla(30, 100%, 80%, 0.15);
   --animate-bouncing-arrow: bouncing-arrow 1s infinite;
-  --header-height: 4rem; /* 48px */
+  --header-height: 4rem; /* 64px */
   --related-articles-carousel-spacing: 0.25rem; /* 4px */
 
   @keyframes bouncing-arrow {
@@ -28,11 +30,16 @@
 }
 
 [aria-current="page"] {
-  color: oklch(70.4% 0.14 182.503);
+  color: var(--color-theme-color);
+  background-color: var(--color-theme-color-backdrop);
+}
+
+[aria-current="false"] {
+  color: #a1a1a1;
 }
 
 [aria-current="page"]:after {
-  background-color: oklch(70.4% 0.14 182.503);
+  background-color: var(--color-theme-color);
 }
 
 [aria-current="page"]:hover {
