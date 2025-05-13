@@ -146,7 +146,7 @@ export const ArticleEditor = ({
           </button>
           <button
             type="button"
-            onClick={() => editor.chain().focus().toggleBold().run()}
+            onClick={() => editor.chain().toggleBold().run()}
             className={"flex justify-center items-center size-7 transition-all cursor-pointer rounded border border-neutral-700 focus-visible:ring-neutral-100 focus-visible:ring-[2px]".concat(
               editor.isActive("bold") ? " bg-neutral-700" : " bg-neutral-800"
             )}

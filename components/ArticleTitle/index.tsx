@@ -4,9 +4,7 @@ import { ReturnToHome } from "../Buttons";
 import { convertToLargeDate } from "../../utils/dates";
 
 interface ArticleWithAuthor extends Article {
-  authors?: {
-    display_name: string | null;
-  };
+  authors: Author;
 }
 
 export const ArticleTitle = ({
@@ -29,12 +27,17 @@ export const ArticleTitle = ({
         <div className="flex flex-wrap gap-6 items-center mb-4">
           <div className="flex gap-2 items-center">
             <Image
-              src="/images/not-authenticated.png"
-              alt={`Avatar de ${authors?.display_name ?? "Excluído"}`}
+              src={
+                authors?.avatar_url
+                  ? authors.avatar_url
+                  : "/images/not-authenticated.png"
+              }
+              alt={`Avatar de ${authors?.username ?? "Excluído"}`}
               width={32}
               height={32}
+              className="rounded-full"
             />
-            <p>{authors?.display_name ?? "Excluído"}</p>
+            <p>{authors?.username ?? "Excluído"}</p>
           </div>
           <p className="flex items-center gap-2">
             <svg

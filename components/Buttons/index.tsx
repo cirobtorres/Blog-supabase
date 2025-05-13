@@ -1,11 +1,17 @@
 import Link from "next/link";
 
-export const ConfirmFormButton = ({ label }: { label: string }) => (
+export const ConfirmFormButton = ({
+  label,
+  isPending,
+}: {
+  label: string;
+  isPending: boolean;
+}) => (
   <button
     type="submit"
     className="transition-all h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
   >
-    {label}
+    {isPending ? "Loading..." : label}
   </button>
 );
 

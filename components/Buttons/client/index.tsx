@@ -303,10 +303,6 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
       id="btt-btn-container"
       data-testid="btt-btn-container"
       className="self-start sticky mx-auto top-1/2 -translate-y-1/2"
-      // style={{
-      //   marginTop: `calc(50vh - ${diameter}px)`,
-      //   marginBottom: `calc(50vh - ${diameter}px)`,
-      // }}
     >
       <button
         id="btt-btn"

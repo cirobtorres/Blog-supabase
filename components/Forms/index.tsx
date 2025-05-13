@@ -23,9 +23,10 @@ import {
 import { putArticle, postArticle } from "@/services/article";
 import { useActionState, useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export const SignUpForm = () => {
-  const [state, action] = useActionState(signUp, { error: null });
+  const [state, action, isPending] = useActionState(signUp, { error: null });
   return (
     <div className="max-w-lg w-full mx-auto p-4 my-[var(--header-height)]">
       <ReturnToHome />
@@ -36,7 +37,7 @@ export const SignUpForm = () => {
         <PasswordFieldset />
         <p className="text-red-500">TODO: checkboxes</p>
         <p className="text-red-500">TODO: captcha</p>
-        <ConfirmFormButton label="Confirmar" />
+        <ConfirmFormButton label="Confirmar" isPending={isPending} />
         {state && <p>{state.error}</p>}
       </form>
       <ProvidersRowButtons />
@@ -54,7 +55,7 @@ export const SignUpForm = () => {
 };
 
 export const SignInForm = () => {
-  const [state, action] = useActionState(signIn, { error: null });
+  const [state, action, isPending] = useActionState(signIn, { error: null });
   return (
     <div className="max-w-lg w-full mx-auto p-4 my-[var(--header-height)]">
       <ReturnToHome />
@@ -62,7 +63,7 @@ export const SignInForm = () => {
       <form action={action} className="flex flex-col gap-2">
         <EmailFieldset />
         <PasswordFieldset />
-        <ConfirmFormButton label="Confirmar" />
+        <ConfirmFormButton label="Confirmar" isPending={isPending} />
         {state && <p className="text-sm text-warning">{state.error}</p>}
       </form>
       <ProvidersRowButtons />
@@ -86,19 +87,21 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
   const [htmlDescription, setHtmlDescription] = useState("");
   const [htmlBody, setHtmlBody] = useState("");
 
-  const [state, action] = useActionState(
-    () => {
+  const [state, action, isPending] = useActionState(
+    async () => {
       const formData = new FormData();
       formData.set(getTitleFormDataValue, htmlTitle);
       formData.set(getSubtitleFormDataValue, htmlDescription);
       formData.set(getEditorFormDataValue, htmlBody);
       formData.set("profile_id", profileId);
-      return postArticle({ success: null, error: null }, formData);
+      const result = await postArticle(
+        { ok: false, success: null, error: null },
+        formData
+      );
+      if (result.ok) toast("Artigo criado!");
+      return result;
     },
-    {
-      success: null,
-      error: null,
-    }
+    { ok: false, success: null, error: null }
   );
 
   return (
@@ -118,12 +121,12 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
             <EditorFieldset setVal={setHtmlBody} />
           </div>
           <div className="flex flex-col gap-1">
-            <ConfirmFormButton label="Publicar" />
+            <ConfirmFormButton label="Publicar" isPending={isPending} />
             <SaveFormButton label="Salvar" />
           </div>
         </form>
         {state.error && <p>Error: {state.error}</p>}
-        {state.success && <p>Success: {state.success}</p>}
+        {/* {state.success && <p>Success: {state.success}</p>} */}
       </div>
     </main>
   );
@@ -144,20 +147,28 @@ export const EditArticleForm = ({
   const [htmlDescription, setHtmlDescription] = useState(sub_title || "");
   const [htmlBody, setHtmlBody] = useState(body);
 
-  const [state, action] = useActionState(
-    () => {
+  const [state, action, isPending] = useActionState(
+    async () => {
       const formData = new FormData();
 
       // const contentHTMLBody = htmlBody.replace(/<p>(\s|&nbsp;)*<\/p>/g, ""); // Remove empties <p></p>
-      // formData.set(getEditorFormDataValue, contentHTMLBody);
 
       formData.set(getTitleFormDataValue, htmlTitle);
       formData.set(getSubtitleFormDataValue, htmlDescription);
       formData.set(getEditorFormDataValue, htmlBody);
 
-      return putArticle(id, { success: null, error: null }, formData);
+      const result = await putArticle(
+        id,
+        { ok: false, success: null, error: null },
+        formData
+      );
+
+      if (result.ok) toast("Artigo atualizado");
+
+      return result;
     },
     {
+      ok: false,
       success: null,
       error: null,
     }
@@ -180,12 +191,12 @@ export const EditArticleForm = ({
             <EditorFieldset setVal={setHtmlBody} defaultValue={htmlBody} />
           </div>
           <div className="flex flex-col gap-1">
-            <ConfirmFormButton label="Publicar" />
+            <ConfirmFormButton label="Publicar" isPending={isPending} />
             <SaveFormButton label="Salvar" />
           </div>
         </form>
         {state.error && <p>Error: {state.error}</p>}
-        {state.success && <p>Success: {state.success}</p>}
+        {/* {state.success && <p>Success: {state.success}</p>} */}
       </div>
     </main>
   );

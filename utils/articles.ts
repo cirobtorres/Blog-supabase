@@ -28,7 +28,6 @@ export const transformHeadings = (body: string) => {
     const wrapper = `<div class="flex items-center gap-4 pt-8 mb-4">${anchor}${svg}</div>`;
     tag.replaceWith(wrapper);
   });
-
   return $.html();
 };
 

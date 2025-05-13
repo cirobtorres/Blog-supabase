@@ -10,9 +10,7 @@ import { getProfile } from "@/services/user";
 import { ArticleTitle } from "../../../components/ArticleTitle";
 
 interface ArticleWithAuthor extends Article {
-  authors?: {
-    display_name: string | null;
-  };
+  authors: Author;
 }
 
 export default async function ArticlePage({
@@ -25,7 +23,7 @@ export default async function ArticlePage({
 
   const { data: article, error: articleError } = await supabase
     .from("articles")
-    .select("*, authors (username)")
+    .select("*, authors (*)")
     .eq("id", id)
     .single<ArticleWithAuthor>();
 
