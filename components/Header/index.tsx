@@ -2,21 +2,21 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { User } from "@supabase/supabase-js";
 import { ProgressBar } from "./ProgressBar";
 import { LogoutButton } from "../Buttons/client";
+import Image from "next/image";
 
-export const StaticHeader = ({ user }: { user: User | null }) => {
+export const StaticHeader = ({ profile }: { profile: Profile | null }) => {
   return (
     <header className="w-full h-[var(--header-height)] border-b border-neutral-800 backdrop-blur-sm bg-neutral-950/50">
       <div className="relative max-w-7xl mx-auto h-full">
-        <HeaderContent {...user} />
+        <HeaderContent profile={profile} />
       </div>
     </header>
   );
 };
 
-export const FixedHeader = ({ user }: { user: User | null }) => {
+export const FixedHeader = ({ profile }: { profile: Profile | null }) => {
   const headerRef = useRef<HTMLElement>(null);
   const scrollingDownRef = useRef(0);
 
@@ -65,24 +65,33 @@ export const FixedHeader = ({ user }: { user: User | null }) => {
       style={{ top: 0 }}
     >
       <div className="relative max-w-7xl mx-auto h-full">
-        <HeaderContent {...user} />
+        <HeaderContent profile={profile} />
       </div>
       <ProgressBar />
     </header>
   );
 };
 
-const HeaderContent = ({ id: userId }: { id?: string }) => {
+const HeaderContent = ({ profile }: { profile: Profile | null }) => {
   return (
     <div className="h-full mx-4 flex justify-between">
       <div className="flex items-center">
         <Link href="/">HOME</Link>
       </div>
-      {userId ? (
+      {profile ? (
         <div className="flex items-center gap-4">
-          <Link href="/admin" className="w-fit p-1 text-sm text-theme-color">
-            display_name
-          </Link>
+          <div className="flex items-center">
+            <Image
+              src={profile.avatar_url}
+              alt={`Avatar de ${profile.username}`}
+              width={24}
+              height={24}
+              className="rounded-full"
+            />
+            <Link href="/admin" className="w-fit p-1 text-sm text-theme-color">
+              {profile.username}
+            </Link>
+          </div>
           <LogoutButton label="Sair" />
         </div>
       ) : (

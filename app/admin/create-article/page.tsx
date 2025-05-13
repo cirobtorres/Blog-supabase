@@ -1,16 +1,15 @@
 import { CreateArticleForm } from "@/components/Forms";
 import { StaticHeader } from "../../../components/Header";
-import { createServerAppClient } from "../../../supabase/server";
+import { redirect } from "next/navigation";
+import { getProfile } from "@/services/user";
 
 export default async function CreateArticlePage() {
-  const supabase = await createServerAppClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const profile = await getProfile();
+  if (!profile) redirect("/");
   return (
     <>
-      <StaticHeader user={user} />
-      <CreateArticleForm />
+      <StaticHeader profile={profile} />
+      <CreateArticleForm profileId={profile.id} />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { labelId, inputId } from "@/utils/strings";
-import Tiptap from "../TipTap";
+import { ArticleEditor } from "./ArticleEditor";
 import { Dispatch, SetStateAction } from "react";
 
 export const DisplayNameFieldset = ({
@@ -21,7 +21,7 @@ export const DisplayNameFieldset = ({
         name={getDisplayNameFormDataValue}
         type="text"
         placeholder={placeholder || ""}
-        className="p-1 bg-neutral-900"
+        className="p-1 transition-all rounded border border-neutral-800 bg-neutral-900 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
       />
     </fieldset>
   );
@@ -42,7 +42,7 @@ export const EmailFieldset = ({ placeholder }: { placeholder?: string }) => {
         name={getEmailFormDataValue}
         type="email"
         placeholder={placeholder || ""}
-        className="p-1 bg-neutral-900"
+        className="p-1 transition-all rounded border border-neutral-800 bg-neutral-900 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
       />
     </fieldset>
   );
@@ -63,7 +63,7 @@ export const PasswordFieldset = ({ placeholder }: { placeholder?: string }) => {
         name={getPasswordFormDataValue}
         type="password"
         placeholder={placeholder || ""}
-        className="p-1 bg-neutral-900"
+        className="p-1 transition-all rounded border border-neutral-800 bg-neutral-900 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
       />
     </fieldset>
   );
@@ -93,7 +93,10 @@ export const TitleFieldset = ({
         rows={2}
         maxLength={128}
         onChange={(e) => setVal(e.target.value)}
-        className="p-2 resize-none rounded border border-neutral-700 bg-neutral-800"
+        className={
+          `p-2 resize-none rounded transition-all border border-neutral-700 bg-neutral-800` +
+          ` focus-visible:ring-neutral-100 focus-visible:ring-[3px]`
+        }
       />
     </fieldset>
   );
@@ -122,7 +125,10 @@ export const SubtitleFieldset = ({
         rows={2}
         maxLength={256}
         onChange={(e) => setVal(e.target.value)}
-        className="p-2 resize-none rounded border border-neutral-700 bg-neutral-800"
+        className={
+          `p-2 resize-none rounded transition-all border border-neutral-700 bg-neutral-800` +
+          ` focus-visible:ring-neutral-100 focus-visible:ring-[3px]`
+        }
       />
     </fieldset>
   );
@@ -144,7 +150,7 @@ export const EditorFieldset = ({
       >
         Body
       </label>
-      <Tiptap
+      <ArticleEditor
         id={getEditorFormDataValue}
         setVal={setVal}
         defaultValue={defaultValue}

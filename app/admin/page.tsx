@@ -1,17 +1,16 @@
 import Link from "next/link";
 import { StaticHeader } from "../../components/Header";
-import { createServerAppClient } from "../../supabase/server";
+import { getProfile } from "@/services/user";
 
 export default async function AdminPage() {
-  const supabase = await createServerAppClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const profile = await getProfile();
   return (
     <>
-      <StaticHeader user={user} />
+      <StaticHeader profile={profile} />
       <main className="mt-[var(--header-height)] max-w-7xl mx-auto">
-        <Link href="/admin/create-article">Criar Artigo</Link>
+        <section className="mx-4">
+          <Link href="/admin/create-article">Criar Artigo</Link>
+        </section>
       </main>
     </>
   );

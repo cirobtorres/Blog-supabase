@@ -1,9 +1,9 @@
 "use client";
 
 import {
-  PublishArticleButton,
+  ConfirmFormButton,
+  SaveFormButton,
   ReturnToHome,
-  SaveArticleButton,
 } from "@/components/Buttons";
 import { ProvidersRowButtons } from "@/components/Buttons/client";
 import {
@@ -27,16 +27,16 @@ import Link from "next/link";
 export const SignUpForm = () => {
   const [state, action] = useActionState(signUp, { error: null });
   return (
-    <div className="max-w-xl w-full mx-auto p-4 my-[var(--header-height)]">
+    <div className="max-w-lg w-full mx-auto p-4 my-[var(--header-height)]">
       <ReturnToHome />
-      <h1>Create Account</h1>
+      <h1 className="font-bold text-3xl text-center">Create Account</h1>
       <form action={action} className="flex flex-col gap-2">
         <DisplayNameFieldset />
         <EmailFieldset />
         <PasswordFieldset />
         <p className="text-red-500">TODO: checkboxes</p>
         <p className="text-red-500">TODO: captcha</p>
-        <PublishArticleButton label="Confirmar" />
+        <ConfirmFormButton label="Confirmar" />
         {state && <p>{state.error}</p>}
       </form>
       <ProvidersRowButtons />
@@ -56,14 +56,14 @@ export const SignUpForm = () => {
 export const SignInForm = () => {
   const [state, action] = useActionState(signIn, { error: null });
   return (
-    <div className="max-w-xl w-full mx-auto p-4 my-[var(--header-height)]">
+    <div className="max-w-lg w-full mx-auto p-4 my-[var(--header-height)]">
       <ReturnToHome />
-      <h1>Login</h1>
+      <h1 className="font-bold text-3xl text-center">Login</h1>
       <form action={action} className="flex flex-col gap-2">
         <EmailFieldset />
         <PasswordFieldset />
-        <PublishArticleButton label="Confirmar" />
-        {state && <p>{state.error}</p>}
+        <ConfirmFormButton label="Confirmar" />
+        {state && <p className="text-sm text-warning">{state.error}</p>}
       </form>
       <ProvidersRowButtons />
       <p className="text-red-500">TODO: phone</p>
@@ -81,68 +81,7 @@ export const SignInForm = () => {
   );
 };
 
-export const EditArticleForm = ({
-  id,
-  title,
-  sub_title,
-  body,
-}: {
-  id: string;
-  title: string;
-  sub_title: string | null;
-  body: string;
-}) => {
-  const [htmlTitle, setHtmlTitle] = useState(title);
-  const [htmlDescription, setHtmlDescription] = useState(sub_title || "");
-  const [htmlBody, setHtmlBody] = useState(body);
-
-  const [state, action] = useActionState(
-    () => {
-      const formData = new FormData();
-
-      const contentHTMLBody = htmlBody.replace(/<p>(\s|&nbsp;)*<\/p>/g, ""); // Remove empties <p></p>
-
-      formData.set(getTitleFormDataValue, htmlTitle);
-      formData.set(getSubtitleFormDataValue, htmlDescription);
-      formData.set(getEditorFormDataValue, contentHTMLBody);
-
-      return putArticle(id, { success: null, error: null }, formData);
-    },
-    {
-      success: null,
-      error: null,
-    }
-  );
-
-  return (
-    <main className="mt-[var(--header-height)] mx-4 flex justify-center items-center">
-      <div className="w-full max-w-7xl mx-auto">
-        <ReturnToHome />
-        <form
-          action={action}
-          className="grid gap-2 grid-cols-1 md:grid-cols-[1fr_300px]"
-        >
-          <div className="flex flex-col gap-2">
-            <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
-            <SubtitleFieldset
-              value={htmlDescription}
-              setVal={setHtmlDescription}
-            />
-            <EditorFieldset setVal={setHtmlBody} defaultValue={htmlBody} />
-          </div>
-          <div className="flex flex-col gap-1">
-            <PublishArticleButton label="Publicar" />
-            <SaveArticleButton label="Salvar" />
-          </div>
-        </form>
-        {state.error && <p>Error: {state.error}</p>}
-        {state.success && <p>Success: {state.success}</p>}
-      </div>
-    </main>
-  );
-};
-
-export const CreateArticleForm = () => {
+export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
   const [htmlTitle, setHtmlTitle] = useState("");
   const [htmlDescription, setHtmlDescription] = useState("");
   const [htmlBody, setHtmlBody] = useState("");
@@ -153,6 +92,7 @@ export const CreateArticleForm = () => {
       formData.set(getTitleFormDataValue, htmlTitle);
       formData.set(getSubtitleFormDataValue, htmlDescription);
       formData.set(getEditorFormDataValue, htmlBody);
+      formData.set("profile_id", profileId);
       return postArticle({ success: null, error: null }, formData);
     },
     {
@@ -178,8 +118,70 @@ export const CreateArticleForm = () => {
             <EditorFieldset setVal={setHtmlBody} />
           </div>
           <div className="flex flex-col gap-1">
-            <PublishArticleButton label="Publicar" />
-            <SaveArticleButton label="Salvar" />
+            <ConfirmFormButton label="Publicar" />
+            <SaveFormButton label="Salvar" />
+          </div>
+        </form>
+        {state.error && <p>Error: {state.error}</p>}
+        {state.success && <p>Success: {state.success}</p>}
+      </div>
+    </main>
+  );
+};
+
+export const EditArticleForm = ({
+  id,
+  title,
+  sub_title,
+  body,
+}: {
+  id: string;
+  title: string;
+  sub_title: string | null;
+  body: string;
+}) => {
+  const [htmlTitle, setHtmlTitle] = useState(title);
+  const [htmlDescription, setHtmlDescription] = useState(sub_title || "");
+  const [htmlBody, setHtmlBody] = useState(body);
+
+  const [state, action] = useActionState(
+    () => {
+      const formData = new FormData();
+
+      // const contentHTMLBody = htmlBody.replace(/<p>(\s|&nbsp;)*<\/p>/g, ""); // Remove empties <p></p>
+      // formData.set(getEditorFormDataValue, contentHTMLBody);
+
+      formData.set(getTitleFormDataValue, htmlTitle);
+      formData.set(getSubtitleFormDataValue, htmlDescription);
+      formData.set(getEditorFormDataValue, htmlBody);
+
+      return putArticle(id, { success: null, error: null }, formData);
+    },
+    {
+      success: null,
+      error: null,
+    }
+  );
+
+  return (
+    <main className="pt-10 max-w-7xl mx-auto flex justify-center items-center">
+      <div className="w-full mx-4">
+        <ReturnToHome />
+        <form
+          action={action}
+          className="grid gap-2 grid-cols-1 md:grid-cols-[1fr_300px]"
+        >
+          <div className="flex flex-col gap-2">
+            <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
+            <SubtitleFieldset
+              value={htmlDescription}
+              setVal={setHtmlDescription}
+            />
+            <EditorFieldset setVal={setHtmlBody} defaultValue={htmlBody} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <ConfirmFormButton label="Publicar" />
+            <SaveFormButton label="Salvar" />
           </div>
         </form>
         {state.error && <p>Error: {state.error}</p>}

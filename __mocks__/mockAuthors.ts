@@ -8,7 +8,7 @@ export const createMockAuthor = (options?: {
 
   return {
     id: faker.string.uuid(),
-    user_id: isUserNull ? null : faker.string.uuid(),
+    profile_id: isUserNull ? null : faker.string.uuid(),
     display_name: faker.internet.displayName(),
     updated_at: isUpdatedAtNull
       ? null

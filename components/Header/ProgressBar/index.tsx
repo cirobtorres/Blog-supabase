@@ -35,8 +35,6 @@ export const ProgressBar = () => {
     };
   }, []);
 
-  console.log(pathname);
-
   return (
     pathname.startsWith("/articles") && (
       <div

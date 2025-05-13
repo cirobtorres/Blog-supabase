@@ -8,7 +8,7 @@ import Heading from "@tiptap/extension-heading";
 import Paragraph from "@tiptap/extension-paragraph";
 import Bold from "@tiptap/extension-bold";
 
-const Tiptap = ({
+export const ArticleEditor = ({
   id,
   setVal,
   defaultValue,
@@ -60,7 +60,7 @@ const Tiptap = ({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 2 }).run()
             }
-            className={"flex justify-center items-center size-7 cursor-pointer rounded border border-neutral-700".concat(
+            className={"flex justify-center items-center size-7 transition-all cursor-pointer rounded border border-neutral-700 focus-visible:ring-neutral-100 focus-visible:ring-[2px]".concat(
               editor.isActive("heading", { level: 2 })
                 ? " bg-neutral-700"
                 : " bg-neutral-800"
@@ -89,7 +89,7 @@ const Tiptap = ({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 3 }).run()
             }
-            className={"flex justify-center items-center size-7 cursor-pointer rounded border border-neutral-700".concat(
+            className={"flex justify-center items-center size-7 transition-all cursor-pointer rounded border border-neutral-700 focus-visible:ring-neutral-100 focus-visible:ring-[2px]".concat(
               editor.isActive("heading", { level: 3 })
                 ? " bg-neutral-700"
                 : " bg-neutral-800"
@@ -119,7 +119,7 @@ const Tiptap = ({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 4 }).run()
             }
-            className={"flex justify-center items-center size-7 cursor-pointer rounded border border-neutral-700".concat(
+            className={"flex justify-center items-center size-7 transition-all cursor-pointer rounded border border-neutral-700 focus-visible:ring-neutral-100 focus-visible:ring-[2px]".concat(
               editor.isActive("heading", { level: 4 })
                 ? " bg-neutral-700"
                 : " bg-neutral-800"
@@ -147,7 +147,7 @@ const Tiptap = ({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={"flex justify-center items-center size-7 cursor-pointer rounded border border-neutral-700".concat(
+            className={"flex justify-center items-center size-7 transition-all cursor-pointer rounded border border-neutral-700 focus-visible:ring-neutral-100 focus-visible:ring-[2px]".concat(
               editor.isActive("bold") ? " bg-neutral-700" : " bg-neutral-800"
             )}
           >
@@ -177,10 +177,14 @@ const Tiptap = ({
         onFocus={() => {
           editor.chain().focus().setTextSelection(lastCharacterIndex).run();
         }}
-        className="article-typography [&_.tiptap.ProseMirror]:min-h-[calc(1.5rem_*_15)] [&_.tiptap.ProseMirror]:p-2 rounded border border-neutral-700 bg-neutral-800"
+        className={
+          `article-typography` +
+          ` [&_.tiptap.ProseMirror]:min-h-[calc(1.5rem_*_15)] [&_.tiptap.ProseMirror]:p-2` +
+          ` [&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:rounded [&_.tiptap.ProseMirror]:transition-all` +
+          ` [&_.tiptap.ProseMirror]:focus-visible:ring-neutral-100 [&_.tiptap.ProseMirror]:focus-visible:ring-[3px]` +
+          ` rounded border border-neutral-700 bg-neutral-800`
+        }
       />
     </>
   );
 };
-
-export default Tiptap;

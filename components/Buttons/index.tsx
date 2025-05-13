@@ -1,18 +1,18 @@
 import Link from "next/link";
 
-export const PublishArticleButton = ({ label }: { label: string }) => (
+export const ConfirmFormButton = ({ label }: { label: string }) => (
   <button
     type="submit"
-    className="h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800"
+    className="transition-all h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
   >
     {label}
   </button>
 );
 
-export const SaveArticleButton = ({ label }: { label: string }) => (
+export const SaveFormButton = ({ label }: { label: string }) => (
   <button
     type="submit"
-    className="h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800"
+    className="transition-all h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
   >
     {label}
   </button>

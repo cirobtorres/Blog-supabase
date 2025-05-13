@@ -58,6 +58,8 @@ export const signIn = async (
 
     if (error) {
       console.error(error);
+      if (error.status === 400)
+        return { error: "E-mail ou senha está incorreto." };
       return { error: error.message };
       // return returnState(error.status);
     }
@@ -67,7 +69,7 @@ export const signIn = async (
   }
 
   return {
-    error: "E-mail or password is incorrect.",
+    error: null,
   };
 };
 

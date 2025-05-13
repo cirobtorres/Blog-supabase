@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
   --background: #0a0a0a;
@@ -8,6 +9,7 @@
 @theme {
   --color-theme-color: hsl(30, 85%, 65%);
   --color-theme-color-backdrop: hsla(30, 100%, 80%, 0.15);
+  --color-warning: hsl(9, 100%, 64%); /* tomato */
   --animate-bouncing-arrow: bouncing-arrow 1s infinite;
   --header-height: 4rem; /* 64px */
   --related-articles-carousel-spacing: 0.25rem; /* 4px */

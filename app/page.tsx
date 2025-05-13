@@ -4,6 +4,7 @@ import { StaticHeader } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArticleFeedGrid } from "@/components/ArticleFeedGrid";
 import { ArticleCover } from "@/components/ArticleCover";
+import { getProfile } from "@/services/user";
 
 export default async function HomePage() {
   let articles: Article[] = [];
@@ -29,28 +30,24 @@ export default async function HomePage() {
   }
 
   const supabase = await createServerAppClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const profile = await getProfile();
 
   const { data: author } = await supabase
     .from("authors")
-    .select("id, user_id")
-    .eq("user_id", user?.id)
-    .single();
-  const isTheAuthor: string | null = author?.id;
+    .select("*")
+    .eq("profile_id", profile?.id)
+    .single<Author | null>();
 
   return (
     <>
-      <StaticHeader user={user} />
+      <StaticHeader profile={profile} />
       <main className="">
         <ArticleCover />
-        <section className="max-w-7xl mx-auto min-h-screen grid grid-rows-[auto_1fr] items-start py-10">
+        <section className="w-full max-w-7xl mx-auto grid grid-rows-[auto_1fr] items-start py-10">
           <div className="flex items-center mx-4 pb-10">
             <h1 className="text-3xl font-bold">Últimos Artigos</h1>
           </div>
-          <ArticleFeedGrid articles={articles} isTheAuthor={isTheAuthor} />
+          <ArticleFeedGrid articles={articles} author={author} />
         </section>
       </main>
       <Footer />

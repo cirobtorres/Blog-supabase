@@ -1,5 +1,6 @@
 import { EditArticleForm } from "@/components/Forms";
 import { StaticHeader } from "@/components/Header";
+import { getProfile } from "@/services/user";
 import { createBrowserAppClient } from "@/supabase/client";
 import { redirect } from "next/navigation";
 
@@ -9,6 +10,7 @@ interface Params {
 
 export default async function EditArticle({ params }: { params: Params }) {
   const { id } = await params;
+  const profile = await getProfile();
   const supabase = await createBrowserAppClient();
 
   const { data: article, error } = await supabase
@@ -22,13 +24,9 @@ export default async function EditArticle({ params }: { params: Params }) {
     redirect("/");
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   return (
     <>
-      <StaticHeader user={user} />
+      <StaticHeader profile={profile} />
       <EditArticleForm {...article} />;
     </>
   );

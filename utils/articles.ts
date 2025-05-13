@@ -10,8 +10,8 @@ export const transformHeadings = (body: string) => {
     const tagName = tag[0].tagName;
     const text = tag.text();
     const id = slugify(text);
-    const heading = `<${tagName} id="${id}" class="scroll-mt-[var(--header-height)] peer">${text}</${tagName}>`;
-    const anchor = `<a href="#${id}">${heading}</a>`;
+    const heading = `<${tagName} id="${id}" class="scroll-mt-[var(--header-height)]">${text}</${tagName}>`;
+    const anchor = `<a href="#${id}" class="peer">${heading}</a>`;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg"
         width="16"
         height="16"
@@ -31,3 +31,6 @@ export const transformHeadings = (body: string) => {
 
   return $.html();
 };
+
+export const addBreakline = (body: string) =>
+  body.replace(/<p>(\s|&nbsp;|<br\s*\/?>)*<\/p>/gi, "<br />");

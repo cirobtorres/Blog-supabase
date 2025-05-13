@@ -1,11 +1,23 @@
 "use client";
 
+import Link from "next/link";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { buttonVariants } from "@/components/ui/button";
 import { deleteArticle, putPrivateArticle } from "@/services/article";
 import { SignInOAuth, signOut } from "@/services/authentication";
 import { Provider } from "@supabase/supabase-js";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useActionState, useState, useEffect, useRef } from "react";
+import { toast } from "sonner";
 
 export const LogoutButton = ({ label }: { label: string }) => {
   return (
@@ -73,11 +85,136 @@ export const EditOrDeleteArticleButtons = ({
 }: {
   article: Article;
 }) => {
+  const expectedString = "Deletar artigo";
+  const [inputString, setInputString] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [state, action, isPending] = useActionState(async () => {
+    const formData = new FormData();
+    formData.set("articleId", article.id);
+    formData.set("inputString", inputString);
+    formData.set("expectedString", expectedString);
+
+    const result = await deleteArticle(formData);
+
+    if (!result) {
+      toast("Artigo deletado!");
+    }
+
+    return result;
+  }, null);
+
+  const disabledButton = inputString !== expectedString;
+
+  const clearInput = () => {
+    setInputString("");
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    clearInput();
+  };
+
+  useEffect(() => {
+    if (!isPending && state === null) {
+      handleCloseDialog();
+    }
+  }, [isPending, state]);
+
   return (
-    <div className="h-5 w-fit flex items-center rounded border overflow-hidden border-neutral-800">
+    <div
+      className="h-5 w-fit flex items-center rounded border overflow-hidden border-neutral-800" // TODO: remover overflow-hidden e corrigir ring
+    >
       <EditArticleButton {...article} />
-      {/* <BlockArticleButton {...article} /> */}
-      <DeleteArticleButton {...article} />
+      <AlertDialog open={isDialogOpen}>
+        <AlertDialogTrigger
+          onClick={() => setIsDialogOpen(true)}
+          className="w-14 px-2 text-xs leading-5 cursor-pointer transition-colors duration-300 text-white bg-neutral-900 hover:bg-neutral-800"
+        >
+          Delete
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center justify-between">
+              Deletar artigo?
+              <AlertDialogCancel
+                className="has-[>svg]:px-1 h-fit py-1"
+                onClick={handleCloseDialog}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-x-icon lucide-x"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </AlertDialogCancel>
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-warning flex items-center gap-2 border-y border-neutral-800 bg-neutral-950">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-octagon-alert-icon lucide-octagon-alert"
+              >
+                <path d="M12 16h.01" />
+                <path d="M12 8v4" />
+                <path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z" />
+              </svg>
+              Essa ação não poderá ser desfeita!
+            </AlertDialogDescription>
+            <fieldset className="p-3 flex flex-col gap-2">
+              <label
+                htmlFor="delete-article-input"
+                className="text-sm text-neutral-400"
+              >
+                Escreva{" "}
+                <span className="text-neutral-100 font-bold">
+                  {expectedString}
+                </span>{" "}
+                para confirmar.
+              </label>
+              <input
+                id="delete-article-input"
+                type="text"
+                placeholder={expectedString}
+                autoComplete="off"
+                value={inputString}
+                onChange={(e) => setInputString(e.target.value)}
+                className="px-2 py-1 text-sm rounded outline-none transition-all focus-visible:border-neutral-500/75 focus-visible:ring-neutral-100/10 focus-visible:ring-[3px] border border-neutral-700 placeholder:text-neutral-600 bg-neutral-800"
+              />
+              {state && <p className="text-xs text-warning">{state.error}</p>}
+            </fieldset>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex items-center gap-2">
+            <AlertDialogCancel onClick={handleCloseDialog}>
+              Cancelar
+            </AlertDialogCancel>
+            <form action={action}>
+              <AlertDialogAction
+                type="submit"
+                disabled={disabledButton}
+                className={buttonVariants({ variant: "destructive" })}
+              >
+                {isPending ? "Loading" : "Confirmar"}
+              </AlertDialogAction>
+            </form>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
@@ -111,17 +248,17 @@ export const BlockArticleButton = ({
   );
 };
 
-export const DeleteArticleButton = ({ id }: { id: string }) => {
-  const pathname = usePathname();
-  const [, action] = useActionState(() => deleteArticle(id, pathname), null);
-  return (
-    <form action={action} className="flex items-center">
-      <button className="w-14 px-2 text-xs leading-5 cursor-pointer transition-colors duration-300 text-white bg-neutral-900 hover:bg-neutral-800">
-        Delete
-      </button>
-    </form>
-  );
-};
+// export const DeleteArticleButton = ({ id }: { id: string }) => {
+//   const pathname = usePathname();
+//   const [, action] = useActionState(() => deleteArticle(id, pathname), null);
+//   return (
+//     <form action={action} className="flex items-center">
+//       <button className="w-14 px-2 text-xs leading-5 cursor-pointer transition-colors duration-300 text-white bg-neutral-900 hover:bg-neutral-800">
+//         Delete
+//       </button>
+//     </form>
+//   );
+// };
 
 export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
   const diameter = 75;
