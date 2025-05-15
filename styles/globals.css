@@ -8,6 +8,8 @@
 
 @theme {
   --color-theme-color: hsl(30, 85%, 65%);
+  --color-theme-link: hsl(30, 85%, 65%);
+  --color-theme-link-visited: hsl(246, 35%, 49%);
   --color-theme-color-backdrop: hsla(30, 100%, 80%, 0.15);
   --color-warning: hsl(9, 100%, 64%); /* tomato */
   --animate-bouncing-arrow: bouncing-arrow 1s infinite;
@@ -61,4 +63,29 @@ body {
 
 ::selection {
   background: #404040;
+}
+
+@layer base {
+  /*------------------------------=====scrollbar=====------------------------------*/
+  .scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #262626;
+    border-radius: 9999px;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #262626;
+  }
+
+  .scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 }

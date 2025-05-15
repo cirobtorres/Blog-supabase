@@ -3,10 +3,16 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { slugify } from "@/utils/strings";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
 
 export const AnchorTracker = ({ articleId }: { articleId: string }) => {
   const [anchorList, setAnchorList] = useState<{ [key: string]: string }[]>([]);
-  const anchorListRef = useRef<HTMLDivElement>(null);
+  const anchorListRef = useRef<HTMLUListElement>(null);
 
   const generatePaddingForSessions = (text: { [x: string]: string }) => {
     const heading = Object.values(text)[0];
@@ -56,6 +62,12 @@ export const AnchorTracker = ({ articleId }: { articleId: string }) => {
         links?.forEach((link, index) => {
           if (index === currentSectionIndex) {
             link.setAttribute("aria-current", "page");
+            // scrollIntoView: scrolls to aria-current=page element to keep it in view inside navbar
+            // link.scrollIntoView({
+            //   behavior: "smooth",
+            //   block: "nearest",
+            //   inline: "nearest",
+            // });
           } else {
             link.setAttribute("aria-current", "false");
           }
@@ -87,37 +99,47 @@ export const AnchorTracker = ({ articleId }: { articleId: string }) => {
           " max-[800px]:self-auto max-[800px]:max-w-full max-[800px]:static max-[800px]:pt-0"
         }
       >
-        <p className="px-2 mb-1 rounded focus-visible:outline-2 focus-visible:outline-white">
-          Conteúdo
-        </p>
-        <div
-          ref={anchorListRef}
-          className="max-h-[50vh] relative py-1 before:absolute before:top-0 before:left-0 before:bottom-0 before:my-1 before:w-0.5 before:bg-neutral-800"
-        >
-          {anchorList.map((text, index) => {
-            const ariaLabel = Object.values(text)[0].replace(
-              /<\/?h[1-6][^>]*>/gi,
-              ""
-            ); // Replaces <h2>Example Title</h2> to Example Title
-            return (
-              <li
-                key={index}
-                aria-current={index === 0 ? "page" : "false"} // When page loads, the first link is supposed to be the colored one
-                aria-label={`Ir até a sessão: ${ariaLabel}`}
-                className="relative list-none pl-2 pr-1 after:absolute after:top-0 after:left-0 after:w-0.5 after:h-full after:bg-transparent"
-              >
-                <Link
-                  href={`#${Object.keys(text)}`}
-                  className={`flex text-sm transition-colors duration-500 break-words rounded hover:text-white focus-visible:outline-2 focus-visible:outline-white focus-visible:text-white focus-visible:bg-neutral-800/50 ${generatePaddingForSessions(
-                    text
-                  )}`}
+        <Accordion type="single" collapsible>
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="cursor-pointer">
+              <p className="text-lg px-2 mb-1 rounded focus-visible:outline-2 focus-visible:outline-white">
+                Conteúdo
+              </p>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="relative">
+                <ul
+                  ref={anchorListRef}
+                  className="scrollbar max-h-96 overflow-y-auto py-1 before:absolute before:top-0 before:left-0 before:bottom-0 before:my-1 before:w-0.5 before:bg-neutral-800 pr-1"
                 >
-                  {ariaLabel}
-                </Link>
-              </li>
-            );
-          })}
-        </div>
+                  {anchorList.map((text, index) => {
+                    const ariaLabel = Object.values(text)[0].replace(
+                      /<\/?h[1-6][^>]*>/gi,
+                      ""
+                    ); // Replaces <h2>Example Title</h2> to Example Title
+                    return (
+                      <li
+                        key={index}
+                        aria-current={index === 0 ? "page" : "false"} // When page loads, the first link is supposed to be the colored one
+                        aria-label={`Ir até a sessão: ${ariaLabel}`}
+                        className="relative list-none pl-2 pr-1 after:absolute after:top-0 after:left-0 after:w-0.5 after:h-full after:bg-transparent"
+                      >
+                        <Link
+                          href={`#${Object.keys(text)}`}
+                          className={`flex text-sm transition-colors duration-500 break-words rounded hover:text-white focus-visible:outline-2 focus-visible:outline-white focus-visible:text-white focus-visible:bg-neutral-800/50 ${generatePaddingForSessions(
+                            text
+                          )}`}
+                        >
+                          {ariaLabel}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </nav>
     )
   );
