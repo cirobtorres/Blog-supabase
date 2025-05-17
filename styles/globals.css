@@ -33,7 +33,7 @@
   }
 }
 
-[aria-current="page"] {
+[aria-current="true"] {
   color: var(--color-theme-color);
   background-color: var(--color-theme-color-backdrop);
 }
@@ -42,11 +42,11 @@
   color: #a1a1a1;
 }
 
-[aria-current="page"]:after {
+[aria-current="true"]:after {
   background-color: var(--color-theme-color);
 }
 
-[aria-current="page"]:hover {
+[aria-current="true"]:hover {
   color: white;
 }
 
@@ -69,7 +69,7 @@ body {
   /*------------------------------=====scrollbar=====------------------------------*/
   .scrollbar::-webkit-scrollbar {
     width: 6px;
-    height: 6px;
+    /* height: 6px; */
   }
 
   .scrollbar::-webkit-scrollbar-track {
@@ -88,4 +88,5 @@ body {
   .scrollbar::-webkit-scrollbar-corner {
     background: transparent;
   }
+  /*------------------------------=====TipTap=====------------------------------*/
 }

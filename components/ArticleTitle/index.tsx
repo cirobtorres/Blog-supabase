@@ -3,16 +3,13 @@ import { ArticleBreadcrumb } from "../Breadcrumb";
 import { ReturnToHome } from "../Buttons";
 import { convertToLargeDate } from "../../utils/dates";
 
-interface ArticleWithAuthor extends Article {
-  authors: Author;
-}
-
 export const ArticleTitle = ({
   title,
   sub_title,
+  slug,
   authors,
   created_at,
-}: ArticleWithAuthor) => (
+}: ArticleJoinAuthor) => (
   <section className="w-full border-b border-neutral-800 bg-neutral-900">
     <div className="max-w-7xl mx-auto">
       <div className="py-10 mx-4">

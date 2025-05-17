@@ -4,8 +4,8 @@ import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import History from "@tiptap/extension-history";
-import Placeholder from "@tiptap/extension-placeholder";
 import CharacterCount from "@tiptap/extension-character-count";
+// import Placeholder from "@tiptap/extension-placeholder";
 
 const characterLimit = 512;
 
@@ -33,11 +33,11 @@ export const CommentEditor = ({
         Paragraph,
         Text,
         History,
-        Placeholder.configure({
-          placeholder: "Contribua com um comentário...",
-          emptyEditorClass: "is-editor-empty",
-          showOnlyCurrent: true,
-        }),
+        // Placeholder.configure({
+        //   placeholder: "Contribua com um comentário...",
+        //   emptyEditorClass: "is-editor-empty",
+        //   showOnlyCurrent: true,
+        // }),
         CharacterCount.configure({
           limit: characterLimit,
         }),
@@ -88,7 +88,7 @@ export const CommentEditor = ({
             // Cursor on the last element position:
             editor.chain().focus().setTextSelection(lastCharacterIndex).run();
           }}
-          className="relative text-left w-full h-full text-sm [scrollbar-width:none] [-ms-overflow-style:none] p-2 group rounded-t border border-neutral-800 bg-neutral-900"
+          className="relative text-left w-full h-full text-sm [scrollbar-width:none] [-ms-overflow-style:none] p-2 rounded-t-md border border-neutral-800 bg-neutral-900 group"
         >
           <div className="absolute top-[calc(100%)] left-1/2 -translate-x-1/2 w-0 h-[2px] bg-theme-color group-focus-within:w-full group-focus-within:duration-200" />
         </EditorContent>
@@ -106,7 +106,7 @@ export const CommentEditor = ({
             <div className="flex gap-1 max-[550px]:justify-center max-[550px]:flex-1">
               <button
                 type="button"
-                className="cursor-pointer shrink-0 w-28 rounded px-3 transition-colors duration-200 border border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800"
+                className="transition-all cursor-pointer shrink-0 w-28 rounded px-3 border border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-neutral-100 hover:bg-neutral-800 outline-none focus-within:border-neutral-700 focus-within:bg-neutral-800 focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
                 onClick={() => {
                   editor.commands.clearContent();
                   editor.commands.blur();
@@ -118,10 +118,10 @@ export const CommentEditor = ({
               </button>
               <button
                 type="submit"
-                className={`shrink-0 w-28 rounded px-3 border transition-colors duration-200 ${
+                className={`transition-all shrink-0 w-28 rounded px-3 border ${
                   editor.isEmpty
                     ? "bg-[#3a3a3a] text-[#919191] border-[#646464]"
-                    : "cursor-pointer bg-neutral-900 border-neutral-800 text-theme-color hover:text-white hover:bg-neutral-800"
+                    : "cursor-pointer bg-neutral-900 border-neutral-800 text-theme-color hover:border-neutral-700 hover:bg-neutral-800 outline-none focus-within:border-neutral-700 focus-within:bg-neutral-800 focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
                 }`}
                 disabled={editor.isEmpty}
               >

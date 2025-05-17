@@ -24,6 +24,8 @@ import { putArticle, postArticle } from "@/services/article";
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { convertToLargeDate } from "@/utils/dates";
+import { useRouter } from "next/navigation";
 
 export const SignUpForm = () => {
   const [state, action, isPending] = useActionState(signUp, { error: null });
@@ -146,12 +148,11 @@ export const EditArticleForm = ({
   const [htmlTitle, setHtmlTitle] = useState(title);
   const [htmlDescription, setHtmlDescription] = useState(sub_title || "");
   const [htmlBody, setHtmlBody] = useState(body);
+  const router = useRouter();
 
   const [state, action, isPending] = useActionState(
     async () => {
       const formData = new FormData();
-
-      // const contentHTMLBody = htmlBody.replace(/<p>(\s|&nbsp;)*<\/p>/g, ""); // Remove empties <p></p>
 
       formData.set(getTitleFormDataValue, htmlTitle);
       formData.set(getSubtitleFormDataValue, htmlDescription);
@@ -163,7 +164,14 @@ export const EditArticleForm = ({
         formData
       );
 
-      if (result.ok) toast("Artigo atualizado");
+      if (result.ok)
+        toast.success("Artigo atualizado", {
+          description: convertToLargeDate(new Date()),
+          action: {
+            label: "Visitar artigo",
+            onClick: () => router.push(`/articles/${id}`),
+          },
+        });
 
       return result;
     },

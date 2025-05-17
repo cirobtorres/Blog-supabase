@@ -34,9 +34,9 @@ export const LogoutButton = ({ label }: { label: string }) => {
 };
 
 const providers = [
-  { label: "Google", bgColor: "#e5322b" },
-  { label: "Linkedin", bgColor: "#0379b7" },
-  { label: "Github", bgColor: "black" },
+  { label: "Google", bgColor: "#e5322b", borderColor: "#ff645f" },
+  { label: "Linkedin", bgColor: "#0379b7", borderColor: "#45beff" },
+  { label: "Github", bgColor: "#000", borderColor: "#272727" },
 ];
 
 export const ProvidersRowButtons = () => {
@@ -58,8 +58,11 @@ export const ProvidersRowButtons = () => {
                 () => provider.label.toLowerCase() as "google" | "github"
               )
             }
-            className="w-full py-1 cursor-pointer"
-            style={{ backgroundColor: provider.bgColor }}
+            className="w-full py-1 rounded-md cursor-pointer"
+            style={{
+              backgroundColor: provider.bgColor,
+              border: `1px solid ${provider.borderColor}`,
+            }}
           >
             {provider.label}
           </button>
@@ -310,9 +313,20 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
         type="button"
         aria-label="Voltar ao topo da página"
         title="Voltar ao topo da página"
-        style={{ height: `${diameter}px` }}
         onClick={() => window.scrollTo(0, 0)}
-        className="relative flex cursor-pointer group rounded focus-visible:outline-2 focus-visible:outline-white"
+        // style={{ height: `${diameter}px` }}
+        // className="relative flex cursor-pointer group rounded focus-visible:outline-2 focus-visible:outline-white"
+        style={{
+          height: `${diameter}px`,
+          top: "50%",
+          bottom: "50%",
+          transform: "translateY(0,-50%)",
+        }}
+        className={
+          `relative flex cursor-pointer group` +
+          ` my-40 transition-all rounded outline-none` +
+          ` focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]`
+        }
       >
         <svg
           className="relative -rotate-90"
