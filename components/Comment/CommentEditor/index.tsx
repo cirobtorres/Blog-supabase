@@ -1,29 +1,34 @@
-import { useState } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEffect, useState } from "react";
+import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import History from "@tiptap/extension-history";
-import Placeholder from "@tiptap/extension-placeholder";
 import CharacterCount from "@tiptap/extension-character-count";
+import { useProfile } from "@/hooks/useProfile";
+import { cn } from "@/utils/classnames";
+import Placeholder from "@tiptap/extension-placeholder";
 
 const characterLimit = 512;
 
 export const CommentEditor = ({
-  profile,
+  id,
+  onSubmit,
   autoFocus = false,
   initialContent = "",
-  onSubmit,
+  className,
   cancel,
 }: {
-  profile: Profile | null;
+  id: string;
+  onSubmit: (body: string) => Promise<void>;
   autoFocus?: boolean;
   initialContent?: string | undefined;
-  onSubmit: (body: string) => Promise<void>;
+  className?: string;
   cancel?: () => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const isAuthenticated = !!profile?.username;
+  const { loggedProfile } = useProfile();
+  const isAuthenticated = !!loggedProfile?.username;
 
   const editor = useEditor(
     {
@@ -34,7 +39,7 @@ export const CommentEditor = ({
         Text,
         History,
         Placeholder.configure({
-          placeholder: "Contribua com um comentário...",
+          placeholder: "Comente aqui...",
           emptyEditorClass: "is-editor-empty",
           showOnlyCurrent: true,
         }),
@@ -42,11 +47,18 @@ export const CommentEditor = ({
           limit: characterLimit,
         }),
       ],
-      autofocus: autoFocus,
+      onCreate: ({ editor }) => {
+        if (autoFocus) {
+          const end = editor.state.doc.content.size;
+          requestAnimationFrame(() => {
+            editor.chain().focus().setTextSelection(end).run();
+          });
+        }
+      },
       editable: isAuthenticated,
       editorProps: {
         attributes: {
-          class: "outline-none [&_h4]:text-2xl [&_h4]:font-extrabold", // [&_*:not(:last-child)]:mb-4
+          class: `outline-none [&_h4]:text-2xl [&_h4]:font-extrabold`,
         },
       },
       content: initialContent,
@@ -58,7 +70,18 @@ export const CommentEditor = ({
     return <p>Loading...</p>;
   }
 
+  const uniqueKey = autoFocus
+    ? `editor-${id}-editing${"-" + String(autoFocus)}`
+    : `editor-${id}`;
+
   const lastCharacterIndex = editor.getHTML().length;
+
+  const closeEditorFunc = () => {
+    editor.commands.clearContent();
+    editor.commands.blur();
+    setIsOpen(false);
+    if (cancel) cancel();
+  };
 
   return (
     <>
@@ -66,10 +89,14 @@ export const CommentEditor = ({
         onSubmit={async (e) => {
           e.preventDefault();
           let contentHTML = editor.getHTML();
-          contentHTML = contentHTML.replace(/<p>(\s|&nbsp;)*<\/p>/g, ""); // Remove every empty <p></p> in contentHTML
+
+          // Remove every empty <p></p> in contentHTML
+          contentHTML = contentHTML.replace(/<p>(\s|&nbsp;)*<\/p>/g, "");
           if (!contentHTML || contentHTML.trim() === "") {
             setIsOpen(false);
-            return; // Safeguard. Prevents saving empty comments
+
+            // Safeguard. Prevents saving empty comments
+            return;
           }
           await onSubmit(contentHTML);
           editor.commands.clearContent();
@@ -78,17 +105,18 @@ export const CommentEditor = ({
         className="w-full flex flex-col shrink-0"
       >
         <EditorContent
-          key={isAuthenticated ? "logged-in" : "logged-out"}
+          key={uniqueKey}
+          id={uniqueKey}
+          name={uniqueKey}
           editor={editor}
-          autoFocus={autoFocus}
-          id="content"
-          name="content"
           onFocus={() => {
             setIsOpen(true);
-            // Cursor on the last element position:
             editor.chain().focus().setTextSelection(lastCharacterIndex).run();
           }}
-          className="relative text-left w-full h-full text-sm [scrollbar-width:none] [-ms-overflow-style:none] p-2 group rounded-t border border-neutral-800 bg-neutral-900"
+          className={cn(
+            "relative text-left w-full h-full text-sm [scrollbar-width:none] [-ms-overflow-style:none] [&_.tiptap.ProseMirror]:py-2 text-neutral-300 border-b border-neutral-800 group",
+            className
+          )}
         >
           <div className="absolute top-[calc(100%)] left-1/2 -translate-x-1/2 w-0 h-[2px] bg-theme-color group-focus-within:w-full group-focus-within:duration-200" />
         </EditorContent>
@@ -104,33 +132,40 @@ export const CommentEditor = ({
           </div>
           {isOpen && isAuthenticated && (
             <div className="flex gap-1 max-[550px]:justify-center max-[550px]:flex-1">
-              <button
-                type="button"
-                className="cursor-pointer shrink-0 w-28 rounded px-3 transition-colors duration-200 border border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800"
-                onClick={() => {
-                  editor.commands.clearContent();
-                  editor.commands.blur();
-                  setIsOpen(false);
-                  if (cancel) cancel();
-                }}
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                className={`shrink-0 w-28 rounded px-3 border transition-colors duration-200 ${
-                  editor.isEmpty
-                    ? "bg-[#3a3a3a] text-[#919191] border-[#646464]"
-                    : "cursor-pointer bg-neutral-900 border-neutral-800 text-theme-color hover:text-white hover:bg-neutral-800"
-                }`}
-                disabled={editor.isEmpty}
-              >
-                Comentar
-              </button>
+              <CancelButton closeEditorFunc={closeEditorFunc} />
+              <ConfirmButton disable={editor.isEmpty} />
             </div>
           )}
         </div>
       </form>
     </>
+  );
+};
+
+const CancelButton = ({ closeEditorFunc }: { closeEditorFunc: any }) => {
+  return (
+    <button
+      type="button"
+      className="transition-all cursor-pointer shrink-0 w-28 rounded px-3 border border-neutral-800 text-neutral-400 hover:border-neutral-700 hover:text-neutral-100 hover:bg-neutral-800 outline-none focus-within:border-neutral-700 focus-within:bg-neutral-800 focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+      onClick={closeEditorFunc}
+    >
+      Cancelar
+    </button>
+  );
+};
+
+const ConfirmButton = ({ disable }: { disable: boolean }) => {
+  return (
+    <button
+      type="submit"
+      className={`transition-all shrink-0 w-28 rounded px-3 border ${
+        disable
+          ? "bg-[#3a3a3a] text-[#919191] border-[#646464]"
+          : "cursor-pointer bg-neutral-900 border-neutral-800 text-theme-color hover:border-neutral-700 hover:bg-neutral-800 outline-none focus-within:border-neutral-700 focus-within:bg-neutral-800 focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+      }`}
+      disabled={disable}
+    >
+      Comentar
+    </button>
   );
 };

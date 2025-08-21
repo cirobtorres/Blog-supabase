@@ -7,13 +7,14 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, getMarkRange } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Heading from "@tiptap/extension-heading";
 import Paragraph from "@tiptap/extension-paragraph";
 import Bold from "@tiptap/extension-bold";
 import History from "@tiptap/extension-history";
+import Highlight from "@tiptap/extension-highlight";
 import BulletList from "@tiptap/extension-bullet-list";
 import ListItem from "@tiptap/extension-list-item";
 import OrderedList from "@tiptap/extension-ordered-list";
@@ -104,7 +105,6 @@ export const ArticleEditor = ({
   autoFocus?: boolean;
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   const [textLinkInput, setTextLinkInput] = useState("");
   const [linkInput, setLinkInput] = useState("");
 
@@ -116,6 +116,7 @@ export const ArticleEditor = ({
       Text,
       History,
       Bold,
+      Highlight,
       BulletList,
       OrderedList,
       ListItem,
@@ -145,22 +146,51 @@ export const ArticleEditor = ({
   }, [editor]);
 
   const updateLink = useCallback(() => {
-    // Update link
-    try {
-      editor
-        ?.chain()
-        .focus()
-        .extendMarkRange("link")
-        .setLink({ href: linkInput })
-        .run();
-    } catch (e) {
-      if (e instanceof Error) {
-        console.error(e.message);
-      } else {
-        console.error(String(e));
-      }
+    if (!editor || !editor.view || !editor.state || !editor.commands) {
+      console.warn("Editor não está disponível no momento da atualização.");
+      return;
     }
-  }, [editor]);
+
+    try {
+      const { state, schema } = editor;
+      const { selection } = state;
+      const { from } = selection;
+      const $from = state.doc.resolve(from);
+      const linkMark = schema.marks.link;
+
+      const range = getMarkRange($from, linkMark);
+
+      if (range) {
+        editor
+          .chain()
+          .focus()
+          .insertContentAt(
+            { from: range.from, to: range.to },
+            {
+              type: "text",
+              text: textLinkInput || linkInput,
+              marks: [
+                {
+                  type: "link",
+                  attrs: { href: linkInput },
+                },
+              ],
+            }
+          )
+          .run();
+      } else {
+        // Fallback: se não houver range de link, apenas atualiza o href
+        editor
+          .chain()
+          .focus()
+          .extendMarkRange("link")
+          .setLink({ href: linkInput })
+          .run();
+      }
+    } catch (e) {
+      console.error("Erro ao atualizar link:", e);
+    }
+  }, [editor, linkInput, textLinkInput]);
 
   const setLink = useCallback(() => {
     if (!editor) return;
@@ -168,6 +198,7 @@ export const ArticleEditor = ({
     // Empty
     if (linkInput === "") {
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
+      console.log("Empty");
       return;
     }
 
@@ -196,25 +227,57 @@ export const ArticleEditor = ({
         .setLink({ href: linkInput })
         .run();
     }
-  }, [editor]);
+  }, [editor, linkInput, textLinkInput]);
 
-  const returnEditorSelection = () =>
-    editor?.state.doc.textBetween(
-      editor.state.selection.from,
-      editor.state.selection.to,
-      " "
-    );
+  const getKeyboardSelection = () => {
+    if (!editor) return "";
+
+    const { state } = editor;
+    const { selection } = state;
+
+    // If keyboard cursor is left inside <a></a>
+    const { from, to } = selection;
+    const $from = state.doc.resolve(from);
+
+    const range = getMarkRange($from, state.schema.marks.link);
+
+    if (range) {
+      return state.doc.textBetween(range.from, range.to, " ");
+    }
+
+    // Fallback: selected text
+    return state.doc.textBetween(from, to, " ");
+  };
+
+  const getKeyboardSelectionUrl = () => {
+    if (!editor) return "";
+
+    const { state } = editor;
+    const { from } = state.selection;
+    const $from = state.doc.resolve(from);
+
+    const linkMark = state.schema.marks.link;
+    const range = getMarkRange($from, linkMark);
+
+    if (range) {
+      const node = state.doc.nodeAt(range.from);
+      if (node) {
+        const mark = node.marks.find((m) => m.type.name === "link");
+        return mark?.attrs.href || "";
+      }
+    }
+
+    return "";
+  };
 
   if (!editor) {
     return <p>Loading...</p>;
   }
 
-  const lastCharacterIndex = editor.getHTML().length;
-
   return (
     <>
       <div
-        className="flex gap-4 items-center mb-1 p-1 rounded border border-neutral-800 bg-neutral-900" // button-group
+        className="w-fit flex gap-4 items-center mb-1 p-1 rounded-md border border-neutral-800 bg-neutral-900" // button-group
       >
         <div className="flex gap-1 items-center">
           <button
@@ -222,9 +285,9 @@ export const ArticleEditor = ({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 2 }).run()
             }
-            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] ${
+            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[3px] ${
               editor.isActive("heading", { level: 2 })
-                ? "border-neutral-600 bg-neutral-700"
+                ? "text-theme-color border-neutral-600 bg-neutral-700"
                 : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
             }`}
           >
@@ -251,9 +314,9 @@ export const ArticleEditor = ({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 3 }).run()
             }
-            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] ${
+            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[3px] ${
               editor.isActive("heading", { level: 3 })
-                ? "border-neutral-600 bg-neutral-700"
+                ? "text-theme-color border-neutral-600 bg-neutral-700"
                 : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
             }`}
           >
@@ -281,9 +344,9 @@ export const ArticleEditor = ({
             onClick={() =>
               editor.chain().focus().toggleHeading({ level: 4 }).run()
             }
-            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] ${
+            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[3px] ${
               editor.isActive("heading", { level: 4 })
-                ? "border-neutral-600 bg-neutral-700"
+                ? "text-theme-color border-neutral-600 bg-neutral-700"
                 : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
             }`}
           >
@@ -311,9 +374,9 @@ export const ArticleEditor = ({
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] ${
+            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[3px] ${
               editor.isActive("bold")
-                ? "border-neutral-600 bg-neutral-700"
+                ? "text-theme-color border-neutral-600 bg-neutral-700"
                 : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
             }`}
           >
@@ -332,12 +395,46 @@ export const ArticleEditor = ({
               <path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8" />
             </svg>
           </button>
-          {editor.isActive("link") ? (
-            <button
-              type="button"
-              // onClick={() => editor.chain().focus().unsetLink().run()}
-              onClick={updateLink} // TODO: FIX ME
-              className="flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] border-neutral-600 bg-neutral-700"
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleHighlight().run()}
+            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[3px] ${
+              editor.isActive("highlight")
+                ? "text-theme-color border-neutral-600 bg-neutral-700"
+                : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-highlighter-icon lucide-highlighter p-1"
+            >
+              <path d="m9 11-6 6v3h9l3-3" />
+              <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />
+            </svg>
+          </button>
+          <AlertDialog open={isDialogOpen}>
+            <AlertDialogTrigger
+              tabIndex={0}
+              onClick={() => {
+                const selectedText = getKeyboardSelection();
+                setTextLinkInput(selectedText || "");
+                const selectedUrl = getKeyboardSelectionUrl();
+                setLinkInput(selectedUrl);
+                setIsDialogOpen(true);
+              }}
+              className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[3px] ${
+                editor.isActive("link")
+                  ? "text-theme-color border-neutral-600 bg-neutral-700"
+                  : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
+              }`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -354,113 +451,157 @@ export const ArticleEditor = ({
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
               </svg>
-            </button>
-          ) : (
-            <div className="flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800">
-              <AlertDialog open={isDialogOpen}>
-                <AlertDialogTrigger
-                  asChild
-                  tabIndex={0}
-                  onClick={() => {
-                    const selectedText = returnEditorSelection();
-                    setTextLinkInput(selectedText || "");
-                    setIsDialogOpen(true);
-                  }}
-                  className="outline-none transition-all rounded focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="28"
-                    height="28"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-link-icon lucide-link p-1"
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex justify-between items-center">
+                  Hyperlink{" "}
+                  <AlertDialogCancel
+                    className="has-[>svg]:px-1 h-fit py-1"
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                      editor.chain().focus();
+                    }}
                   >
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                  </svg>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle className="flex justify-between items-center">
-                      Hyperlink{" "}
-                      <AlertDialogCancel
-                        className="has-[>svg]:px-1 h-fit py-1"
-                        onClick={() => {
-                          setIsDialogOpen(false);
-                          editor.chain().focus();
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-x-icon lucide-x"
-                        >
-                          <path d="M18 6 6 18" />
-                          <path d="m6 6 12 12" />
-                        </svg>
-                      </AlertDialogCancel>
-                    </AlertDialogTitle>
-                    <AlertDialogDescription className="border-y border-neutral-800 bg-neutral-950">
-                      Crie um texto para o hiperlink. Se você deixar o texto
-                      vazio, o texto será o próprio link.
-                    </AlertDialogDescription>
-                    <div className="px-3">
-                      <FloatingInput
-                        id="text-link"
-                        label="Texto"
-                        value={textLinkInput}
-                        setValue={(e) => setTextLinkInput(e.target.value)}
-                      />
-                      <FloatingInput
-                        id="text-url"
-                        label="URL"
-                        value={linkInput}
-                        setValue={(e) => setLinkInput(e.target.value)}
-                      />
-                    </div>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter className="flex gap-1">
-                    <AlertDialogCancel
-                      onClick={() => {
-                        setIsDialogOpen(false);
-                        editor.chain().focus();
-                      }}
-                      className={cn(
-                        "w-24",
-                        buttonVariants({ variant: "default" })
-                      )}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-x-icon lucide-x"
                     >
-                      Cancelar
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => {
-                        setIsDialogOpen(false);
-                        setLink();
-                      }}
-                      className={cn(
-                        "w-24",
-                        buttonVariants({ variant: "outline" })
-                      )}
-                    >
-                      Salvar
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          )}
+                      <path d="M18 6 6 18" />
+                      <path d="m6 6 12 12" />
+                    </svg>
+                  </AlertDialogCancel>
+                </AlertDialogTitle>
+                <AlertDialogDescription className="border-y border-neutral-800 bg-neutral-950">
+                  Crie um texto para o hiperlink. Se você deixar o texto vazio,
+                  o texto será o próprio link.
+                </AlertDialogDescription>
+                <div className="px-3">
+                  <FloatingInput
+                    id="text-link"
+                    label="Texto"
+                    value={textLinkInput}
+                    setValue={(e) => setTextLinkInput(e.target.value)}
+                  />
+                  <FloatingInput
+                    id="text-url"
+                    label="URL"
+                    value={linkInput}
+                    setValue={(e) => setLinkInput(e.target.value)}
+                  />
+                </div>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="flex justify-between py-2">
+                <div className="flex-1">
+                  <AlertDialogCancel
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                      editor.chain().focus().unsetLink().run();
+                    }}
+                    className={cn(
+                      "w-24",
+                      buttonVariants({ variant: "default" })
+                    )}
+                  >
+                    Remover
+                  </AlertDialogCancel>
+                </div>
+                <div className="flex gap-1">
+                  <AlertDialogCancel
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                    }}
+                    className={cn(
+                      "w-24",
+                      buttonVariants({ variant: "default" })
+                    )}
+                  >
+                    Cancelar
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                      editor?.isActive("link") ? updateLink() : setLink();
+                    }}
+                    className={cn(
+                      "w-24",
+                      buttonVariants({ variant: "outline" })
+                    )}
+                  >
+                    Salvar
+                  </AlertDialogAction>
+                </div>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+        <div className="flex gap-1 items-center">
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[3px] ${
+              editor.isActive("bulletList")
+                ? "text-theme-color border-neutral-600 bg-neutral-700"
+                : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-list-icon lucide-list p-1"
+            >
+              <path d="M3 12h.01" />
+              <path d="M3 18h.01" />
+              <path d="M3 6h.01" />
+              <path d="M8 12h13" />
+              <path d="M8 18h13" />
+              <path d="M8 6h13" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[3px] ${
+              editor.isActive("orderedList")
+                ? "text-theme-color border-neutral-600 bg-neutral-700"
+                : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-list-ordered-icon lucide-list-ordered p-1"
+            >
+              <path d="M10 12h11" />
+              <path d="M10 18h11" />
+              <path d="M10 6h11" />
+              <path d="M4 10h2" />
+              <path d="M4 6h1v4" />
+              <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />
+            </svg>
+          </button>
         </div>
       </div>
       <EditorContent
@@ -470,13 +611,21 @@ export const ArticleEditor = ({
         autoComplete="new-password"
         defaultValue={defaultValue}
         spellCheck={false}
-        onFocus={() => editor.chain().selectTextblockEnd().focus()} // editor.chain().focus().setTextSelection(lastCharacterIndex).run();
+        onFocus={() => editor.chain().selectTextblockEnd().focus()}
         className={
-          `article-typography` +
-          ` [&_.tiptap.ProseMirror]:min-h-[calc(1.5rem_*_15)] [&_.tiptap.ProseMirror]:p-2` +
-          ` [&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:rounded [&_.tiptap.ProseMirror]:transition-all` +
+          `flex flex-col rounded-md [&_p]:pb-6 [&_p]:text-neutral-400 [&_strong]:text-neutral-400` +
+          ` [&_p_a]:text-theme-color [&_p_a]:underline [&_p_a]:bg-neutral-700 [&_p_a]:hover:text-theme-link` +
+          ` [&_p_a]:border [&_p_a]:border-neutral-600 [&_p_a]:px-1 [&_p_a]:py-0.5 [&_p_a]:rounded-md` +
+          ` [&_p_mark]:text-neutral-100 [&_p_mark]:bg-neutral-700 [&_p_mark]:border [&_p_mark]:border-neutral-600` +
+          ` [&_p_mark]:px-1 [&_p_mark]:py-0.5 [&_p_mark]:rounded-md` +
+          ` [&_h2]:text-[2rem] [&_h2]:font-bold [&_h2]:pb-6` +
+          ` [&_h3]:text-2xl [&_h4]:text-xl [&_h3]:pb-6 [&_h4]:pb-6` +
+          ` [&_ul]:pb-6 [&_ul_li:last-child_p]:pb-0 [&_ul]:ml-5 [&_ul_li]:list-disc` +
+          ` [&_ol]:pb-6 [&_ol_li:last-child_p]:pb-0 [&_ol]:ml-5 [&_ol_li]:list-decimal` +
+          ` [&_.tiptap.ProseMirror]:min-h-[calc(1.5rem_*_15)] [&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6` +
+          ` [&_.tiptap.ProseMirror]:rounded-md [&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all` +
           ` [&_.tiptap.ProseMirror]:focus-visible:ring-neutral-100 [&_.tiptap.ProseMirror]:focus-visible:ring-[3px]` +
-          ` rounded border border-neutral-700 bg-neutral-800`
+          ` border border-neutral-700 bg-neutral-800`
         }
       />
     </>

@@ -3,11 +3,11 @@ import { EditOrDeleteArticleButtons } from "../Buttons/client";
 import { convertToLargeDate } from "@/utils/dates";
 import Image from "next/image";
 
-export const ArticleFeedGrid = ({
+export const ArticleFeedGrid = async ({
   articles,
   author,
 }: {
-  articles: Article[];
+  articles: ArticleJoinAuthor[];
   author: Author | null;
 }) => {
   const isTheAuthor: string | undefined = author?.id;
@@ -43,44 +43,48 @@ export const ArticleGridElement = ({
   article,
   author,
 }: {
-  article: Article;
+  article: ArticleJoinAuthor;
   author: Author | null;
-}) => (
-  <div className="h-full grid grid-rows-[auto_34px] border border-neutral-800 p-3 rounded-lg bg-neutral-950">
-    <div className="flex flex-col">
-      <div className="flex items-center justify-between">
-        <small className="text-neutral-500">
-          <time dateTime={convertToLargeDate(article.created_at)}>
-            {convertToLargeDate(article.created_at)}
-          </time>
-        </small>
-        <Image
-          src={author?.avatar_url ?? "/images/not-authenticated.png"}
-          alt={`Avatar de ${author?.username ?? "[Excluído]"}`}
-          width={24}
-          height={24}
-          className="rounded-full"
-        />
+}) => {
+  return (
+    <div className="h-full grid grid-rows-[auto_34px] border border-neutral-800 p-3 rounded-lg bg-neutral-950">
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between">
+          <small className="text-neutral-500">
+            <time dateTime={convertToLargeDate(article.created_at)}>
+              {convertToLargeDate(article.created_at)}
+            </time>
+          </small>
+          <Image
+            src={
+              article?.authors?.avatar_url ?? "/images/not-authenticated.png"
+            }
+            alt={`Avatar de ${author?.username ?? "[Excluído]"}`}
+            width={24}
+            height={24}
+            className="rounded-full"
+          />
+        </div>
+        <div className="pb-2">
+          <h2 className="text-lg font-bold">
+            <Link
+              href={`/articles/${article.id}`}
+              className="transition-colors duration-300 hover:text-neutral-100"
+            >
+              {article.title}
+            </Link>
+          </h2>
+        </div>
+        <div className="pb-2">
+          <p className="text-sm text-neutral-500">{article.sub_title}</p>
+        </div>
       </div>
-      <div className="pb-2">
-        <h2 className="text-lg font-bold">
-          <Link
-            href={`articles/${article.id}`}
-            className="transition-colors duration-300 hover:text-white"
-          >
-            {article.title}
-          </Link>
-        </h2>
-      </div>
-      <div className="pb-2">
-        <p className="text-sm text-neutral-500">{article.sub_title}</p>
-      </div>
+      <Link
+        href={`/articles/${article.id}`}
+        className="text-center py-1 px-2 rounded border border-neutral-800 hover:border-neutral-700 transition-colors duration-300 bg-neutral-900 hover:text-neutral-100 hover:bg-neutral-800" // max-w-48
+      >
+        Leia mais
+      </Link>
     </div>
-    <Link
-      href={`articles/${article.id}`}
-      className="text-center py-1 px-2 rounded border border-neutral-800 transition-colors duration-300 bg-neutral-900 hover:text-white hover:bg-neutral-800" // max-w-48
-    >
-      Leia mais
-    </Link>
-  </div>
-);
+  );
+};

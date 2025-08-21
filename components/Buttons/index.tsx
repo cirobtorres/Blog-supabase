@@ -5,11 +5,11 @@ export const ConfirmFormButton = ({
   isPending,
 }: {
   label: string;
-  isPending: boolean;
+  isPending?: boolean;
 }) => (
   <button
     type="submit"
-    className="transition-all h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+    className="text-sm text-theme-color transition-all h-fit py-2 cursor-pointer rounded-md border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 hover:border-neutral-600 focus-visible:bg-neutral-700 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
   >
     {isPending ? "Loading..." : label}
   </button>
@@ -18,7 +18,7 @@ export const ConfirmFormButton = ({
 export const SaveFormButton = ({ label }: { label: string }) => (
   <button
     type="submit"
-    className="transition-all h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+    className="text-sm text-neutral-100 transition-all h-fit py-2 cursor-pointer rounded-md border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 hover:border-neutral-600 focus-visible:bg-neutral-700 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
   >
     {label}
   </button>

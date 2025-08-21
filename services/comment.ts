@@ -1,11 +1,12 @@
 "use client";
 
+import { createBrowserAppClient } from "@/supabase/client";
 import { useCallback, useEffect, useState } from "react";
 
 export const useAsync = (
   func: (
     ...args: any[]
-  ) => Promise<Comment | Comment[] | number | string | void>,
+  ) => Promise<Comments | Comments[] | number | string | void>,
   // getComments => Promise<Comment[]>
   // createComment => Promise<Comment>
   // updateComment => Promise<Comment>
@@ -25,7 +26,7 @@ export const useAsync = (
 export const useAsyncFn = (
   func: (
     ...args: any[]
-  ) => Promise<Comment | Comment[] | number | string | void>,
+  ) => Promise<Comments | Comments[] | number | string | void>,
   // getComments => Promise<Comment[]>
   // createComment => Promise<Comment>
   // updateComment => Promise<Comment>
@@ -37,7 +38,7 @@ export const useAsyncFn = (
   const [loading, setLoading] = useState(initialLoading);
   const [error, setError] = useState<string | null>(null);
   const [value, setValue] = useState<
-    Comment | Comment[] | number | string | void | null
+    Comments | Comments[] | number | string | void | null
   >(null);
 
   const execute = useCallback(async (...params: any[]) => {
@@ -64,54 +65,292 @@ export const useAsyncFn = (
 };
 
 export const clientCountComments = async (
-  documentId: string,
-  parent_id: string
-) => {};
+  article_id: string,
+  parent_id: string | null
+) => {
+  const supabase = createBrowserAppClient();
+
+  const { count, error } = await supabase
+    .from("comments")
+    .select("id", { count: "exact", head: true })
+    .eq("is_deleted", false)
+    .eq("article_id", article_id)
+    .is("parent_id", parent_id);
+
+  if (error) {
+    console.error("clientCountComments error:", error);
+    return Promise.reject(new Error("Failed to fetch count comments"));
+  }
+
+  return count || 0;
+};
 
 export const clientGetComments = async (
-  documentId: string,
-  pagination: any,
-  parentId: string | null = null,
-  sort: string[] | null = ["createdAt:desc"]
-) => {};
+  article_id: string,
+  pagination: { start: number; limit: number },
+  parent_id: string | null = null,
+  sort: { attr: string; ascending: boolean } | null
+) => {
+  const from = pagination.start;
+  const to = pagination.limit - 1;
 
-export const clientGetComment = async ({
-  documentId,
-}: {
-  documentId: string;
-}) => {};
+  const supabase = createBrowserAppClient();
+
+  const { data: comments, error } = await supabase
+    .from("comments")
+    .select(
+      `
+        *,
+        profiles:comments_profile_id_fkey (
+          id, 
+          email, 
+          username, 
+          avatar_url, 
+          updated_at, 
+          created_at
+        )
+      `
+    )
+    .eq("is_deleted", false)
+    .eq("article_id", article_id)
+    .is("parent_id", parent_id)
+    .range(from, to)
+    .order(sort?.attr ?? "created_at", { ascending: sort?.ascending || false });
+  // INNER JOIN
+  // comments_profile_id_fkey é a chave estrangeira entre comments e profiles
+  // Para renomear uma coluna, faz a notação NOVO_NOME:chave
+  // Logo, comments_profile_id_fkey aparecerá como profiles {id: ... username: ...}
+  // .range(from, to)
+
+  if (error) {
+    console.error("clientGetComments error:", error);
+    return Promise.reject(new Error("Failed to fetch get comments"));
+  }
+
+  return comments;
+};
+
+export const clientGetChilds = async (
+  parent_id: string,
+  pagination: { start: number; limit: number },
+  sort: { attr: string; ascending: boolean } | null
+) => {
+  const from = (pagination.start - 1) * pagination.limit;
+  const to = from + pagination.limit - 1;
+
+  const supabase = createBrowserAppClient();
+
+  const { data: childs, error } = await supabase
+    .from("comments")
+    .select(
+      `
+        *,
+        profiles:comments_profile_id_fkey (
+          id, 
+          email, 
+          username, 
+          avatar_url, 
+          updated_at, 
+          created_at
+        )
+      `
+    )
+    .eq("is_deleted", false)
+    .is("parent_id", parent_id)
+    // .range(from, to) // TODO: pagination
+    .order(sort?.attr ?? "created_at", { ascending: sort?.ascending || false });
+  // INNER JOIN
+  // comments_profile_id_fkey é a chave estrangeira entre comments e profiles
+  // Para renomear uma coluna, faz a notação NOVO_NOME:chave
+  // Logo, comments_profile_id_fkey aparecerá como profiles {id: ... username: ...}
+  // .range(from, to)
+
+  if (error) {
+    console.error("clientGetChilds error:", error);
+    return Promise.reject(new Error("Failed to fetch get childs"));
+  }
+
+  return childs;
+};
+
+export const clientHasChilds = async () => {};
+
+export const clientGetComment = async ({ id }: { id: string }) => {};
 
 export const clientSaveComment = async ({
-  documentId,
+  article_id,
   body,
-  userId,
-  parentId: parent_id,
+  profile_id,
+  parent_id,
 }: {
-  documentId: string;
+  article_id: string;
   body: string;
-  userId: string;
-  parentId?: string | null;
-}) => {};
+  profile_id: string;
+  parent_id?: string | null;
+}) => {
+  const supabase = createBrowserAppClient();
+
+  const { data: comment, error } = await supabase
+    .from("comments")
+    .insert({ article_id, body, profile_id, parent_id })
+    .select(
+      `
+        *,
+        profiles:comments_profile_id_fkey (
+          id, 
+          email, 
+          username, 
+          avatar_url, 
+          updated_at, 
+          created_at
+        )
+      `
+    )
+    .single();
+
+  if (error) {
+    console.error("clientSaveComment error:", error);
+    return Promise.reject(new Error("Failed to fetch save comment"));
+  }
+
+  return comment;
+};
 
 export const clientUpdateComment = async ({
-  documentId,
+  id,
   body,
 }: {
-  documentId: string;
+  id: string;
   body: string;
-}) => {};
+}) => {
+  const supabase = createBrowserAppClient();
 
-export const clientDeleteComment = async ({
-  documentId,
+  const { data: comment, error } = await supabase
+    .from("comments")
+    .update({ body })
+    .eq("id", id)
+    .select(
+      `
+        *,
+        profiles:comments_profile_id_fkey (
+          id, 
+          email, 
+          username, 
+          avatar_url, 
+          updated_at, 
+          created_at
+        )
+      `
+    )
+    .single();
+
+  if (error) {
+    console.error("clientUpdateComment error:", error);
+    return Promise.reject(new Error("Failed to fetch update comment"));
+  }
+
+  return comment;
+};
+
+export const clientDeleteComment = async ({ id }: { id: string }) => {
+  const supabase = createBrowserAppClient();
+
+  const { data: comment, error } = await supabase
+    .from("comments")
+    .update({ is_deleted: true })
+    .eq("id", id)
+    .select(
+      `
+        *,
+        profiles:comments_profile_id_fkey (
+          id, 
+          email, 
+          username, 
+          avatar_url, 
+          updated_at, 
+          created_at
+        )
+      `
+    )
+    .single();
+
+  if (error) {
+    console.error("clientDeleteComment error:", error);
+    return Promise.reject(new Error("Failed to fetch delete comment"));
+  }
+
+  return comment;
+};
+
+export const clientHasLiked = async ({
+  comment_id,
+  profile_id,
 }: {
-  documentId: string;
-}) => {};
+  comment_id: string;
+  profile_id: string;
+}) => {
+  const supabase = createBrowserAppClient();
 
-export const countCommentLikes = async (commentDocumentId: string) => {};
+  const { data: comment, error } = await supabase
+    .from("comment_likes")
+    .select("*")
+    .eq("comment_id", comment_id)
+    .eq("profile_id", profile_id)
+    .maybeSingle();
 
-export const likeComment = async (
-  commentDocumentId: string,
-  userDocumentId: string
-) => {};
+  if (error) {
+    console.error("hasLiked error:", error);
+    return Promise.reject(new Error("Failed to fetch has liked"));
+  }
 
-export const dislikeComment = async (commentDocumentId: string) => {};
+  return comment;
+};
+
+export const likeComment = async ({
+  comment_id,
+  profile_id,
+}: {
+  comment_id: string;
+  profile_id: string;
+}) => {
+  const supabase = createBrowserAppClient();
+
+  const { data: like, error: likeError } = await supabase
+    .from("comment_likes")
+    .insert([{ comment_id, profile_id }])
+    .select("*")
+    .single();
+
+  if (likeError) {
+    console.error("likeComment error:", likeError);
+    return Promise.reject(
+      new Error("Failed to insert like_count at comment_likes")
+    );
+  }
+  return like;
+};
+
+export const dislikeComment = async ({
+  comment_id,
+  profile_id,
+}: {
+  comment_id: string;
+  profile_id: string;
+}) => {
+  const supabase = createBrowserAppClient();
+
+  const { data: like, error } = await supabase
+    .from("comment_likes")
+    .delete()
+    .eq("comment_id", comment_id)
+    .eq("profile_id", profile_id)
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error("dislikeComment error:", error);
+    return Promise.reject(new Error("Failed to fetch disliking comment"));
+  }
+
+  return like;
+};
