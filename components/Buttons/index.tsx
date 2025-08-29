@@ -1,26 +1,35 @@
 import Link from "next/link";
+import { LoadingSpinning } from "../LoadingSpinning";
 
 export const ConfirmFormButton = ({
   label,
   isPending,
 }: {
   label: string;
-  isPending: boolean;
+  isPending?: boolean;
 }) => (
   <button
     type="submit"
-    className="transition-all h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+    disabled={isPending}
+    className="text-sm text-theme-color transition-all h-[38px] py-2 disabled:text-neutral-300 cursor-pointer rounded-md border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 hover:border-neutral-600 focus-visible:bg-neutral-700 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
   >
-    {isPending ? "Loading..." : label}
+    {isPending ? <LoadingSpinning className="my-0" /> : label}
   </button>
 );
 
-export const SaveFormButton = ({ label }: { label: string }) => (
+export const SaveFormButton = ({
+  label,
+  isPending,
+}: {
+  label: string;
+  isPending?: boolean;
+}) => (
   <button
-    type="submit"
-    className="transition-all h-fit py-1 cursor-pointer rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+    type="button"
+    disabled={isPending}
+    className="text-sm text-neutral-100 transition-all h-[38px] py-2 cursor-pointer rounded-md border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 hover:border-neutral-600 focus-visible:bg-neutral-700 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
   >
-    {label}
+    {isPending ? <LoadingSpinning className="my-0" /> : label}
   </button>
 );
 
@@ -28,7 +37,10 @@ export const ReturnToHome = () => {
   return (
     <Link
       href="/"
-      className="w-fit text-sm flex gap-2 items-center uppercase mb-6"
+      className={
+        `w-fit text-sm flex gap-2 items-center uppercase mb-6 ` +
+        `transition-all hover:text-neutral-100 rounded outline-none focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
+      }
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

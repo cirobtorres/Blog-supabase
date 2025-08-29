@@ -18,6 +18,8 @@ import { SignInOAuth, signOut } from "@/services/authentication";
 import { Provider } from "@supabase/supabase-js";
 import { useActionState, useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { LoadingSpinning } from "@/components/LoadingSpinning";
+import { CancelIcon } from "@/components/Icons";
 
 export const LogoutButton = ({ label }: { label: string }) => {
   return (
@@ -26,7 +28,7 @@ export const LogoutButton = ({ label }: { label: string }) => {
         e.preventDefault();
         signOut();
       }}
-      className="text-sm cursor-pointer hover:text-white"
+      className="text-sm cursor-pointer px-1 py-0.5 rounded outline-none text-neutral-300 hover:text-neutral-100 transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
     >
       {label}
     </button>
@@ -34,20 +36,25 @@ export const LogoutButton = ({ label }: { label: string }) => {
 };
 
 const providers = [
-  { label: "Google", bgColor: "#e5322b" },
-  { label: "Linkedin", bgColor: "#0379b7" },
-  { label: "Github", bgColor: "black" },
+  { label: "Google", bgColor: "#e5322b", borderColor: "#ff645f" },
+  { label: "Linkedin", bgColor: "#0379b7", borderColor: "#45beff" },
+  { label: "Github", bgColor: "#000", borderColor: "#272727" },
 ];
 
-export const ProvidersRowButtons = () => {
+export const ProvidersRowButtons = ({
+  redirectTo,
+}: {
+  redirectTo?: string;
+}) => {
   const [state, setState] = useState<Provider | null>(null);
   const [, action] = useActionState(() => {
-    if (state) return SignInOAuth(state);
+    console.log("redirectTo:", redirectTo);
+    if (state) return SignInOAuth(state, redirectTo);
   }, null);
 
   return (
     <>
-      <Ou />
+      <Or />
       <form action={action} className="flex flex-col gap-2">
         {providers.map((provider, index) => (
           <button
@@ -58,25 +65,20 @@ export const ProvidersRowButtons = () => {
                 () => provider.label.toLowerCase() as "google" | "github"
               )
             }
-            className="w-full py-1 cursor-pointer"
-            style={{ backgroundColor: provider.bgColor }}
+            className={
+              `w-full py-1 rounded-md cursor-pointer outline-none ` +
+              `transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[2px] focus-visible:bg-neutral-800/50`
+            }
+            style={{
+              backgroundColor: provider.bgColor,
+              border: `1px solid ${provider.borderColor}`,
+            }}
           >
             {provider.label}
           </button>
         ))}
       </form>
     </>
-  );
-};
-
-const Ou = () => {
-  return (
-    <div className="relative py-4">
-      <span className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 px-2 pointer-events-none text-neutral-600 bg-neutral-950">
-        ou
-      </span>
-      <hr className="border-y-neutral-800" />
-    </div>
   );
 };
 
@@ -140,21 +142,7 @@ export const EditOrDeleteArticleButtons = ({
                 className="has-[>svg]:px-1 h-fit py-1"
                 onClick={handleCloseDialog}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-x-icon lucide-x"
-                >
-                  <path d="M18 6 6 18" />
-                  <path d="m6 6 12 12" />
-                </svg>
+                <CancelIcon />
               </AlertDialogCancel>
             </AlertDialogTitle>
             <AlertDialogDescription className="text-warning flex items-center gap-2 border-y border-neutral-800 bg-neutral-950">
@@ -209,7 +197,7 @@ export const EditOrDeleteArticleButtons = ({
                 disabled={disabledButton}
                 className={buttonVariants({ variant: "destructive" })}
               >
-                {isPending ? "Loading" : "Confirmar"}
+                Confirmar && <LoadingSpinning loadingState={isPending} />
               </AlertDialogAction>
             </form>
           </AlertDialogFooter>
@@ -310,9 +298,20 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
         type="button"
         aria-label="Voltar ao topo da página"
         title="Voltar ao topo da página"
-        style={{ height: `${diameter}px` }}
         onClick={() => window.scrollTo(0, 0)}
-        className="relative flex cursor-pointer group rounded focus-visible:outline-2 focus-visible:outline-white"
+        // style={{ height: `${diameter}px` }}
+        // className="relative flex cursor-pointer group rounded focus-visible:outline-2 focus-visible:outline-white"
+        style={{
+          height: `${diameter}px`,
+          top: "50%",
+          bottom: "50%",
+          transform: "translateY(0,-50%)",
+        }}
+        className={
+          `relative flex cursor-pointer group ` +
+          `my-40 transition-all rounded outline-none ` +
+          `focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
+        }
       >
         <svg
           className="relative -rotate-90"
@@ -367,6 +366,18 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
           <path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z" />
         </svg>
       </button>
+    </div>
+  );
+};
+
+const Or = () => {
+  return (
+    <div className="relative flex items-center py-6">
+      <div className="absolute h-[1px] right-0 left-[calc(50%_+_30px)] bg-neutral-800" />
+      <span className="text-neutral-600 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 pointer-events-none">
+        ou
+      </span>
+      <div className="absolute h-[1px] left-0 right-[calc(50%_+_30px)] bg-neutral-800" />
     </div>
   );
 };

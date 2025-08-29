@@ -37,8 +37,16 @@ export async function updateSession(request: NextRequest) {
   const url = request.nextUrl.clone();
   const currentPath = url.pathname;
 
+  // TODO: BUG
+  // Se o usuário admin "deslogar" no painel admin, ele não é redirecionado para HOME.
   if (!user && protectedRoutes.some((regex) => regex.test(currentPath))) {
+    // ERRO:
+    // I chose error instead redirect in order to maintain admin pannel "hidden".
+    // Next.js standard behave is to raise an error for non existing routes.
+    // If suddenly the page redirects, the malicious user would then know that is a hidden/protected route.
+    // Protected routes of this app should not be accessible to commom users.
     return NextResponse.error();
+    // REDIRECT:
     // url.pathname = "/";
     // return NextResponse.redirect(url);
   }

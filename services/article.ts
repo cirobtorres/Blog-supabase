@@ -22,7 +22,7 @@ export const postArticle = async (
     return {
       ok: false,
       success: null,
-      error: "Title and body cannot be empty.",
+      error: "O título e o subtítulo são obrigatórios.",
     };
 
   const supabase = await createServerAppClient();
@@ -53,7 +53,7 @@ export const postArticle = async (
   }
 
   revalidatePath("/");
-  return { ok: true, success: "Article created!", error: null };
+  return { ok: true, success: "Artigo criado!", error: null };
 };
 
 export const putArticle = async (

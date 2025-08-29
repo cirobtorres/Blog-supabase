@@ -18,7 +18,7 @@ export const FloatingInput = ({
   return (
     <fieldset
       id={`floating-fieldset-${id}`}
-      className="relative mt-2 rounded border border-neutral-800 bg-neutral-900 group"
+      className="relative mt-2 rounded border border-neutral-700 bg-neutral-800 group"
     >
       <input
         id={`floating-input-${id}`}
@@ -29,12 +29,12 @@ export const FloatingInput = ({
         onChange={setValue}
         placeholder={placeholder}
         className={
-          `h-full w-full text-sm` +
-          ` px-2 pb-0.5 pt-4` +
-          ` appearance-none border-none placeholder:text-transparent placeholder:select-none bg-transparent` +
-          ` transition-all rounded outline-none` +
-          ` focus:placeholder:text-[hsl(0,0%,10%)] focus-visible:ring-neutral-100 focus-visible:ring-[3px]` +
-          ` peer`
+          `h-full w-full text-sm font-medium text-neutral-400` +
+          `px-2 pb-0.5 pt-4 ` +
+          `appearance-none border-none placeholder:text-transparent placeholder:select-none bg-transparent ` +
+          `transition-all rounded outline-none ` +
+          `focus:placeholder:text-[hsl(0,0%,10%)] focus-visible:ring-neutral-100 focus-visible:ring-[3px] ` +
+          `peer `
         }
       />
       <label
@@ -42,7 +42,7 @@ export const FloatingInput = ({
         data-testid={`floating-label-${id}`}
         htmlFor={`floating-input-${id}`}
         className={
-          `absolute top-1/2 z-10 origin-[0] start-1 px-1 select-none` +
+          `absolute top-1/2 z-10 origin-[0] start-1 px-1 font-medium select-none` +
           ` -translate-y-5 scale-75 text-theme-color peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-theme-color` +
           ` peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white` +
           ` text-sm pointer-events-none bg-transparent bg-opacity-50` +
@@ -73,7 +73,7 @@ export const DisplayNameFieldset = ({
       name={getDisplayNameFormDataValue}
       type="text"
       placeholder={placeholder || ""}
-      className="p-1 transition-all rounded border border-neutral-800 bg-neutral-900 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+      className="p-1 transition-all rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
     />
   </fieldset>
 );
@@ -92,7 +92,7 @@ export const EmailFieldset = ({ placeholder }: { placeholder?: string }) => (
       name={getEmailFormDataValue}
       type="email"
       placeholder={placeholder || ""}
-      className="p-1 transition-all rounded border border-neutral-800 bg-neutral-900 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+      className="p-1 transition-all rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
     />
   </fieldset>
 );
@@ -111,7 +111,7 @@ export const PasswordFieldset = ({ placeholder }: { placeholder?: string }) => (
       name={getPasswordFormDataValue}
       type="password"
       placeholder={placeholder || ""}
-      className="p-1 transition-all rounded border border-neutral-800 bg-neutral-900 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+      className="p-1 transition-all rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
     />
   </fieldset>
 );
@@ -141,7 +141,7 @@ export const TitleFieldset = ({
       spellCheck={false}
       onChange={(e) => setVal(e.target.value)}
       className={
-        `p-2 resize-none rounded transition-all border border-neutral-700 bg-neutral-800` +
+        `scrollbar p-2 resize-none rounded transition-all border border-neutral-700 bg-neutral-800` +
         ` focus-visible:ring-neutral-100 focus-visible:ring-[3px]`
       }
     />
@@ -172,7 +172,7 @@ export const SubtitleFieldset = ({
       spellCheck={false}
       onChange={(e) => setVal(e.target.value)}
       className={
-        `p-2 resize-none rounded transition-all border border-neutral-700 bg-neutral-800` +
+        `scrollbar p-2 resize-none rounded transition-all border border-neutral-700 bg-neutral-800` +
         ` focus-visible:ring-neutral-100 focus-visible:ring-[3px]`
       }
     />

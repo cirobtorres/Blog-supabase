@@ -24,6 +24,8 @@ import { putArticle, postArticle } from "@/services/article";
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { convertToLargeDate } from "@/utils/dates";
+import { useRouter } from "next/navigation";
 
 export const SignUpForm = () => {
   const [state, action, isPending] = useActionState(signUp, { error: null });
@@ -38,7 +40,7 @@ export const SignUpForm = () => {
         <p className="text-red-500">TODO: checkboxes</p>
         <p className="text-red-500">TODO: captcha</p>
         <ConfirmFormButton label="Confirmar" isPending={isPending} />
-        {state && <p>{state.error}</p>}
+        {state.error && <p>{state.error}</p>}
       </form>
       <ProvidersRowButtons />
       <div className="py-4">
@@ -64,7 +66,7 @@ export const SignInForm = () => {
         <EmailFieldset />
         <PasswordFieldset />
         <ConfirmFormButton label="Confirmar" isPending={isPending} />
-        {state && <p className="text-sm text-warning">{state.error}</p>}
+        {state.error && <p className="text-sm text-warning">{state.error}</p>}
       </form>
       <ProvidersRowButtons />
       <p className="text-red-500">TODO: phone</p>
@@ -98,7 +100,32 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
         { ok: false, success: null, error: null },
         formData
       );
-      if (result.ok) toast("Artigo criado!");
+      if (!result.ok) {
+        toast(result.error);
+      } else {
+        toast(result.success);
+      }
+      return result;
+    },
+    { ok: false, success: null, error: null }
+  );
+
+  const [saveState, saveAction, isPendingSave] = useActionState(
+    async () => {
+      const formData = new FormData();
+      formData.set(getTitleFormDataValue, htmlTitle);
+      formData.set(getSubtitleFormDataValue, htmlDescription);
+      formData.set(getEditorFormDataValue, htmlBody);
+      formData.set("profile_id", profileId);
+      const result = await postArticle(
+        { ok: false, success: null, error: null },
+        formData
+      );
+      if (!result.ok) {
+        toast(result.error);
+      } else {
+        toast(result.success);
+      }
       return result;
     },
     { ok: false, success: null, error: null }
@@ -122,7 +149,7 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
           </div>
           <div className="flex flex-col gap-1">
             <ConfirmFormButton label="Publicar" isPending={isPending} />
-            <SaveFormButton label="Salvar" />
+            <SaveFormButton label="Salvar" isPending={isPending} />
           </div>
         </form>
         {state.error && <p>Error: {state.error}</p>}
@@ -146,12 +173,11 @@ export const EditArticleForm = ({
   const [htmlTitle, setHtmlTitle] = useState(title);
   const [htmlDescription, setHtmlDescription] = useState(sub_title || "");
   const [htmlBody, setHtmlBody] = useState(body);
+  const router = useRouter();
 
   const [state, action, isPending] = useActionState(
     async () => {
       const formData = new FormData();
-
-      // const contentHTMLBody = htmlBody.replace(/<p>(\s|&nbsp;)*<\/p>/g, ""); // Remove empties <p></p>
 
       formData.set(getTitleFormDataValue, htmlTitle);
       formData.set(getSubtitleFormDataValue, htmlDescription);
@@ -163,7 +189,14 @@ export const EditArticleForm = ({
         formData
       );
 
-      if (result.ok) toast("Artigo atualizado");
+      if (result.ok)
+        toast.success("Artigo atualizado", {
+          description: convertToLargeDate(new Date()),
+          action: {
+            label: "Visitar artigo",
+            onClick: () => router.push(`/articles/${id}`),
+          },
+        });
 
       return result;
     },
