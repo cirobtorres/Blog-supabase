@@ -5,13 +5,11 @@ import { BackToTopButton } from "../../../components/Buttons/client";
 import { AnchorTracker } from "@/components/StickyNavBar";
 import { ArticleBody } from "@/components/ArticleBody";
 import { RelatedArticles } from "@/components/RelatedArticles";
-import { Comments } from "@/components/Comment";
 import { getProfile } from "@/services/user";
 import { ArticleTitle } from "../../../components/ArticleTitle";
-
-interface ArticleWithAuthor extends Article {
-  authors: Author;
-}
+import { ArticleCover } from "@/components/ArticleCover";
+import { CommentProvider } from "@/providers/CommentProvider";
+import Comments from "@/components/Comment";
 
 export default async function ArticlePage({
   params,
@@ -25,7 +23,7 @@ export default async function ArticlePage({
     .from("articles")
     .select("*, authors (*)")
     .eq("id", id)
-    .single<ArticleWithAuthor>();
+    .single<ArticleJoinAuthor>();
 
   if (!article || article.is_private || articleError)
     return (
@@ -36,16 +34,16 @@ export default async function ArticlePage({
       </main>
     );
 
-  const profile = await getProfile();
+  const profile: Profile | null = await getProfile();
 
   return (
     <>
       <FixedHeader profile={profile} />
       <main className="flex flex-col items-center mt-[var(--header-height)]">
         <ArticleTitle {...article} />
-        {/* <ArticleCover /> */}
+        <ArticleCover />
         <section className="w-full max-w-7xl mx-auto py-10">
-          <div className="grid grid-rows-1 md:grid-cols-[200px_1fr] lg:grid-cols-[200px_1fr_80px] gap-4 mx-4">
+          <div className="grid grid-rows-1 md:grid-cols-[350px_1fr] lg:grid-cols-[350px_1fr_80px] gap-4 mx-4">
             <article className="text-sm">
               <AnchorTracker articleId={article.id} />
             </article>
@@ -58,7 +56,9 @@ export default async function ArticlePage({
           </div>
         </section>
         <RelatedArticles />
-        <Comments profile={profile} />
+        <CommentProvider>
+          <Comments />
+        </CommentProvider>
       </main>
       <Footer />
     </>

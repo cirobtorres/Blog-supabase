@@ -13,6 +13,9 @@
   --color-theme-color-backdrop: hsla(30, 100%, 80%, 0.15);
   --color-warning: hsl(9, 100%, 64%); /* tomato */
   --animate-bouncing-arrow: bouncing-arrow 1s infinite;
+  --animate-pop: pop 200ms ease;
+  --animate-circular-open: circular-open 1000ms ease-out forwards;
+  --animate-fade-in-up: fade-in-up 0.25s ease-out both;
   --header-height: 4rem; /* 64px */
   --related-articles-carousel-spacing: 0.25rem; /* 4px */
 
@@ -31,9 +34,56 @@
       animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
     }
   }
+
+  @keyframes pop {
+    0% {
+      transform: translateY(15%);
+      opacity: 0;
+    }
+    15% {
+      transform: translateY(-12%);
+      opacity: 1;
+    }
+    30% {
+      transform: translateY(8%);
+      opacity: 1;
+    }
+    45% {
+      transform: translateY(-5%);
+      opacity: 1;
+    }
+    60% {
+      transform: translateY(3%);
+      opacity: 1;
+    }
+    75% {
+      transform: translateY(0%);
+      opacity: 1;
+    }
+  }
+
+  @keyframes circular-open {
+    from {
+      clip-path: circle(0% at 50% 0%);
+    }
+    to {
+      clip-path: circle(150% at 50% 0%);
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
 }
 
-[aria-current="page"] {
+[aria-current="true"] {
   color: var(--color-theme-color);
   background-color: var(--color-theme-color-backdrop);
 }
@@ -42,11 +92,11 @@
   color: #a1a1a1;
 }
 
-[aria-current="page"]:after {
+[aria-current="true"]:after {
   background-color: var(--color-theme-color);
 }
 
-[aria-current="page"]:hover {
+[aria-current="true"]:hover {
   color: white;
 }
 
@@ -58,34 +108,69 @@ body {
 
 ::-moz-selection {
   /* Firefox */
-  background: #404040;
+  background: #797979; /* #404040 */
 }
 
 ::selection {
-  background: #404040;
+  background: #797979; /* #404040 */
 }
 
 @layer base {
   /*------------------------------=====scrollbar=====------------------------------*/
-  .scrollbar::-webkit-scrollbar {
+  .scrollbar::-webkit-scrollbar,
+  .tiptap.ProseMirror::-webkit-scrollbar,
+  .article-fieldset > textarea::-webkit-scrollbar {
     width: 6px;
-    height: 6px;
+    /* height: 6px; */
   }
 
-  .scrollbar::-webkit-scrollbar-track {
+  .scrollbar::-webkit-scrollbar-track,
+  .tiptap.ProseMirror::-webkit-scrollbar-track,
+  .article-fieldset > textarea::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .scrollbar::-webkit-scrollbar-thumb {
-    background: #262626;
+  .scrollbar::-webkit-scrollbar-thumb,
+  .tiptap.ProseMirror::-webkit-scrollbar-thumb,
+  .article-fieldset > textarea::-webkit-scrollbar-thumb {
+    cursor: default;
     border-radius: 9999px;
   }
 
+  .scrollbar::-webkit-scrollbar-thumb,
   .scrollbar::-webkit-scrollbar-thumb:hover {
     background: #262626;
   }
 
-  .scrollbar::-webkit-scrollbar-corner {
+  .article-fieldset > textarea::-webkit-scrollbar-thumb {
+    background: #525252;
+  }
+
+  .article-fieldset > textarea::-webkit-scrollbar-thumb:hover {
+    background: #737373;
+  }
+
+  .tiptap.ProseMirror::-webkit-scrollbar-thumb {
+    background: #414141;
+  }
+
+  .tiptap.ProseMirror::-webkit-scrollbar-thumb:hover {
+    background: #494949;
+  }
+
+  .scrollbar::-webkit-scrollbar-corner,
+  .tiptap.ProseMirror::-webkit-scrollbar-corner,
+  .article-fieldset > textarea::-webkit-scrollbar-corner {
     background: transparent;
+  }
+
+  /*------------------------------=====TipTap=====------------------------------*/
+  /*PLACEHOLDER*/
+  .tiptap p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: #525252;
+    float: left;
+    height: 0;
+    pointer-events: none;
   }
 }

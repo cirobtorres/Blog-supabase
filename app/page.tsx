@@ -7,14 +7,14 @@ import { ArticleCover } from "@/components/ArticleCover";
 import { getProfile } from "@/services/user";
 
 export default async function HomePage() {
-  let articles: Article[] = [];
+  let articles: ArticleJoinAuthor[] = [];
 
   try {
     const { data: fetchedArticles, error } = await createBrowserAppClient()
       .from("articles")
-      .select("*")
+      .select("*, authors (*)")
       .order("created_at", { ascending: false })
-      .overrideTypes<Article[], { merge: false }>();
+      .overrideTypes<ArticleJoinAuthor[], { merge: false }>();
 
     if (error) throw new Error("Error loading articles");
 

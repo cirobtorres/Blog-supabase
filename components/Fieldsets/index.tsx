@@ -18,7 +18,7 @@ export const FloatingInput = ({
   return (
     <fieldset
       id={`floating-fieldset-${id}`}
-      className="relative mt-2 rounded border border-neutral-800 bg-neutral-900 group"
+      className="relative mt-2 rounded border border-neutral-700 bg-neutral-800 group"
     >
       <input
         id={`floating-input-${id}`}
@@ -29,12 +29,12 @@ export const FloatingInput = ({
         onChange={setValue}
         placeholder={placeholder}
         className={
-          `h-full w-full text-sm` +
-          ` px-2 pb-0.5 pt-4` +
-          ` appearance-none border-none placeholder:text-transparent placeholder:select-none bg-transparent` +
-          ` transition-all rounded outline-none` +
-          ` focus:placeholder:text-[hsl(0,0%,10%)] focus-visible:ring-neutral-100 focus-visible:ring-[3px]` +
-          ` peer`
+          `h-full w-full text-sm font-medium text-neutral-400 ` +
+          `px-2 pb-0.5 pt-4 ` +
+          `appearance-none border-none placeholder:text-transparent placeholder:select-none bg-transparent ` +
+          `transition-all rounded outline-none ` +
+          `focus:placeholder:text-[hsl(0,0%,10%)] focus-visible:ring-neutral-100 focus-visible:ring-[3px] ` +
+          `peer `
         }
       />
       <label
@@ -42,11 +42,11 @@ export const FloatingInput = ({
         data-testid={`floating-label-${id}`}
         htmlFor={`floating-input-${id}`}
         className={
-          `absolute top-1/2 z-10 origin-[0] start-1 px-1 select-none` +
-          ` -translate-y-5 scale-75 text-theme-color peer-focus:-translate-y-5 peer-focus:scale-75 peer-focus:text-theme-color` +
-          ` peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white` +
-          ` text-sm pointer-events-none bg-transparent bg-opacity-50` +
-          ` transform transition-top duration-100`
+          `absolute top-1/2 z-10 origin-[0] start-1 px-1 font-medium select-none ` +
+          `-translate-y-5 scale-75 peer-focus:-translate-y-5 peer-focus:scale-75 text-theme-color peer-focus:text-theme-color ` +
+          `peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white ` +
+          `text-sm pointer-events-none bg-transparent bg-opacity-50 ` +
+          `transform transition-top duration-100 `
         }
       >
         {label}
@@ -73,7 +73,7 @@ export const DisplayNameFieldset = ({
       name={getDisplayNameFormDataValue}
       type="text"
       placeholder={placeholder || ""}
-      className="p-1 transition-all rounded border border-neutral-800 bg-neutral-900 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+      className="p-1 transition-all rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
     />
   </fieldset>
 );
@@ -92,7 +92,7 @@ export const EmailFieldset = ({ placeholder }: { placeholder?: string }) => (
       name={getEmailFormDataValue}
       type="email"
       placeholder={placeholder || ""}
-      className="p-1 transition-all rounded border border-neutral-800 bg-neutral-900 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+      className="p-1 transition-all rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
     />
   </fieldset>
 );
@@ -111,7 +111,7 @@ export const PasswordFieldset = ({ placeholder }: { placeholder?: string }) => (
       name={getPasswordFormDataValue}
       type="password"
       placeholder={placeholder || ""}
-      className="p-1 transition-all rounded border border-neutral-800 bg-neutral-900 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+      className="p-1 transition-all rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
     />
   </fieldset>
 );
@@ -123,14 +123,13 @@ export const TitleFieldset = ({
   value?: string;
   setVal: Dispatch<SetStateAction<string>>;
 }) => (
-  <fieldset className="flex flex-col">
-    <label
-      id={labelId("Title")}
-      htmlFor={getTitleFormDataValue}
-      className="py-1"
-    >
-      Title
-    </label>
+  <fieldset
+    className={
+      "relative p-2 pt-6 pr-1 flex flex-col rounded transition-all duration-300 border border-neutral-700 " +
+      "hover:ring-3 hover:ring-neutral-100 focus-within:ring-3 focus-within:ring-neutral-100 " +
+      "bg-neutral-800 hover:bg-neutral-700 focus-within:bg-neutral-700 article-fieldset "
+    }
+  >
     <textarea
       id={getTitleFormDataValue}
       name={getTitleFormDataValue}
@@ -140,11 +139,26 @@ export const TitleFieldset = ({
       maxLength={128}
       spellCheck={false}
       onChange={(e) => setVal(e.target.value)}
+      placeholder=""
       className={
-        `p-2 resize-none rounded transition-all border border-neutral-700 bg-neutral-800` +
-        ` focus-visible:ring-neutral-100 focus-visible:ring-[3px]`
+        `resize-none rounded transition-all outline-none border-none bg-none ` +
+        `peer `
       }
     />
+    <label
+      id={labelId("Title")}
+      htmlFor={getTitleFormDataValue}
+      className={
+        `absolute origin-left select-none pointer-events-none font-medium pl-3 text-neutral-400 ` + // text-theme-color
+        `top-6 transform transition-top duration-100 ` +
+        `left-0 peer-placeholder-shown:left-0 peer-placeholder-shown:translate-x-0 ` +
+        `-translate-y-5 peer-focus:-translate-y-5 peer-placeholder-shown:translate-y-0 ` +
+        `-translate-x-0 peer-focus:-translate-x-0 ` +
+        `scale-75 peer-focus:scale-75 peer-placeholder-shown:scale-100 ` // peer-placeholder-shown:text-neutral-400
+      }
+    >
+      Título do Artigo
+    </label>
   </fieldset>
 );
 
@@ -155,14 +169,13 @@ export const SubtitleFieldset = ({
   value?: string;
   setVal: Dispatch<SetStateAction<string>>;
 }) => (
-  <fieldset className="flex flex-col">
-    <label
-      id={labelId("Subtitle")}
-      htmlFor={getSubtitleFormDataValue}
-      className="py-1"
-    >
-      Subtitle
-    </label>
+  <fieldset
+    className={
+      "relative p-2 pt-6 pr-1 flex flex-col rounded transition-all duration-300 border border-neutral-700 " +
+      "hover:ring-3 hover:ring-neutral-100 focus-within:ring-3 focus-within:ring-neutral-100 " +
+      "bg-neutral-800 hover:bg-neutral-700 focus-within:bg-neutral-700 article-fieldset "
+    }
+  >
     <textarea
       id={getSubtitleFormDataValue}
       name={getSubtitleFormDataValue}
@@ -171,11 +184,26 @@ export const SubtitleFieldset = ({
       maxLength={256}
       spellCheck={false}
       onChange={(e) => setVal(e.target.value)}
+      placeholder=""
       className={
-        `p-2 resize-none rounded transition-all border border-neutral-700 bg-neutral-800` +
-        ` focus-visible:ring-neutral-100 focus-visible:ring-[3px]`
+        `resize-none rounded transition-all outline-none border-none bg-none ` +
+        `peer `
       }
     />
+    <label
+      id={labelId("Subtitle")}
+      htmlFor={getSubtitleFormDataValue}
+      className={
+        `absolute origin-left select-none pointer-events-none font-medium pl-3 text-neutral-400 ` + // text-theme-color
+        `top-6 transform transition-top duration-100 ` +
+        `left-0 peer-placeholder-shown:left-0 peer-placeholder-shown:translate-x-0 ` +
+        `-translate-y-5 peer-focus:-translate-y-5 peer-placeholder-shown:translate-y-0 ` +
+        `-translate-x-0 peer-focus:-translate-x-0 ` +
+        `scale-75 peer-focus:scale-75 peer-placeholder-shown:scale-100 ` // peer-placeholder-shown:text-neutral-400
+      }
+    >
+      Subtítulo do Artigo
+    </label>
   </fieldset>
 );
 
@@ -186,14 +214,7 @@ export const EditorFieldset = ({
   setVal: Dispatch<SetStateAction<string>>;
   defaultValue?: string;
 }) => (
-  <fieldset className="flex flex-col">
-    <label
-      id={labelId("Body")}
-      htmlFor={getEditorFormDataValue}
-      className="py-1"
-    >
-      Body
-    </label>
+  <fieldset className="h-full flex flex-col">
     <ArticleEditor
       id={getEditorFormDataValue}
       setVal={setVal}
