@@ -10,23 +10,18 @@ import { Provider } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-// const returnState = (state: number | undefined) => {
-//   const stateMap = new Map();
-//   stateMap.set(422, { error: "Weak password. At least 6 characters." });
-//   stateMap.set(400, { error: "E-mail invalid." });
-//   return stateMap.get(state) || { error: "Error. User not created." };
-// };
-
-export const SignInOAuth = async (provider: Provider) => {
+export const SignInOAuth = async (provider: Provider, redirectTo?: string) => {
   if (!provider) return null;
 
   const supabase = await createServerAppClient();
+
+  // console.log(redirectTo);
 
   const { data: userData, error: userError } =
     await supabase.auth.signInWithOAuth({
       provider: provider as Provider,
       options: {
-        redirectTo: `http://localhost:3000/auth/callback`,
+        redirectTo: redirectTo || `http://localhost:3000/auth/callback`,
       },
     });
 

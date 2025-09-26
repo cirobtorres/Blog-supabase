@@ -16,8 +16,25 @@ import { buttonVariants } from "@/components/ui/button";
 import { deleteArticle, putPrivateArticle } from "@/services/article";
 import { SignInOAuth, signOut } from "@/services/authentication";
 import { Provider } from "@supabase/supabase-js";
-import { useActionState, useState, useEffect, useRef } from "react";
+import {
+  useActionState,
+  useState,
+  useEffect,
+  useRef,
+  MouseEventHandler,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { toast } from "sonner";
+import { LoadingSpinning } from "@/components/LoadingSpinning";
+import { AlertIcon, CancelIcon, TrashBinIcon } from "@/components/Icons";
+import ToolTipWrapper from "@/components/ui/tooltip";
+
+const providers = [
+  { label: "Google", bgColor: "#e5322b", borderColor: "#ff645f" },
+  { label: "Linkedin", bgColor: "#0379b7", borderColor: "#45beff" },
+  { label: "Github", bgColor: "#000", borderColor: "#272727" },
+];
 
 export const LogoutButton = ({ label }: { label: string }) => {
   return (
@@ -26,28 +43,26 @@ export const LogoutButton = ({ label }: { label: string }) => {
         e.preventDefault();
         signOut();
       }}
-      className="text-sm cursor-pointer hover:text-white"
+      className="text-sm cursor-pointer px-1 py-0.5 rounded outline-none text-neutral-300 hover:text-neutral-100 transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
     >
       {label}
     </button>
   );
 };
 
-const providers = [
-  { label: "Google", bgColor: "#e5322b" },
-  { label: "Linkedin", bgColor: "#0379b7" },
-  { label: "Github", bgColor: "black" },
-];
-
-export const ProvidersRowButtons = () => {
+export const ProvidersRowButtons = ({
+  redirectTo,
+}: {
+  redirectTo?: string;
+}) => {
   const [state, setState] = useState<Provider | null>(null);
   const [, action] = useActionState(() => {
-    if (state) return SignInOAuth(state);
+    if (state) return SignInOAuth(state, redirectTo);
   }, null);
 
   return (
     <>
-      <Ou />
+      <Or />
       <form action={action} className="flex flex-col gap-2">
         {providers.map((provider, index) => (
           <button
@@ -58,25 +73,20 @@ export const ProvidersRowButtons = () => {
                 () => provider.label.toLowerCase() as "google" | "github"
               )
             }
-            className="w-full py-1 cursor-pointer"
-            style={{ backgroundColor: provider.bgColor }}
+            className={
+              `w-full py-1 rounded-md cursor-pointer outline-none ` +
+              `transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[2px] focus-visible:bg-neutral-800/50`
+            }
+            style={{
+              backgroundColor: provider.bgColor,
+              border: `1px solid ${provider.borderColor}`,
+            }}
           >
             {provider.label}
           </button>
         ))}
       </form>
     </>
-  );
-};
-
-const Ou = () => {
-  return (
-    <div className="relative py-4">
-      <span className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 px-2 pointer-events-none text-neutral-600 bg-neutral-950">
-        ou
-      </span>
-      <hr className="border-y-neutral-800" />
-    </div>
   );
 };
 
@@ -140,40 +150,11 @@ export const EditOrDeleteArticleButtons = ({
                 className="has-[>svg]:px-1 h-fit py-1"
                 onClick={handleCloseDialog}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-x-icon lucide-x"
-                >
-                  <path d="M18 6 6 18" />
-                  <path d="m6 6 12 12" />
-                </svg>
+                <CancelIcon />
               </AlertDialogCancel>
             </AlertDialogTitle>
             <AlertDialogDescription className="text-warning flex items-center gap-2 border-y border-neutral-800 bg-neutral-950">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-octagon-alert-icon lucide-octagon-alert"
-              >
-                <path d="M12 16h.01" />
-                <path d="M12 8v4" />
-                <path d="M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z" />
-              </svg>
+              <AlertIcon />
               Essa ação não poderá ser desfeita!
             </AlertDialogDescription>
             <fieldset className="p-3 flex flex-col gap-2">
@@ -209,7 +190,7 @@ export const EditOrDeleteArticleButtons = ({
                 disabled={disabledButton}
                 className={buttonVariants({ variant: "destructive" })}
               >
-                {isPending ? "Loading" : "Confirmar"}
+                Confirmar <LoadingSpinning loadingState={isPending} />
               </AlertDialogAction>
             </form>
           </AlertDialogFooter>
@@ -299,74 +280,167 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
   }, [articleId]);
 
   return (
-    <div
-      id="btt-btn-container"
-      data-testid="btt-btn-container"
-      className="self-start sticky mx-auto top-1/2 -translate-y-1/2"
-    >
-      <button
-        id="btt-btn"
-        data-testid="btt-btn"
-        type="button"
-        aria-label="Voltar ao topo da página"
-        title="Voltar ao topo da página"
-        style={{ height: `${diameter}px` }}
-        onClick={() => window.scrollTo(0, 0)}
-        className="relative flex cursor-pointer group rounded focus-visible:outline-2 focus-visible:outline-white"
+    <article className="hidden lg:block">
+      <div
+        id="btt-btn-container"
+        data-testid="btt-btn-container"
+        className="self-start sticky mx-auto top-1/2 -translate-y-1/2"
       >
-        <svg
-          className="relative -rotate-90"
-          role="presentation"
-          aria-hidden="true"
-          focusable="false"
-          style={{ width: `${diameter}px`, height: `${diameter}px` }}
+        <button
+          id="btt-btn"
+          data-testid="btt-btn"
+          type="button"
+          aria-label="Voltar ao topo da página"
+          title="Voltar ao topo da página"
+          onClick={() => window.scrollTo(0, 0)}
+          // style={{ height: `${diameter}px` }}
+          // className="relative flex cursor-pointer group rounded focus-visible:outline-2 focus-visible:outline-white"
+          style={{
+            height: `${diameter}px`,
+            top: "50%",
+            bottom: "50%",
+            transform: "translateY(0,-50%)",
+          }}
+          className={
+            `relative flex cursor-pointer group ` +
+            `my-40 transition-all rounded outline-none ` +
+            `focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
+          }
         >
-          <circle
-            cx={outerRadius}
-            cy={outerRadius}
-            r={`${innerRadius}px`}
-            strokeWidth={`${strokeWidth}px`}
-            strokeDasharray={circunference.current}
-            className="w-fit h-fit fill-none stroke-neutral-800"
-            style={{ strokeDashoffset: 0 }}
-          />
-          <circle
-            id="progress-circle"
-            data-testid="progress-circle"
-            cx={outerRadius}
-            cy={outerRadius}
-            r={`${innerRadius}px`}
-            strokeWidth={`${strokeWidth}px`}
-            strokeDasharray={circunference.current}
-            style={{ strokeDashoffset: circunference.current }}
-            className="w-fit h-fit fill-none stroke-theme-color"
-          />
-          <circle
-            id="progress-circle-blur"
-            data-testid="progress-circle-blur"
-            cx={outerRadius}
-            cy={outerRadius}
-            r={`${innerRadius}px`}
-            strokeWidth={`${strokeWidth}px`}
-            strokeDasharray={circunference.current}
-            style={{ strokeDashoffset: circunference.current }}
-            className="w-fit h-fit fill-none stroke-theme-color blur-xs"
-          />
-        </svg>
-        <svg
-          id="btt-arrow-up"
-          stroke="currentColor"
-          fill="currentColor"
-          strokeWidth="0"
-          viewBox="0 0 448 512"
-          height="20px"
-          width="20px"
-          xmlns="http://www.w3.org/2000/svg"
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 group-hover:animate-bouncing-arrow"
-        >
-          <path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z" />
-        </svg>
-      </button>
+          <svg
+            className="relative -rotate-90"
+            role="presentation"
+            aria-hidden="true"
+            focusable="false"
+            style={{ width: `${diameter}px`, height: `${diameter}px` }}
+          >
+            <circle
+              cx={outerRadius}
+              cy={outerRadius}
+              r={`${innerRadius}px`}
+              strokeWidth={`${strokeWidth}px`}
+              strokeDasharray={circunference.current}
+              className="w-fit h-fit fill-none stroke-neutral-800"
+              style={{ strokeDashoffset: 0 }}
+            />
+            <circle
+              id="progress-circle"
+              data-testid="progress-circle"
+              cx={outerRadius}
+              cy={outerRadius}
+              r={`${innerRadius}px`}
+              strokeWidth={`${strokeWidth}px`}
+              strokeDasharray={circunference.current}
+              style={{ strokeDashoffset: circunference.current }}
+              className="w-fit h-fit fill-none stroke-theme-color"
+            />
+            <circle
+              id="progress-circle-blur"
+              data-testid="progress-circle-blur"
+              cx={outerRadius}
+              cy={outerRadius}
+              r={`${innerRadius}px`}
+              strokeWidth={`${strokeWidth}px`}
+              strokeDasharray={circunference.current}
+              style={{ strokeDashoffset: circunference.current }}
+              className="w-fit h-fit fill-none stroke-theme-color blur-xs"
+            />
+          </svg>
+          <svg
+            id="btt-arrow-up"
+            stroke="currentColor"
+            fill="currentColor"
+            strokeWidth="0"
+            viewBox="0 0 448 512"
+            height="20px"
+            width="20px"
+            xmlns="http://www.w3.org/2000/svg"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 group-hover:animate-bouncing-arrow"
+          >
+            <path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z" />
+          </svg>
+        </button>
+      </div>
+    </article>
+  );
+};
+
+export const DeleteEditor = ({
+  onRemove,
+  dialogState,
+}: {
+  onRemove: MouseEventHandler<HTMLButtonElement>;
+  dialogState: [boolean, Dispatch<SetStateAction<boolean>>];
+}) => {
+  const [isDialogOpen, setIsDialogOpen] = dialogState;
+
+  const handleOpenDialog = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsDialogOpen(false);
+  };
+
+  return (
+    <AlertDialog open={isDialogOpen}>
+      <ToolTipWrapper tooltip="Excluir">
+        <AlertDialogTrigger onClick={handleOpenDialog} asChild>
+          <button
+            type="button"
+            className={
+              `cursor-pointer p-1 ` +
+              `rounded border border-transparent outline-none ` +
+              `transition-all [&_svg]:transition-all hover:[&_svg]:stroke-theme-color ` +
+              `focus-visible:ring-[3px] focus-visible:ring-neutral-500 focus-visible:bg-neutral-800 ` // focus-visible:[&_*]:stroke-theme-color hover:[&_*]:stroke-theme-color
+            }
+          >
+            <TrashBinIcon size={16} />
+          </button>
+        </AlertDialogTrigger>
+      </ToolTipWrapper>
+      <AlertDialogContent>
+        <AlertDialogTitle className="flex items-center justify-between">
+          Deletar componente?
+          <AlertDialogCancel
+            className="has-[>svg]:px-1 h-fit py-1"
+            onClick={handleCloseDialog}
+          >
+            <CancelIcon />
+          </AlertDialogCancel>
+        </AlertDialogTitle>
+        <AlertDialogDescription className="text-warning flex items-center gap-2 border-y border-neutral-800 bg-neutral-950">
+          <AlertIcon />
+          Essa ação não poderá ser desfeita!
+        </AlertDialogDescription>
+
+        <AlertDialogFooter className="flex items-center gap-2">
+          <AlertDialogCancel onClick={handleCloseDialog}>
+            Cancelar
+          </AlertDialogCancel>
+          <AlertDialogAction
+            type="submit"
+            onClick={onRemove}
+            className={buttonVariants({ variant: "destructive" })}
+          >
+            Confirmar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
+const Or = () => {
+  return (
+    <div className="relative flex items-center py-6">
+      <div className="absolute h-[1px] right-0 left-[calc(50%_+_30px)] bg-neutral-800" />
+      <span className="text-neutral-600 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 pointer-events-none">
+        ou
+      </span>
+      <div className="absolute h-[1px] left-0 right-[calc(50%_+_30px)] bg-neutral-800" />
     </div>
   );
 };

@@ -75,11 +75,16 @@ export const FixedHeader = ({ profile }: { profile: Profile | null }) => {
 const HeaderContent = ({ profile }: { profile: Profile | null }) => {
   return (
     <div className="h-full mx-4 flex justify-between">
-      <div className="flex items-center">
-        <Link href="/">HOME</Link>
+      <div className="flex items-center px-2">
+        <Link
+          href="/"
+          className="px-2 py-0.5 rounded outline-none text-neutral-300 hover:text-neutral-100 transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+        >
+          HOME
+        </Link>
       </div>
       {profile ? (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <div className="flex items-center">
             <Image
               src={profile.avatar_url}
@@ -88,18 +93,27 @@ const HeaderContent = ({ profile }: { profile: Profile | null }) => {
               height={24}
               className="rounded-full"
             />
-            <Link href="/admin" className="w-fit p-1 text-sm text-theme-color">
+            <Link
+              href="/admin"
+              className="w-fit text-sm text-theme-color ml-2 px-1 py-0.5 rounded outline-none hover:text-neutral-100 transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+            >
               {profile.username}
             </Link>
           </div>
           <LogoutButton label="Sair" />
         </div>
       ) : (
-        <div className="flex items-center gap-4">
-          <Link href="/sign-in" className="w-fit text-sm py-1">
+        <div className="flex items-center gap-2">
+          <Link
+            href="/sign-in"
+            className="w-fit text-sm px-1 py-0.5 rounded outline-none text-neutral-300 hover:text-neutral-100 transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+          >
             Entrar
           </Link>
-          <Link href="/sign-up" className="w-fit text-sm py-1">
+          <Link
+            href="/sign-up"
+            className="w-fit text-sm px-1 py-0.5 rounded outline-none text-neutral-300 hover:text-neutral-100 transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+          >
             Cadastrar
           </Link>
         </div>

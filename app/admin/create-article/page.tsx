@@ -1,4 +1,4 @@
-import { CreateArticleForm } from "@/components/Forms";
+import { CreateArticleForm } from "@/components/Forms/CreateArticleForn";
 import { StaticHeader } from "../../../components/Header";
 import { redirect } from "next/navigation";
 import { getProfile } from "@/services/user";

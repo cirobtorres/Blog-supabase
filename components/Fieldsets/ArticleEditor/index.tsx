@@ -1,23 +1,20 @@
 "use client";
 
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useCallback, useEffect, useState } from "react";
+import { useEditor, EditorContent, getMarkRange } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import Heading from "@tiptap/extension-heading";
 import Paragraph from "@tiptap/extension-paragraph";
 import Bold from "@tiptap/extension-bold";
 import History from "@tiptap/extension-history";
+import Highlight from "@tiptap/extension-highlight";
 import BulletList from "@tiptap/extension-bullet-list";
 import ListItem from "@tiptap/extension-list-item";
 import OrderedList from "@tiptap/extension-ordered-list";
 import Link, { LinkProtocolOptions } from "@tiptap/extension-link";
+import type { BundledLanguage } from "shiki";
+import CodeBlockShiki from "tiptap-extension-code-block-shiki";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +29,36 @@ import {
 import { FloatingInput } from "..";
 import { buttonVariants } from "../../ui/button";
 import { cn } from "../../../lib/utils";
+import {
+  BoldIcon,
+  BulletListIcon,
+  CancelIcon,
+  HeaderH2Icon,
+  HeaderH3Icon,
+  HeaderH4Icon,
+  HighlightIcon,
+  LinkIcon,
+  OrderedListIcon,
+  DownloadIcon,
+  TrashBinIcon,
+  UploadIcon,
+} from "@/components/Icons";
+import ToolTipWrapper from "@/components/ui/tooltip";
+import { LoadingSpinning } from "@/components/LoadingSpinning";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { formatCodeBlockLanguage } from "@/utils/strings";
+import Image from "next/image";
 
+// ------------------------------==========TEXT==========------------------------------
 const validateAllowedUri = (
   url: string,
   ctx: {
@@ -92,19 +118,25 @@ const validateAllowedAutoLink = (url: string) => {
   }
 };
 
-export const ArticleEditor = ({
+const getClassName = (func: boolean) =>
+  `flex justify-center items-center outline-none transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[3px] ${
+    func
+      ? "text-theme-color border-neutral-600 bg-neutral-700 hover:bg-neutral-600"
+      : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
+  }`;
+
+export const TipTapTextEditor = ({
   id,
   setVal,
   defaultValue,
   autoFocus = false,
 }: {
   id: string;
-  setVal: Dispatch<SetStateAction<string>>;
+  setVal: (data: any) => void;
   defaultValue?: string;
   autoFocus?: boolean;
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   const [textLinkInput, setTextLinkInput] = useState("");
   const [linkInput, setLinkInput] = useState("");
 
@@ -116,6 +148,7 @@ export const ArticleEditor = ({
       Text,
       History,
       Bold,
+      Highlight,
       BulletList,
       OrderedList,
       ListItem,
@@ -138,29 +171,56 @@ export const ArticleEditor = ({
 
   useEffect(() => {
     if (editor) {
-      const html = editor.getHTML();
-      setVal((prev) => (prev ? prev : html));
+      setVal(editor.getHTML());
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
   const updateLink = useCallback(() => {
-    // Update link
-    try {
-      editor
-        ?.chain()
-        .focus()
-        .extendMarkRange("link")
-        .setLink({ href: linkInput })
-        .run();
-    } catch (e) {
-      if (e instanceof Error) {
-        console.error(e.message);
-      } else {
-        console.error(String(e));
-      }
+    if (!editor || !editor.view || !editor.state || !editor.commands) {
+      console.warn("Editor não está disponível no momento da atualização.");
+      return;
     }
-  }, [editor]);
+
+    try {
+      const { state, schema } = editor;
+      const { selection } = state;
+      const { from } = selection;
+      const $from = state.doc.resolve(from);
+      const linkMark = schema.marks.link;
+
+      const range = getMarkRange($from, linkMark);
+
+      if (range) {
+        editor
+          .chain()
+          .focus()
+          .insertContentAt(
+            { from: range.from, to: range.to },
+            {
+              type: "text",
+              text: textLinkInput || linkInput,
+              marks: [
+                {
+                  type: "link",
+                  attrs: { href: linkInput },
+                },
+              ],
+            }
+          )
+          .run();
+      } else {
+        // Fallback: se não houver range de link, apenas atualiza o href
+        editor
+          .chain()
+          .focus()
+          .extendMarkRange("link")
+          .setLink({ href: linkInput })
+          .run();
+      }
+    } catch (e) {
+      console.error("Erro ao atualizar link:", e);
+    }
+  }, [editor, linkInput, textLinkInput]);
 
   const setLink = useCallback(() => {
     if (!editor) return;
@@ -196,271 +256,260 @@ export const ArticleEditor = ({
         .setLink({ href: linkInput })
         .run();
     }
-  }, [editor]);
+  }, [editor, linkInput, textLinkInput]);
 
-  const returnEditorSelection = () =>
-    editor?.state.doc.textBetween(
-      editor.state.selection.from,
-      editor.state.selection.to,
-      " "
-    );
+  const getKeyboardSelection = () => {
+    if (!editor) return "";
+
+    const { state } = editor;
+    const { selection } = state;
+
+    // If keyboard cursor is left inside <a></a>
+    const { from, to } = selection;
+    const $from = state.doc.resolve(from);
+
+    const range = getMarkRange($from, state.schema.marks.link);
+
+    if (range) {
+      return state.doc.textBetween(range.from, range.to, " ");
+    }
+
+    // Fallback: selected text
+    return state.doc.textBetween(from, to, " ");
+  };
+
+  // const getKeyboardSelection = () => {
+  //   if (!editor) return "";
+
+  //   const { state } = editor;
+  //   const { selection } = state;
+  //   const { from, to } = selection;
+
+  //   // if there is something selected
+  //   if (from !== to) {
+  //     return state.doc.textBetween(from, to, " ");
+  //   }
+
+  //   // cursor on a word
+  //   const $pos = state.doc.resolve(from);
+  //   const parent = $pos.parent;
+  //   const offset = $pos.parentOffset;
+
+  //   if (!parent.isTextblock) return "";
+
+  //   const text = parent.textContent;
+
+  //   // find range of that word
+  //   let start = offset;
+  //   let end = offset;
+
+  //   while (start > 0 && /\w/.test(text[start - 1])) start--;
+  //   while (end < text.length && /\w/.test(text[end])) end++;
+
+  //   return text.slice(start, end);
+  // };
+
+  const getKeyboardSelectionUrl = () => {
+    if (!editor) return "";
+
+    const { state } = editor;
+    const { from } = state.selection;
+    const $from = state.doc.resolve(from);
+
+    const linkMark = state.schema.marks.link;
+    const range = getMarkRange($from, linkMark);
+
+    if (range) {
+      const node = state.doc.nodeAt(range.from);
+      if (node) {
+        const mark = node.marks.find((m) => m.type.name === "link");
+        return mark?.attrs.href || "";
+      }
+    }
+
+    return "";
+  };
+
+  const handleLinkClick = () => {
+    const selectedText = getKeyboardSelection();
+    setTextLinkInput(selectedText || "");
+    const selectedUrl = getKeyboardSelectionUrl();
+    setLinkInput(selectedUrl);
+    setIsDialogOpen(true);
+  };
 
   if (!editor) {
-    return <p>Loading...</p>;
+    return <LoadingSpinning loadingState={true} />;
   }
-
-  const lastCharacterIndex = editor.getHTML().length;
 
   return (
     <>
       <div
-        className="flex gap-4 items-center mb-1 p-1 rounded border border-neutral-800 bg-neutral-900" // button-group
+        className="w-full flex gap-4 items-center pb-1" // border-y border-neutral-800
       >
         <div className="flex gap-1 items-center">
-          <button
-            type="button"
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 2 }).run()
-            }
-            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] ${
-              editor.isActive("heading", { level: 2 })
-                ? "border-neutral-600 bg-neutral-700"
-                : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-heading2-icon lucide-heading-2 p-1"
-            >
-              <path d="M4 12h8" />
-              <path d="M4 18V6" />
-              <path d="M12 18V6" />
-              <path d="M21 18h-4c0-4 4-3 4-6 0-1.5-2-2.5-4-1" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 3 }).run()
-            }
-            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] ${
-              editor.isActive("heading", { level: 3 })
-                ? "border-neutral-600 bg-neutral-700"
-                : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-heading3-icon lucide-heading-3 p-1"
-            >
-              <path d="M4 12h8" />
-              <path d="M4 18V6" />
-              <path d="M12 18V6" />
-              <path d="M17.5 10.5c1.7-1 3.5 0 3.5 1.5a2 2 0 0 1-2 2" />
-              <path d="M17 17.5c2 1.5 4 .3 4-1.5a2 2 0 0 0-2-2" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 4 }).run()
-            }
-            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] ${
-              editor.isActive("heading", { level: 4 })
-                ? "border-neutral-600 bg-neutral-700"
-                : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-heading4-icon lucide-heading-4 p-1"
-            >
-              <path d="M12 18V6" />
-              <path d="M17 10v3a1 1 0 0 0 1 1h3" />
-              <path d="M21 10v8" />
-              <path d="M4 12h8" />
-              <path d="M4 18V6" />
-            </svg>
-          </button>
-        </div>
-        <div className="flex gap-1 items-center">
-          <button
-            type="button"
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] ${
-              editor.isActive("bold")
-                ? "border-neutral-600 bg-neutral-700"
-                : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-bold-icon lucide-bold p-1"
-            >
-              <path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8" />
-            </svg>
-          </button>
-          {editor.isActive("link") ? (
+          <ToolTipWrapper tooltip="Header H2">
             <button
               type="button"
-              // onClick={() => editor.chain().focus().unsetLink().run()}
-              onClick={updateLink} // TODO: FIX ME
-              className="flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] border-neutral-600 bg-neutral-700"
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: 2 }).run()
+              }
+              className={getClassName(editor.isActive("heading", { level: 2 }))}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-link-icon lucide-link p-1"
-              >
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-              </svg>
+              <HeaderH2Icon size={28} />
             </button>
-          ) : (
-            <div className="flex justify-center items-center transition-all cursor-pointer rounded border focus-visible:ring-neutral-100 focus-visible:ring-[2px] border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800">
-              <AlertDialog open={isDialogOpen}>
-                <AlertDialogTrigger
-                  asChild
+          </ToolTipWrapper>
+          <ToolTipWrapper tooltip="Header H3">
+            <button
+              type="button"
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: 3 }).run()
+              }
+              className={getClassName(editor.isActive("heading", { level: 3 }))}
+            >
+              <HeaderH3Icon size={28} />
+            </button>
+          </ToolTipWrapper>
+          <ToolTipWrapper tooltip="Header H4">
+            <button
+              type="button"
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: 4 }).run()
+              }
+              className={getClassName(editor.isActive("heading", { level: 4 }))}
+            >
+              <HeaderH4Icon size={28} />
+            </button>
+          </ToolTipWrapper>
+        </div>
+        <div className="flex gap-1 items-center">
+          <ToolTipWrapper tooltip="Negrito">
+            <button
+              type="button"
+              onClick={() => editor.chain().focus().toggleBold().run()}
+              className={getClassName(editor.isActive("bold"))}
+            >
+              <BoldIcon size={28} />
+            </button>
+          </ToolTipWrapper>
+          <ToolTipWrapper tooltip="Realce">
+            <button
+              type="button"
+              onClick={() => editor.chain().focus().toggleHighlight().run()}
+              className={getClassName(editor.isActive("highlight"))}
+            >
+              <HighlightIcon size={28} />
+            </button>
+          </ToolTipWrapper>
+          <AlertDialog open={isDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <ToolTipWrapper tooltip="Hiperlink">
+                <button
+                  type="button"
                   tabIndex={0}
-                  onClick={() => {
-                    const selectedText = returnEditorSelection();
-                    setTextLinkInput(selectedText || "");
-                    setIsDialogOpen(true);
-                  }}
-                  className="outline-none transition-all rounded focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+                  onClick={handleLinkClick}
+                  className={getClassName(editor.isActive("link"))}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="28"
-                    height="28"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-link-icon lucide-link p-1"
+                  <LinkIcon size={28} />
+                </button>
+              </ToolTipWrapper>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex justify-between items-center">
+                  Hyperlink{" "}
+                  <AlertDialogCancel
+                    className="has-[>svg]:px-1 h-fit py-1"
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                      editor.chain().focus();
+                    }}
                   >
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                  </svg>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle className="flex justify-between items-center">
-                      Hyperlink{" "}
-                      <AlertDialogCancel
-                        className="has-[>svg]:px-1 h-fit py-1"
-                        onClick={() => {
-                          setIsDialogOpen(false);
-                          editor.chain().focus();
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-x-icon lucide-x"
-                        >
-                          <path d="M18 6 6 18" />
-                          <path d="m6 6 12 12" />
-                        </svg>
-                      </AlertDialogCancel>
-                    </AlertDialogTitle>
-                    <AlertDialogDescription className="border-y border-neutral-800 bg-neutral-950">
-                      Crie um texto para o hiperlink. Se você deixar o texto
-                      vazio, o texto será o próprio link.
-                    </AlertDialogDescription>
-                    <div className="px-3">
-                      <FloatingInput
-                        id="text-link"
-                        label="Texto"
-                        value={textLinkInput}
-                        setValue={(e) => setTextLinkInput(e.target.value)}
-                      />
-                      <FloatingInput
-                        id="text-url"
-                        label="URL"
-                        value={linkInput}
-                        setValue={(e) => setLinkInput(e.target.value)}
-                      />
-                    </div>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter className="flex gap-1">
-                    <AlertDialogCancel
-                      onClick={() => {
-                        setIsDialogOpen(false);
-                        editor.chain().focus();
-                      }}
-                      className={cn(
-                        "w-24",
-                        buttonVariants({ variant: "default" })
-                      )}
-                    >
-                      Cancelar
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => {
-                        setIsDialogOpen(false);
-                        setLink();
-                      }}
-                      className={cn(
-                        "w-24",
-                        buttonVariants({ variant: "outline" })
-                      )}
-                    >
-                      Salvar
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          )}
+                    <CancelIcon />
+                  </AlertDialogCancel>
+                </AlertDialogTitle>
+                <AlertDialogDescription className="border-y border-neutral-800 bg-neutral-950">
+                  Crie um texto para o hiperlink. Se você deixar o texto vazio,
+                  o texto será o próprio link.
+                </AlertDialogDescription>
+                <div className="px-3">
+                  <FloatingInput
+                    id="text-link"
+                    label="Texto"
+                    value={textLinkInput}
+                    setValue={(e) => setTextLinkInput(e.target.value)}
+                  />
+                  <FloatingInput
+                    id="text-url"
+                    label="URL"
+                    value={linkInput}
+                    setValue={(e) => setLinkInput(e.target.value)}
+                  />
+                </div>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="flex justify-between py-2">
+                <div className="flex-1">
+                  <AlertDialogCancel
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                      editor.chain().focus().unsetLink().run();
+                    }}
+                    className={cn(
+                      "w-24",
+                      buttonVariants({ variant: "default" })
+                    )}
+                  >
+                    Remover
+                  </AlertDialogCancel>
+                </div>
+                <div className="flex gap-1">
+                  <AlertDialogCancel
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                    }}
+                    className={cn(
+                      "w-24",
+                      buttonVariants({ variant: "default" })
+                    )}
+                  >
+                    Cancelar
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                      editor?.isActive("link") ? updateLink() : setLink();
+                    }}
+                    className={cn(
+                      "w-24",
+                      buttonVariants({ variant: "outline" })
+                    )}
+                  >
+                    Salvar
+                  </AlertDialogAction>
+                </div>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+        <div className="flex gap-1 items-center">
+          <ToolTipWrapper tooltip="Lista não ordenada">
+            <button
+              type="button"
+              onClick={() => editor.chain().focus().toggleBulletList().run()}
+              className={getClassName(editor.isActive("bulletList"))}
+            >
+              <BulletListIcon size={28} />
+            </button>
+          </ToolTipWrapper>
+          <ToolTipWrapper tooltip="Lista ordenada">
+            <button
+              type="button"
+              onClick={() => editor.chain().focus().toggleOrderedList().run()}
+              className={getClassName(editor.isActive("orderedList"))}
+            >
+              <OrderedListIcon size={28} />
+            </button>
+          </ToolTipWrapper>
         </div>
       </div>
       <EditorContent
@@ -470,15 +519,472 @@ export const ArticleEditor = ({
         autoComplete="new-password"
         defaultValue={defaultValue}
         spellCheck={false}
-        onFocus={() => editor.chain().selectTextblockEnd().focus()} // editor.chain().focus().setTextSelection(lastCharacterIndex).run();
+        onFocus={() => editor.chain().selectTextblockEnd().focus()}
         className={
-          `article-typography` +
-          ` [&_.tiptap.ProseMirror]:min-h-[calc(1.5rem_*_15)] [&_.tiptap.ProseMirror]:p-2` +
-          ` [&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:rounded [&_.tiptap.ProseMirror]:transition-all` +
-          ` [&_.tiptap.ProseMirror]:focus-visible:ring-neutral-100 [&_.tiptap.ProseMirror]:focus-visible:ring-[3px]` +
-          ` rounded border border-neutral-700 bg-neutral-800`
+          `p-1 flex flex-col [&_p]:pb-6 [&_p]:text-base [&_p]:text-neutral-400 [&_strong]:text-neutral-400 ` +
+          `[&_p_strong]:text-neutral-300 rounded border border-neutral-700 ` +
+          `transition-all duration-300 focus-within:border-theme-color ` + // focus-within:ring-3 focus-within:ring-neutral-100
+          `[&_p_a]:text-theme-color [&_p_a]:underline [&_p_a]:bg-neutral-700 [&_p_a]:hover:text-theme-link ` +
+          `[&_p_a]:border [&_p_a]:border-neutral-600 [&_p_a]:px-1 [&_p_a]:py-0.5 [&_p_a]:rounded-md ` +
+          `[&_p_mark]:text-neutral-100 [&_p_mark]:bg-neutral-700 [&_p_mark]:border [&_p_mark]:border-neutral-600 ` +
+          `[&_p_mark]:px-1 [&_p_mark]:py-0.5 [&_p_mark]:rounded-md ` +
+          `[&_h2]:text-[2rem] [&_h2]:font-bold [&_h2]:pb-6 ` +
+          `[&_h3]:text-2xl [&_h4]:text-xl [&_h3]:pb-6 [&_h4]:pb-6 ` +
+          `[&_ul]:pb-6 [&_ul_li:last-child_p]:pb-0 [&_ul]:ml-5 [&_ul_li]:list-disc ` +
+          `[&_ol]:pb-6 [&_ol_li:last-child_p]:pb-0 [&_ol]:ml-5 [&_ol_li]:list-decimal ` +
+          `[&_.tiptap.ProseMirror]:h-[320px] [&_.tiptap.ProseMirror]:overflow-y-auto  ` +
+          `[&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6 [&_.tiptap.ProseMirror]:rounded-b-xs ` +
+          `[&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all ` +
+          `bg-neutral-900 `
         }
       />
     </>
+  );
+};
+
+// ------------------------------==========QUOTE==========------------------------------
+export const TipTapQuoteEditor = ({
+  id,
+  setVal,
+  defaultValue,
+}: {
+  id: string;
+  setVal: (data: any) => void;
+  defaultValue?: string;
+}) => {
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions: [Document, Paragraph, Text, History],
+    content: defaultValue,
+    onUpdate: ({ editor }) => setVal(editor.getHTML()),
+  });
+
+  useEffect(() => {
+    if (editor) {
+      setVal(editor.getHTML());
+    }
+  }, [editor]);
+
+  if (!editor) {
+    return <LoadingSpinning loadingState={true} />;
+  }
+
+  return (
+    <EditorContent
+      id={id}
+      name={id}
+      editor={editor}
+      autoComplete="new-password"
+      defaultValue={defaultValue}
+      spellCheck={false}
+      onFocus={() => editor.chain().selectTextblockEnd().focus()}
+      className={
+        `p-1 flex flex-col [&_p]:pb-6 [&_p]:text-base [&_p]:text-neutral-400 [&_strong]:text-neutral-400 ` +
+        `[&_p_strong]:text-neutral-300 rounded border border-neutral-700 ` +
+        `transition-all duration-300 focus-within:border-theme-color ` + // focus-within:ring-3 focus-within:ring-neutral-100
+        `[&_p_a]:text-theme-color [&_p_a]:underline [&_p_a]:bg-neutral-700 [&_p_a]:hover:text-theme-link ` +
+        `[&_p_a]:border [&_p_a]:border-neutral-600 [&_p_a]:px-1 [&_p_a]:py-0.5 [&_p_a]:rounded-md ` +
+        `[&_p_mark]:text-neutral-100 [&_p_mark]:bg-neutral-700 [&_p_mark]:border [&_p_mark]:border-neutral-600 ` +
+        `[&_p_mark]:px-1 [&_p_mark]:py-0.5 [&_p_mark]:rounded-md ` +
+        `[&_h2]:text-[2rem] [&_h2]:font-bold [&_h2]:pb-6 ` +
+        `[&_h3]:text-2xl [&_h4]:text-xl [&_h3]:pb-6 [&_h4]:pb-6 ` +
+        `[&_ul]:pb-6 [&_ul_li:last-child_p]:pb-0 [&_ul]:ml-5 [&_ul_li]:list-disc ` +
+        `[&_ol]:pb-6 [&_ol_li:last-child_p]:pb-0 [&_ol]:ml-5 [&_ol_li]:list-decimal ` +
+        `[&_.tiptap.ProseMirror]:h-[312px] [&_.tiptap.ProseMirror]:overflow-y-auto  ` +
+        `[&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6 [&_.tiptap.ProseMirror]:rounded-b-xs ` +
+        `[&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all ` +
+        `bg-neutral-900 `
+      }
+    />
+  );
+};
+
+// ------------------------------==========CODE==========------------------------------
+export const TipTapCodeEditor = ({
+  id,
+  setVal,
+  setLanguage,
+  defaultCode,
+  defaultlanguage,
+  autoFocus = false,
+}: {
+  id: string;
+  setVal: (data: string) => void;
+  setLanguage: (data: string) => void;
+  defaultCode?: string;
+  defaultlanguage?: string;
+  autoFocus?: boolean;
+}) => {
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions: [
+      Document,
+      Text,
+      History,
+      CustomCodeBlockShiki.configure({
+        defaultTheme: "dark-plus",
+        defaultLanguage: "ts",
+        languageClassPrefix: "language-",
+        exitOnTripleEnter: false,
+      }),
+    ],
+    autofocus: autoFocus,
+    content: defaultCode,
+    onUpdate: ({ editor }) => setVal(editor.getHTML()),
+  });
+
+  useEffect(() => {
+    if (editor) {
+      editor
+        .chain()
+        .focus()
+        .updateAttributes("codeBlock", { language: "ts" })
+        .run();
+      setVal(editor.getHTML());
+      return () => editor?.destroy();
+    }
+  }, [editor]);
+
+  if (!editor) {
+    return <LoadingSpinning loadingState={true} />;
+  }
+
+  const onLanguageChange = (lang: string) => {
+    editor
+      .chain()
+      .focus()
+      .updateAttributes("codeBlock", { language: lang })
+      .run();
+    setLanguage(lang);
+  };
+
+  return (
+    <div className="relative">
+      <LanguageSelecter
+        defaultlanguage={defaultlanguage}
+        callback={onLanguageChange}
+      />
+      <EditorContent
+        id={id}
+        name={id}
+        editor={editor}
+        autoComplete="new-password"
+        defaultValue={defaultCode}
+        spellCheck={false}
+        onFocus={() => editor.chain().selectTextblockEnd().focus()}
+        className={
+          `p-1 flex flex-col rounded border border-neutral-700 ` +
+          `transition-all duration-300 focus-within:border-theme-color ` +
+          `[&_.tiptap.ProseMirror]:h-[312px] [&_.tiptap.ProseMirror]:overflow-y-auto ` +
+          `[&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6 [&_.tiptap.ProseMirror]:rounded-b-xs ` +
+          `[&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all ` +
+          `[&_.tiptap.ProseMirror]:[background-color:rgb(30,30,30)] [background-color:rgb(30,30,30)!important] ` +
+          `bg-neutral-900 `
+        }
+      />
+    </div>
+  );
+};
+
+const languages: BundledLanguage[] = ["ts", "py", "kt", "java"];
+const styleLang: BundledLanguage[] = ["css"];
+const dbLang: BundledLanguage[] = ["sql"];
+
+const convertBack = (lang?: string): BundledLanguage => {
+  if (!lang) return "ts";
+  switch (lang.toLocaleLowerCase()) {
+    case "typescript":
+      return "ts";
+    case "python":
+      return "py";
+    case "kotlin":
+      return "kt";
+    case "java":
+      return "java";
+    case "sql":
+      return "sql";
+    case "css":
+      return "css";
+    default:
+      return "ts";
+  }
+};
+
+const LanguageSelecter = ({
+  defaultlanguage,
+  callback,
+}: {
+  defaultlanguage?: string;
+  callback: (lang: string) => void;
+}) => {
+  const [lang, setLang] = useState<BundledLanguage | null | undefined>(
+    convertBack(defaultlanguage) ?? "ts"
+  );
+
+  return (
+    <Select
+      value={lang ?? ""}
+      onValueChange={(value) => {
+        callback(value);
+        setLang(value.toLocaleLowerCase() as BundledLanguage);
+      }}
+    >
+      <SelectTrigger
+        className={cn(
+          "w-32 z-10 absolute top-2 right-4 py-1 px-3 rounded-[3px] bg-neutral-800 transition-ring duration-300",
+          "data-[state=open]:text-theme-color data-[state=open]:bg-[#2b2b2b] "
+        )}
+      >
+        <SelectValue placeholder={formatCodeBlockLanguage(lang)} />
+      </SelectTrigger>
+      <SelectContent className="w-40 transition-all duration-300 scrollbar focus-within:hover:ring-3 focus-within:hover:ring-neutral-100">
+        <SelectGroup>
+          <SelectLabel>Lógica</SelectLabel>
+          {languages.sort().map((language) => (
+            <SelectItem key={language} value={language}>
+              {formatCodeBlockLanguage(language)}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+        <SelectSeparator />
+        <SelectGroup>
+          <SelectLabel>Estilo</SelectLabel>
+          {styleLang.sort().map((language) => (
+            <SelectItem key={language} value={language}>
+              {formatCodeBlockLanguage(language)}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+        <SelectSeparator />
+        <SelectGroup>
+          <SelectLabel>Banco de Dados</SelectLabel>
+          {dbLang.sort().map((language) => (
+            <SelectItem key={language} value={language}>
+              {formatCodeBlockLanguage(language)}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+};
+
+const CustomCodeBlockShiki = CodeBlockShiki.extend({
+  addKeyboardShortcuts() {
+    return {
+      ...this.parent?.(),
+      ArrowDown: ({ editor }) => {
+        const { state } = editor;
+        const { $from } = state.selection;
+        const after = $from.after();
+
+        if (after !== undefined) {
+          // Evaluates the existance of a node
+          return false; // Standard behavior to arrow down → just to navigate
+        }
+
+        return true; // Do not create another <pre><code></pre></code> tags
+      },
+      ArrowUp: ({ editor }) => {
+        // Navigation (only)
+        return false;
+      },
+
+      Enter: () => {
+        // Break line (only)
+        return false;
+      },
+    };
+  },
+});
+
+// ------------------------------==========IMAGE==========------------------------------
+const imgEditorObjects = [
+  {
+    key: "1",
+    icon: TrashBinIcon,
+    iconSize: 16,
+    tooltip: "Excluir",
+  },
+  {
+    key: "2",
+    icon: LinkIcon,
+    iconSize: 24,
+    tooltip: "Copiar link",
+  },
+  {
+    key: "3",
+    icon: DownloadIcon,
+    iconSize: 16,
+    tooltip: "Baixar",
+  },
+  {
+    key: "4",
+    icon: UploadIcon,
+    iconSize: 16,
+    tooltip: "Enviar",
+  },
+];
+
+const ImgEditorButtons = ({
+  tooltip,
+  iconSize,
+  Icon,
+}: {
+  tooltip: string;
+  iconSize: number;
+  Icon: React.ComponentType<any>;
+}) => (
+  <ToolTipWrapper tooltip={tooltip}>
+    <li>
+      <button type="button">
+        <Icon size={iconSize} />
+      </button>
+    </li>
+  </ToolTipWrapper>
+);
+
+export const ImageFieldset = ({
+  src,
+  alt,
+  filename,
+  caption,
+  setSrc,
+  setAlt,
+  setFilename,
+  setCaption,
+}: {
+  src: string;
+  alt: string;
+  filename: string;
+  caption: string;
+  setSrc: (src: string) => void;
+  setAlt: (alt: string) => void;
+  setFilename: (filename: string) => void;
+  setCaption: (caption: string) => void;
+}) => {
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+
+    setPreview(url);
+
+    // TODO: ...
+  };
+
+  return (
+    <div className="flex justify-center items-center w-full h-full">
+      <div
+        onDragOver={(e) => e.preventDefault()}
+        className={
+          `relative w-[70%] h-full p-2 shrink-0 ` +
+          `after:absolute after:right-0 after:w-[1px] ` +
+          `after:top-0 after:bottom-0 ` +
+          `after:bg-neutral-700 `
+        }
+        onDrop={handleDrop}
+      >
+        <ul
+          className={
+            `z-10 absolute right-2 top-2 flex justify-center items-center w-fit ml-auto mr-0 rounded border border-neutral-700 bg-neutral-900 ` +
+            `[&_li_*]:outline-none ` +
+            `[&_li]:not-last:[&_button]:border-r [&_li]:not-last:[&_button]:border-neutral-700 ` +
+            `[&_li]:first:[&_button]:rounded-l [&_li]:last:[&_button]:rounded-r ` +
+            `[&_li_button]:transition-ring [&_li_button]:duration-300 ` +
+            `[&_li_button]:size-10 [&_li_button]:flex [&_li_button]:items-center [&_li_button]:justify-center ` +
+            `[&_li_button]:cursor-pointer [&_li_button]:hover:bg-neutral-800 ` +
+            `[&_li_button]:focus-visible:ring-3 [&_li_button]:focus-visible:ring-neutral-100 ` +
+            `[&_li_button]:focus-visible:bg-neutral-800 `
+          }
+        >
+          {imgEditorObjects.map((imageObj) => (
+            <ImgEditorButtons
+              key={imageObj.key}
+              Icon={imageObj.icon}
+              iconSize={imageObj.iconSize}
+              tooltip={imageObj.tooltip}
+            />
+          ))}
+        </ul>
+        {preview ? (
+          <Image
+            src={preview}
+            alt="preview"
+            fill
+            className="absolute object-cover"
+          />
+        ) : (
+          <div className="absolute flex justify-center items-center left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-96 h-60 max-lg:w-60 max-lg:h-48 rounded-xl pointer-events-none border-2 border-dashed border-neutral-800 opacity-100 animate-opacity delay-[250ms]">
+            <p className="text-3xl max-lg:text-xl text-neutral-500 delay-[250ms]">
+              Arraste e solte
+            </p>
+          </div>
+        )}
+      </div>
+      <div className="shrink-0 w-[30%] h-full flex flex-col">
+        <div
+          className={
+            `relative grid grid-cols-[repeat(2,minmax(0,1fr))] gap-1 p-2 bg-neutral-900 ` +
+            `after:absolute after:h-[1px] after:left-0 after:right-0 after:bottom-0 after:bg-neutral-700 `
+          }
+        >
+          <div className="[&_*]:text-xs">
+            <p className="text-neutral-500">Tamanho</p>
+            <p className="text-neutral-300 font-[600]">2KB</p>
+          </div>
+          <div className="[&_*]:text-xs">
+            <p className="text-neutral-500">Data</p>
+            <p className="text-neutral-300 font-[600]">11/09/2025</p>
+          </div>
+          <div className="[&_*]:text-xs">
+            <p className="text-neutral-500">Id</p>
+            <p className="text-neutral-300 font-[600]">26</p>
+          </div>
+          <div className="[&_*]:text-xs">
+            <p className="text-neutral-500">Dimensões</p>
+            <p className="text-neutral-300 font-[600]">1920x1080</p>
+          </div>
+          <div className="[&_*]:text-xs">
+            <p className="text-neutral-500">Extensão</p>
+            <p className="text-neutral-300 font-[600]">jpeg</p>
+          </div>
+        </div>
+        <div className="p-2 pt-0">
+          <FloatingInput
+            id="1"
+            label="Nome da imagem"
+            placeholder=""
+            value={filename}
+            setValue={(e) => setFilename(e.target.value)}
+          />
+          <FloatingInput
+            id="2"
+            label="Nome Alternativo"
+            placeholder=""
+            value={alt}
+            setValue={(e) => setAlt(e.target.value)}
+          />
+          <small className="text-[11px]">
+            <p className="text-neutral-500 px-1 mt-1">
+              Texto exibido no lugar da imagem caso o recurso esteja
+              indisponível.
+            </p>
+          </small>
+          <FloatingInput
+            id="3"
+            label="Rodapé"
+            placeholder=""
+            value={caption}
+            setValue={(e) => setCaption(e.target.value)}
+          />
+        </div>
+      </div>
+    </div>
   );
 };

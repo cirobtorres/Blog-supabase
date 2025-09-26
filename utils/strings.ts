@@ -1,3 +1,6 @@
+import he from "he";
+import { BundledLanguage } from "shiki";
+
 export const slugify = (str: string) => {
   return str
     .toLowerCase()
@@ -12,3 +15,37 @@ export const slugify = (str: string) => {
 export const inputId = (str: string) => `input-${slugify(str)}`;
 
 export const labelId = (str: string) => `label-${slugify(str)}`;
+
+export const escapeCharacters = (str: string) => he.decode(str); // Decode escaped characters
+
+export const removePreCodeTags = (htmlDecoded: string) =>
+  htmlDecoded
+    .replace(/^<pre[^>]*><code[^>]*>/, "")
+    .replace(/<\/code><\/pre>$/, "");
+
+export const formatCodeBlockLanguage = (
+  lang: BundledLanguage | null | undefined
+) => {
+  switch (lang?.toLocaleLowerCase()) {
+    case "ts":
+      return "Typescript";
+    case "typescript":
+      return "Typescript";
+    case "py":
+      return "Python";
+    case "python":
+      return "Python";
+    case "kt":
+      return "Kotlin";
+    case "kts":
+      return "Kotlin";
+    case "java":
+      return "Java";
+    case "sql":
+      return "SQL";
+    case "css":
+      return "CSS";
+    default:
+      return "plain text";
+  }
+};
