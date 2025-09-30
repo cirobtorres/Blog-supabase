@@ -1,3 +1,11 @@
+export const comercialDate = (ISOdate: Date) => {
+  const day = String(ISOdate.getDate()).padStart(2, "0");
+  const month = String(ISOdate.getMonth() + 1).padStart(2, "0");
+  const year = ISOdate.getFullYear();
+
+  return `${day}/${month}/${year}`;
+};
+
 export const convertToLargeDate = (ISOdate: Date) => {
   const date = new Date(ISOdate);
 
@@ -25,7 +33,7 @@ export const convertToLargeDate = (ISOdate: Date) => {
   return `${day} de ${month} de ${year}, às ${hours}:${minutes}`;
 };
 
-export const convertToShortDate = (ISOdate: string) => {
+export const convertToShortDate = (ISOdate: Date) => {
   const date = new Date(ISOdate);
 
   const months = [
@@ -48,7 +56,7 @@ export const convertToShortDate = (ISOdate: string) => {
   return `${month} de ${year}`;
 };
 
-export const convertDateToYouTubeLike = (ISOdate: string) => {
+export const convertDateToYouTubeLike = (ISOdate: Date) => {
   const date = new Date(ISOdate);
   const now = new Date();
   const diffInMs = now.getTime() - date.getTime();

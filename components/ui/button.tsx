@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/classnames";
 
 const buttonVariants = cva(
   `inline-flex items-center justify-center gap-2 shrink-0 outline-none cursor-pointer whitespace-nowrap text-sm font-medium rounded-md transition-all` +
@@ -14,7 +13,7 @@ const buttonVariants = cva(
       variant: {
         default: "text-neutral-100 bg-neutral-700",
         outline:
-          "border border-neutral-700 shadow-xs bg-neutral-800 hover:bg-neutral-600/40 text-theme-color",
+          "border border-neutral-700 shadow-xs bg-neutral-800 hover:bg-neutral-600/80 text-theme-color",
         destructive:
           "text-neutral-100 shadow-xs border border-red-900 bg-red-950 hover:bg-red-800/50 focus-visible:ring-red-500 focus-visible:border-red-500/50",
         link: "text-blue-500 border border-neutral-800 bg-neutral-900 underline-offset-4 hover:underline",

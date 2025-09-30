@@ -1,4 +1,4 @@
-import { EditArticleForm } from "@/components/Forms";
+import { EditArticleForm } from "@/components/Forms/EditArticleForm";
 import { StaticHeader } from "@/components/Header";
 import { getProfile } from "@/services/user";
 import { createBrowserAppClient } from "@/supabase/client";
@@ -11,6 +11,7 @@ interface Params {
 export default async function EditArticle({ params }: { params: Params }) {
   const { id } = await params;
   const profile = await getProfile();
+  if (!profile) redirect("/");
   const supabase = await createBrowserAppClient();
 
   const { data: article, error } = await supabase
@@ -27,7 +28,7 @@ export default async function EditArticle({ params }: { params: Params }) {
   return (
     <>
       <StaticHeader profile={profile} />
-      <EditArticleForm {...article} />;
+      <EditArticleForm profileId={profile.id} article={{ ...article }} />
     </>
   );
 }

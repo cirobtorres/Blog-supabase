@@ -18,21 +18,22 @@ const supabase = createBrowserAppClient();
 async function getArticles(id: string) {
   const { data: lastArticles } = await supabase
     .from("articles")
-    .select("*")
+    .select("*, authors (*)")
     .neq("id", id)
-    .range(0, 5);
+    .range(0, 5)
+    .overrideTypes<ArticleJoinAuthor[], { merge: false }>();
   return lastArticles;
 }
 
 export const RelatedArticles = () => {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<ArticleJoinAuthor[] | null>([]);
   const [emblaRef, emblaApi] = useEmblaCarousel(OPTIONS);
   const { id }: { id: string } = useParams();
 
   useEffect(() => {
     getArticles(id).then((articles) => {
       if (articles) {
-        setArticles(articles.map((article: Article) => article));
+        setArticles(articles.map((article: ArticleJoinAuthor) => article));
       }
     });
   }, [id]);
@@ -45,6 +46,7 @@ export const RelatedArticles = () => {
   } = usePrevNextButtons(emblaApi);
 
   return (
+    articles &&
     articles.length > 0 && (
       <section className="w-full py-10">
         <div className="relative w-full max-w-4xl m-auto ">
@@ -58,7 +60,7 @@ export const RelatedArticles = () => {
                   className="translate-0 sm:flex-[0_0_50%] flex-[0_0_100%] min-w-0 pl-[var(--related-articles-carousel-spacing)]"
                   key={article.id}
                 >
-                  <ArticleGridElement {...article} />
+                  <ArticleGridElement article={article} author={null} />
                 </div>
               ))}
             </div>

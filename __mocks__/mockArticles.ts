@@ -1,3 +1,4 @@
+import { slugify } from "@/utils/strings";
 import { faker } from "@faker-js/faker";
 
 export const createMockArticles = (options?: {
@@ -29,13 +30,16 @@ export const createMockArticle = (options?: {
     isUpdatedAtNull = true,
   } = options || {};
 
+  const title = faker.lorem.sentence(faker.number.int({ min: 5, max: 10 }));
+
   return {
     id: faker.string.uuid(),
     author_id: isAuthorNull ? null : faker.string.uuid(),
-    title: faker.lorem.sentence(faker.number.int({ min: 5, max: 10 })),
+    title,
+    slug: slugify(title),
     sub_title: faker.lorem.sentence(faker.number.int({ min: 5, max: 10 })),
     body: faker.lorem.sentences(faker.number.int({ min: 3, max: 6 })),
-    private: isPrivate || false,
+    is_private: isPrivate || false,
     updated_at: isUpdatedAtNull
       ? faker.date.soon({ refDate: "2025-01-01T00:00:00.000Z" })
       : null,

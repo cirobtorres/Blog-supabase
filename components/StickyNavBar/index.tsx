@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { slugify } from "@/utils/strings";
+import { useEffect, useRef } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -10,158 +9,111 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 
-export const AnchorTracker = ({ articleId }: { articleId: string }) => {
-  const [anchorList, setAnchorList] = useState<{ [key: string]: string }[]>([]);
+export const AnchorTracker = ({ anchors }: { anchors: AnchorTracher }) => {
   const anchorListRef = useRef<HTMLUListElement>(null);
 
-  const generatePaddingForSessions = (text: { [x: string]: string }) => {
-    const heading = Object.values(text)[0];
-    return heading.match(/<h[1][^>]*>(.*?)<\/h[1]>/gi)
-      ? "pl-0"
-      : heading.match(/<h[2][^>]*>(.*?)<\/h[2]>/gi)
-      ? "pl-3"
-      : heading.match(/<h[3][^>]*>(.*?)<\/h[3]>/gi)
-      ? "pl-6"
-      : heading.match(/<h[4][^>]*>(.*?)<\/h[4]>/gi)
-      ? "pl-9"
-      : heading.match(/<h[5][^>]*>(.*?)<\/h[5]>/gi)
-      ? "pl-12"
-      : "pl-[3.75rem]";
-  };
-
   useEffect(() => {
+    if (anchors.length === 0) return;
+
     const linkAnchorsListener = () => {
-      // Select article content
-      const contentElement = document.getElementById(articleId);
       const header = document.getElementById("floating-header");
       const headerHeight = header?.offsetHeight ?? 0;
 
-      if (!contentElement) return;
-
-      // Retrieve all sections
-      const allSections: NodeListOf<HTMLHeadingElement> =
-        contentElement.querySelectorAll("h1, h2, h3, h4, h5, h6");
-
-      // Get rid of sections with children, like shadcn/ui accordion buttons nested within h3 tags. These are not supposed to be anchors
-      const sections = Array.from(allSections).filter(
-        (section) => !section.querySelector("*")
-      );
-
       let currentSectionIndex = 0;
 
-      if (sections && sections.length > 0) {
-        sections.forEach((section, index) => {
-          const sectionRect = section.getBoundingClientRect();
-          const sectionTop = sectionRect.top + window.scrollY - headerHeight;
-          if (window.scrollY >= sectionTop) {
-            currentSectionIndex = index;
-          }
-        });
-        const links = anchorListRef.current?.querySelectorAll("li");
+      anchors.forEach((item, index) => {
+        const section = document.getElementById(item.id);
+        if (!section) return;
 
-        links?.forEach((link, index) => {
-          if (index === currentSectionIndex) {
-            link.setAttribute("aria-current", "page");
-            // scrollIntoView: scrolls to aria-current=page element to keep it in view inside navbar
-            // link.scrollIntoView({
-            //   behavior: "smooth",
-            //   block: "nearest",
-            //   inline: "nearest",
-            // });
-          } else {
-            link.setAttribute("aria-current", "false");
-          }
-        });
-      }
+        const sectionTop =
+          section.getBoundingClientRect().top + window.scrollY - headerHeight;
+
+        if (window.scrollY >= sectionTop) {
+          currentSectionIndex = index;
+        }
+      });
+
+      const links = anchorListRef.current?.querySelectorAll("li");
+      links?.forEach((link, index) => {
+        link.setAttribute(
+          "aria-current",
+          index === currentSectionIndex ? "true" : "false"
+        );
+      });
     };
 
     window.addEventListener("scroll", linkAnchorsListener);
     return () => {
       window.removeEventListener("scroll", linkAnchorsListener);
     };
-  }, [articleId]);
-
-  useEffect(() => {
-    const contentElement = document.getElementById(articleId);
-    if (contentElement) {
-      const anchors = extractAnchors(contentElement.innerHTML);
-      setAnchorList(anchors);
-    }
-  }, [articleId]);
+  }, [anchors]);
 
   return (
-    anchorList &&
-    anchorList.length > 0 && (
-      <nav
-        className={
-          "w-full" +
-          " self-start max-w-72 sticky top-20 mb-4 col-start-1 max-[800px]:col-start-auto" +
-          " max-[800px]:self-auto max-[800px]:max-w-full max-[800px]:static max-[800px]:pt-0"
-        }
-      >
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="cursor-pointer">
-              <p className="text-lg px-2 mb-1 rounded focus-visible:outline-2 focus-visible:outline-white">
-                Conteúdo
-              </p>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="relative">
-                <ul
-                  ref={anchorListRef}
-                  className="scrollbar max-h-96 overflow-y-auto py-1 before:absolute before:top-0 before:left-0 before:bottom-0 before:my-1 before:w-0.5 before:bg-neutral-800 pr-1"
-                >
-                  {anchorList.map((text, index) => {
-                    const ariaLabel = Object.values(text)[0].replace(
-                      /<\/?h[1-6][^>]*>/gi,
-                      ""
-                    ); // Replaces <h2>Example Title</h2> to Example Title
-                    return (
-                      <li
-                        key={index}
-                        aria-current={index === 0 ? "page" : "false"} // When page loads, the first link is supposed to be the colored one
-                        aria-label={`Ir até a sessão: ${ariaLabel}`}
-                        className="relative list-none pl-2 pr-1 after:absolute after:top-0 after:left-0 after:w-0.5 after:h-full after:bg-transparent"
-                      >
-                        <Link
-                          href={`#${Object.keys(text)}`}
-                          className={`flex text-sm transition-colors duration-500 break-words rounded hover:text-white focus-visible:outline-2 focus-visible:outline-white focus-visible:text-white focus-visible:bg-neutral-800/50 ${generatePaddingForSessions(
-                            text
-                          )}`}
+    anchors &&
+    anchors.length > 0 && (
+      <article className="text-sm">
+        <nav
+          className={
+            "w-full border border-neutral-700 rounded-lg p-4 backdrop-blur-sm bg-neutral-900" +
+            " self-start sticky top-20 col-start-1 max-md:col-start-auto" +
+            " max-md:self-auto max-md:static"
+          }
+        >
+          <Accordion type="single" defaultValue="item-1" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="pr-2 hover:bg-neutral-800 cursor-pointer">
+                <p className="text-lg px-2 rounded focus-visible:outline-2 focus-visible:outline-neutral-100">
+                  Conteúdo
+                </p>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="mt-2 relative">
+                  <ul
+                    ref={anchorListRef}
+                    className="scrollbar max-h-[450px] overflow-y-auto py-1 before:absolute before:top-0 before:left-0 before:bottom-0 before:my-1 before:w-0.5 before:bg-neutral-800 pr-1"
+                  >
+                    {anchors.map((item, index) => {
+                      const { id, text, tag } = item;
+                      return (
+                        <li
+                          key={index}
+                          aria-current={index === 0 ? "true" : "false"} // When page loads, the first link is supposed to be the colored one
+                          aria-label={`Ir até a sessão: ${text}`}
+                          className="relative list-none pl-2 pr-1 py-1 after:absolute after:top-0 after:left-0 after:w-0.5 after:h-full after:bg-transparent"
                         >
-                          {ariaLabel}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </nav>
+                          <Link
+                            href={`#${id}`}
+                            className={
+                              `flex text-sm transition-all break-words rounded outline-none hover:text-neutral-100` +
+                              ` focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50 ` +
+                              generatePaddings(tag)
+                            }
+                          >
+                            {text}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </nav>
+      </article>
     )
   );
 };
 
-const extractAnchors = (htmlString: string): { [key: string]: string }[] => {
-  const anchorList: { [key: string]: string }[] = [];
-  const regex = /<(h[1-6])([^>]*)>(.*?)<\/\1>/gi;
-  let match;
-
-  while ((match = regex.exec(htmlString)) !== null) {
-    const [, tag, attributes, content] = match;
-    // Skip if content has HTML tags like <b> <strong> <i> <strike> <u>
-    // Ex: <h1>Example <b>1</b></h1>
-    if (/<[^>]+>/.test(content)) continue;
-
-    // Get id or generate one
-    const idMatch = attributes.match(/id="([^"]*)"/);
-    const id = idMatch ? idMatch[1] : slugify(content);
-
-    anchorList.push({ [id]: `<${tag}>${content}</${tag}>` });
+const generatePaddings = (tag: string) => {
+  switch (tag) {
+    case "h2":
+      return "pl-0";
+    case "h3":
+      return "pl-3";
+    case "h4":
+      return "pl-6";
+    default:
+      return "pl-0";
   }
-
-  return anchorList;
 };
