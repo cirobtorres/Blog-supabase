@@ -132,7 +132,7 @@ const CommentOptions = ({
             isMenuOpen ? "bg-neutral-800" : ""
           }`}
         >
-          <OptionIcon />
+          <OptionIcon className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
         </PopoverTrigger>
         <PopoverContent>
           <EditComment
@@ -170,7 +170,7 @@ const EditComment = ({
     className="w-full flex justify-between items-center p-2 cursor-pointer rounded-md hover:bg-neutral-800 outline-none transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50"
   >
     Editar
-    <EditIcon size={14} />
+    <EditIcon className="size-[14px]" />
   </button>
 );
 
@@ -213,7 +213,7 @@ const DeleteComment = ({
       >
         <div className="flex justify-between items-center">
           Deletar
-          <DeleteIcon size={14} />
+          <DeleteIcon className="size-[14px]" />
         </div>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -228,7 +228,7 @@ const DeleteComment = ({
             </AlertDialogCancel>
           </AlertDialogTitle>
           <AlertDialogDescription className="text-warning flex items-center gap-2 border-y border-neutral-800 bg-neutral-950">
-            <AlertIcon size={20} />
+            <AlertIcon className="size-5" />
             Essa ação não poderá ser desfeita!
           </AlertDialogDescription>
         </AlertDialogHeader>

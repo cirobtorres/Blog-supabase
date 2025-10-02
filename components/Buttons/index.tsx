@@ -12,15 +12,10 @@ export const ConfirmFormButton = ({
     type="submit"
     disabled={isPending}
     className={
-      `cursor-pointer h-[38px] py-2 not-disabled:transition-all not-disabled:duration-300 ` +
-      `text-sm text-neutral-100 rounded-md border border-green-700 bg-green-900 ` +
-      `hover:border-green-600 hover:bg-green-800 ` +
-      `focus-visible:ring-[3px] focus-visible:ring-neutral-100 focus-visible:bg-green-800 ` +
+      `w-full cursor-pointer h-[38px] py-2 not-disabled:transition-all not-disabled:duration-300 outline-none ` +
+      `text-sm text-neutral-100 rounded-xs border border-theme-color bg-theme-color-light ` +
+      `focus-visible:ring-2 focus-visible:ring-theme-color focus-visible:border-transparent ` +
       `disabled:cursor-auto disabled:text-neutral-400 disabled:border-neutral-600 disabled:bg-neutral-700 `
-      // `text-sm text-theme-color rounded-md border border-neutral-700 bg-neutral-800 ` +
-      // `hover:border-neutral-600 hover:bg-neutral-700 ` +
-      // `focus-visible:ring-[3px] focus-visible:ring-neutral-100 focus-visible:bg-neutral-700 ` +
-      // `disabled:cursor-auto disabled:text-neutral-400 disabled:border-neutral-600 disabled:bg-neutral-700 `
     }
   >
     {isPending ? (
@@ -42,15 +37,11 @@ export const SaveFormButton = ({
     type="button"
     disabled={isPending}
     className={
-      `cursor-pointer h-[38px] py-2 not-disabled:transition-all not-disabled:duration-300 ` +
-      `text-sm text-neutral-100 rounded-md border border-blue-700 bg-blue-900 ` +
-      `hover:border-blue-600 hover:bg-blue-800 ` +
-      `focus-visible:ring-[3px] focus-visible:ring-neutral-100 focus-visible:bg-blue-800 ` +
+      `w-full cursor-pointer h-[38px] py-2 not-disabled:transition-all not-disabled:duration-300 ` +
+      `text-sm text-neutral-100 rounded-xs border border-neutral-700 bg-neutral-800 ` +
+      `hover:border-neutral-600 hover:bg-neutral-800 ` +
+      `focus-visible:ring-[3px] focus-visible:ring-neutral-100 focus-visible:bg-neutral-800 ` +
       `disabled:cursor-auto disabled:text-neutral-400 disabled:border-neutral-600 disabled:bg-neutral-700 `
-      // `text-sm text-neutral-100 rounded-md border border-neutral-700 bg-neutral-800 ` +
-      // `hover:border-neutral-600 hover:bg-neutral-700 ` +
-      // `focus-visible:ring-[3px] focus-visible:ring-neutral-100 focus-visible:bg-neutral-700 ` +
-      // `disabled:cursor-auto disabled:text-neutral-400 disabled:border-neutral-600 disabled:bg-neutral-700 `
     }
   >
     {isPending ? (

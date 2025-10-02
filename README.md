@@ -127,6 +127,7 @@ execute function update_comment_like_count();
   <li>ADICIONAR: criar "blocos" similares ao do Strapi na criação de conteúdo e adicionaras seguintes features:</li>
   <ul>
     <li>ADICIONAR: criar blocos de imagens (apenas 1 imagem);</li>
+    <li>ADICIONAR: criar blocos de hover card;</li>
     <li>ADICIONAR: criar blocos de múltiplas imagens (carrossel);</li>
     <li>ADICIONAR: criar blocos de citação (quote);</li>
     <li>ADICIONAR: criar blocos de quiz;</li>

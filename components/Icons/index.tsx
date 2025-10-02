@@ -1,17 +1,23 @@
 import { cn } from "@/utils/classnames";
+import {
+  GlobeLock,
+  House,
+  Images as LucideIconsImages,
+  NotebookPen,
+} from "lucide-react";
 
-const OptionIcon = ({ size = 24 }: { size?: number }) => (
+const OptionIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-ellipsis-vertical absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
+    className={cn("lucide lucide-ellipsis-vertical", className)}
   >
     <circle cx="12" cy="12" r="1" />
     <circle cx="12" cy="5" r="1" />
@@ -19,60 +25,54 @@ const OptionIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const CancelIcon = ({
-  size = 24,
-  classNames,
-}: {
-  size?: number;
-  classNames?: string;
-}) => (
+const CancelIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={cn("lucide lucide-x-icon lucide-x", classNames)}
+    className={cn("lucide lucide-x-icon lucide-x", className)}
   >
     <path d="M18 6 6 18" />
     <path d="m6 6 12 12" />
   </svg>
 );
 
-const EditIcon = ({ size = 24 }: { size?: number }) => (
+const EditIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-pencil-icon lucide-pencil"
+    className={cn("lucide lucide-pencil-icon lucide-pencil", className)}
   >
     <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
     <path d="m15 5 4 4" />
   </svg>
 );
 
-const DeleteIcon = ({ size = 24 }: { size?: number }) => (
+const DeleteIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-trash2-icon lucide-trash-2"
+    className={cn("lucide lucide-trash2-icon lucide-trash-2", className)}
   >
     <path d="M10 11v6" />
     <path d="M14 11v6" />
@@ -82,35 +82,38 @@ const DeleteIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const ReportIcon = ({ size = 24 }: { size?: number }) => (
+const ReportIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-flag-icon lucide-flag"
+    className={cn("lucide lucide-flag-icon lucide-flag", className)}
   >
     <path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528" />
   </svg>
 );
 
-const AlertIcon = ({ size = 24 }: { size?: number }) => (
+const AlertIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-octagon-alert-icon lucide-octagon-alert"
+    className={cn(
+      "lucide lucide-octagon-alert-icon lucide-octagon-alert",
+      className
+    )}
   >
     <path d="M12 16h.01" />
     <path d="M12 8v4" />
@@ -118,26 +121,18 @@ const AlertIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const TextEditorIcon = ({
-  classNames,
-  size = 24,
-}: {
-  classNames?: string;
-  size?: number;
-}) => (
+const TextEditorIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`lucide lucide-case-upper-icon lucide-case-upper ${
-      classNames ?? ""
-    }`}
+    className={cn("lucide lucide-case-upper-icon lucide-case-upper", className)}
   >
     <path d="M15 11h4.5a1 1 0 0 1 0 5h-4a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h3a1 1 0 0 1 0 5" />
     <path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16" />
@@ -145,26 +140,18 @@ const TextEditorIcon = ({
   </svg>
 );
 
-const CodeEditorIcon = ({
-  classNames,
-  size = 24,
-}: {
-  classNames?: string;
-  size?: number;
-}) => (
+const CodeEditorIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`lucide lucide-code-xml-icon lucide-code-xml ${
-      classNames ?? ""
-    }`}
+    className={cn("lucide lucide-code-xml-icon lucide-code-xml", className)}
   >
     <path d="m18 16 4-4-4-4" />
     <path d="m6 8-4 4 4 4" />
@@ -172,50 +159,39 @@ const CodeEditorIcon = ({
   </svg>
 );
 
-const QuoteEditorIcon = ({
-  classNames,
-  size = 24,
-}: {
-  classNames?: string;
-  size?: number;
-}) => (
+const QuoteEditorIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`lucide lucide-quote-icon lucide-quote ${classNames ?? ""}`}
+    className={cn("lucide lucide-quote-icon lucide-quote", className)}
   >
     <path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z" />
     <path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z" />
   </svg>
 );
 
-const AccordionEditorIcon = ({
-  classNames,
-  size = 24,
-}: {
-  classNames?: string;
-  size?: number;
-}) => (
+const AccordionEditorIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`lucide lucide-list-chevrons-up-down-icon lucide-list-chevrons-up-down ${
-      classNames ?? ""
-    }`}
+    className={cn(
+      "lucide lucide-list-chevrons-up-down-icon lucide-list-chevrons-up-down",
+      className
+    )}
   >
     <path d="M3 5h8" />
     <path d="M3 12h8" />
@@ -225,26 +201,21 @@ const AccordionEditorIcon = ({
   </svg>
 );
 
-const AlertEditorIcon = ({
-  classNames,
-  size = 24,
-}: {
-  classNames?: string;
-  size?: number;
-}) => (
+const AlertEditorIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`lucide lucide-circle-alert-icon lucide-circle-alert ${
-      classNames ?? ""
-    }`}
+    className={cn(
+      "lucide lucide-circle-alert-icon lucide-circle-alert",
+      className
+    )}
   >
     <circle cx="12" cy="12" r="10" />
     <line x1="12" x2="12" y1="8" y2="12" />
@@ -252,49 +223,22 @@ const AlertEditorIcon = ({
   </svg>
 );
 
-const ImageEditorIcon = ({
-  classNames,
-  size = 24,
-}: {
-  classNames?: string;
-  size?: number;
-}) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={`lucide lucide-image-icon lucide-image ${classNames ?? ""}`}
-  >
-    <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-    <circle cx="9" cy="9" r="2" />
-    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-  </svg>
+const ImageEditorIcon = ({ className }: { className?: string }) => (
+  <LucideIconsImages className={className} />
 );
 
-const ImageCarouselEditorIcon = ({
-  classNames,
-  size = 24,
-}: {
-  classNames?: string;
-  size?: number;
-}) => (
+const ImageCarouselEditorIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`lucide lucide-images-icon lucide-images ${classNames ?? ""}`}
+    className={cn("lucide lucide-images-icon lucide-images", className)}
   >
     <path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16" />
     <path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2" />
@@ -303,26 +247,21 @@ const ImageCarouselEditorIcon = ({
   </svg>
 );
 
-const QuizEditorIcon = ({
-  classNames,
-  size = 24,
-}: {
-  classNames?: string;
-  size?: number;
-}) => (
+const QuizEditorIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`lucide lucide-circle-question-mark-icon lucide-circle-question-mark ${
-      classNames ?? ""
-    }`}
+    className={cn(
+      "lucide lucide-circle-question-mark-icon lucide-circle-question-mark",
+      className
+    )}
   >
     <circle cx="12" cy="12" r="10" />
     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
@@ -330,42 +269,36 @@ const QuizEditorIcon = ({
   </svg>
 );
 
-const PlusIcon = ({
-  size = 24,
-  classNames,
-}: {
-  size?: number;
-  classNames?: string;
-}) => (
+const PlusIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className={`lucide lucide-plus-icon lucide-plus ${classNames ?? ""} `}
+    className={cn("lucide lucide-plus-icon lucide-plus", className)}
   >
     <path d="M5 12h14" />
     <path d="M12 5v14" />
   </svg>
 );
 
-const TrashBinIcon = ({ size = 24 }: { size?: number }) => (
+const TrashBinIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-trash-icon lucide-trash stroke-neutral-300"
+    className={cn("lucide lucide-trash-icon lucide-trash", className)}
   >
     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
     <path d="M3 6h18" />
@@ -373,18 +306,18 @@ const TrashBinIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const HeaderH2Icon = ({ size = 24 }: { size?: number }) => (
+const HeaderH2Icon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-heading2-icon lucide-heading-2 p-1"
+    className={cn("lucide lucide-heading2-icon lucide-heading-2", className)}
   >
     <path d="M4 12h8" />
     <path d="M4 18V6" />
@@ -393,18 +326,18 @@ const HeaderH2Icon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const HeaderH3Icon = ({ size = 24 }: { size?: number }) => (
+const HeaderH3Icon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-heading3-icon lucide-heading-3 p-1"
+    className={cn("lucide lucide-heading3-icon lucide-heading-3", className)}
   >
     <path d="M4 12h8" />
     <path d="M4 18V6" />
@@ -414,18 +347,18 @@ const HeaderH3Icon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const HeaderH4Icon = ({ size = 24 }: { size?: number }) => (
+const HeaderH4Icon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-heading4-icon lucide-heading-4 p-1"
+    className={cn("lucide lucide-heading4-icon lucide-heading-4", className)}
   >
     <path d="M12 18V6" />
     <path d="M17 10v3a1 1 0 0 0 1 1h3" />
@@ -435,52 +368,49 @@ const HeaderH4Icon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const BoldIcon = ({ size = 24 }: { size?: number }) => (
+const BoldIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-bold-icon lucide-bold p-1"
+    className={cn("lucide lucide-bold-icon lucide-bold", className)}
   >
     <path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8" />
   </svg>
 );
 
-const HighlightIcon = ({ size = 24 }: { size?: number }) => (
+const HighlightIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-highlighter-icon lucide-highlighter p-1"
+    className={cn(
+      "lucide lucide-highlighter-icon lucide-highlighter",
+      className
+    )}
   >
     <path d="m9 11-6 6v3h9l3-3" />
     <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />
   </svg>
 );
 
-const LinkIcon = ({
-  size = 24,
-  className,
-}: {
-  size?: number;
-  className?: string;
-}) => (
+const LinkIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -494,18 +424,18 @@ const LinkIcon = ({
   </svg>
 );
 
-const BulletListIcon = ({ size = 24 }: { size?: number }) => (
+const BulletListIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-list-icon lucide-list p-1"
+    className={cn("lucide lucide-list-icon lucide-list", className)}
   >
     <path d="M3 12h.01" />
     <path d="M3 18h.01" />
@@ -516,18 +446,21 @@ const BulletListIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const OrderedListIcon = ({ size = 24 }: { size?: number }) => (
+const OrderedListIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-list-ordered-icon lucide-list-ordered p-1"
+    className={cn(
+      "lucide lucide-list-ordered-icon lucide-list-ordered",
+      className
+    )}
   >
     <path d="M10 12h11" />
     <path d="M10 18h11" />
@@ -538,36 +471,36 @@ const OrderedListIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const ArrowDownIcon = ({ size = 24 }: { size?: number }) => (
+const ArrowDownIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-arrow-down-icon lucide-arrow-down stroke-neutral-300"
+    className={cn("lucide lucide-arrow-down-icon lucide-arrow-down", className)}
   >
     <path d="M12 5v14" />
     <path d="m19 12-7 7-7-7" />
   </svg>
 );
 
-const DownloadIcon = ({ size = 24 }: { size?: number }) => (
+const DownloadIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-download-icon lucide-download"
+    className={cn("lucide lucide-download-icon lucide-download", className)}
   >
     <path d="M12 15V3" />
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -575,18 +508,18 @@ const DownloadIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const UploadIcon = ({ size = 24 }: { size?: number }) => (
+const UploadIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-upload-icon lucide-upload"
+    className={cn("lucide lucide-upload-icon lucide-upload", className)}
   >
     <path d="M12 3v12" />
     <path d="m17 8-5-5-5 5" />
@@ -594,17 +527,11 @@ const UploadIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-const CopyCodeIcon = ({
-  size = 24,
-  className,
-}: {
-  size?: number;
-  className?: string;
-}) => (
+const CopyCodeIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -618,17 +545,11 @@ const CopyCodeIcon = ({
   </svg>
 );
 
-const CheckIcon = ({
-  size = 24,
-  className,
-}: {
-  size?: number;
-  className?: string;
-}) => (
+const CheckIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -641,17 +562,11 @@ const CheckIcon = ({
   </svg>
 );
 
-const ExternalLinkIcon = ({
-  size = 24,
-  className,
-}: {
-  size?: number;
-  className?: string;
-}) => (
+const ExternalLinkIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -666,6 +581,77 @@ const ExternalLinkIcon = ({
     <path d="M7 7h10v10" />
     <path d="M7 17 17 7" />
   </svg>
+);
+
+const SearchIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={cn("lucide lucide-search-icon lucide-search", className)}
+  >
+    <path d="m21 21-4.34-4.34" />
+    <circle cx="11" cy="11" r="8" />
+  </svg>
+);
+
+const MovableIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={cn("lucide lucide-move-icon lucide-move", className)}
+  >
+    <path d="M12 2v20" />
+    <path d="m15 19-3 3-3-3" />
+    <path d="m19 9 3 3-3 3" />
+    <path d="M2 12h20" />
+    <path d="m5 9-3 3 3 3" />
+    <path d="m9 5 3-3 3 3" />
+  </svg>
+);
+
+const EllipsisIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={cn("lucide lucide-ellipsis-icon lucide-ellipsis", className)}
+  >
+    <circle cx="12" cy="12" r="1" />
+    <circle cx="19" cy="12" r="1" />
+    <circle cx="5" cy="12" r="1" />
+  </svg>
+);
+
+const HomeIcon = ({ className }: { className?: string }) => (
+  <House className={className} />
+);
+
+const PencilIcon = ({ className }: { className?: string }) => (
+  <NotebookPen className={className} />
+);
+
+const GlobeIcon = ({ className }: { className?: string }) => (
+  <GlobeLock className={className} />
 );
 
 export {
@@ -699,4 +685,10 @@ export {
   CopyCodeIcon,
   CheckIcon,
   ExternalLinkIcon,
+  SearchIcon,
+  MovableIcon,
+  EllipsisIcon,
+  HomeIcon,
+  PencilIcon,
+  GlobeIcon,
 };

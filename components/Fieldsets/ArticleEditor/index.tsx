@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  ActionDispatch,
-  useCallback,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import { ActionDispatch, useCallback, useEffect, useState } from "react";
 import { useEditor, EditorContent, getMarkRange } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
@@ -63,7 +56,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatCodeBlockLanguage } from "@/utils/strings";
-import Image from "next/image";
+import NextImage from "next/image";
 import { comercialDate } from "@/utils/dates";
 
 // ------------------------------==========TEXT==========------------------------------
@@ -333,7 +326,7 @@ export const TipTapTextEditor = ({
               }
               className={getClassName(editor.isActive("heading", { level: 2 }))}
             >
-              <HeaderH2Icon size={28} />
+              <HeaderH2Icon className="size-7 p-1" />
             </button>
           </ToolTipWrapper>
           <ToolTipWrapper tooltip="Header H3">
@@ -344,7 +337,7 @@ export const TipTapTextEditor = ({
               }
               className={getClassName(editor.isActive("heading", { level: 3 }))}
             >
-              <HeaderH3Icon size={28} />
+              <HeaderH3Icon className="size-7 p-1" />
             </button>
           </ToolTipWrapper>
           <ToolTipWrapper tooltip="Header H4">
@@ -355,7 +348,7 @@ export const TipTapTextEditor = ({
               }
               className={getClassName(editor.isActive("heading", { level: 4 }))}
             >
-              <HeaderH4Icon size={28} />
+              <HeaderH4Icon className="size-7 p-1" />
             </button>
           </ToolTipWrapper>
         </div>
@@ -366,7 +359,7 @@ export const TipTapTextEditor = ({
               onClick={() => editor.chain().focus().toggleBold().run()}
               className={getClassName(editor.isActive("bold"))}
             >
-              <BoldIcon size={28} />
+              <BoldIcon className="size-7 p-1" />
             </button>
           </ToolTipWrapper>
           <ToolTipWrapper tooltip="Realce">
@@ -375,7 +368,7 @@ export const TipTapTextEditor = ({
               onClick={() => editor.chain().focus().toggleHighlight().run()}
               className={getClassName(editor.isActive("highlight"))}
             >
-              <HighlightIcon size={28} />
+              <HighlightIcon className="size-7 p-1" />
             </button>
           </ToolTipWrapper>
           <AlertDialog open={isDialogOpen}>
@@ -387,7 +380,7 @@ export const TipTapTextEditor = ({
                   onClick={handleLinkClick}
                   className={getClassName(editor.isActive("link"))}
                 >
-                  <LinkIcon size={28} />
+                  <LinkIcon className="size-7 p-1" />
                 </button>
               </ToolTipWrapper>
             </AlertDialogTrigger>
@@ -475,7 +468,7 @@ export const TipTapTextEditor = ({
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               className={getClassName(editor.isActive("bulletList"))}
             >
-              <BulletListIcon size={28} />
+              <BulletListIcon className="size-7 p-1" />
             </button>
           </ToolTipWrapper>
           <ToolTipWrapper tooltip="Lista ordenada">
@@ -484,7 +477,7 @@ export const TipTapTextEditor = ({
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
               className={getClassName(editor.isActive("orderedList"))}
             >
-              <OrderedListIcon size={28} />
+              <OrderedListIcon className="size-7 p-1" />
             </button>
           </ToolTipWrapper>
         </div>
@@ -494,13 +487,13 @@ export const TipTapTextEditor = ({
         name={id}
         editor={editor}
         autoComplete="new-password"
-        defaultValue={defaultValue}
+        // defaultValue={defaultValue}
         spellCheck={false}
         onFocus={() => editor.chain().selectTextblockEnd().focus()}
         className={
           `p-1 flex flex-col [&_p]:pb-6 [&_p]:text-base [&_p]:text-neutral-400 [&_strong]:text-neutral-400 ` +
           `[&_p_strong]:text-neutral-300 rounded border border-neutral-700 ` +
-          `transition-all duration-300 focus-within:border-theme-color ` + // focus-within:ring-3 focus-within:ring-neutral-100
+          // `transition-all duration-300 focus-within:border-theme-color ` + // focus-within:ring-3 focus-within:ring-neutral-100
           `[&_p_a]:text-theme-color [&_p_a]:underline [&_p_a]:bg-neutral-700 [&_p_a]:hover:text-theme-link ` +
           `[&_p_a]:border [&_p_a]:border-neutral-600 [&_p_a]:px-1 [&_p_a]:py-0.5 [&_p_a]:rounded-md ` +
           `[&_p_mark]:text-neutral-100 [&_p_mark]:bg-neutral-700 [&_p_mark]:border [&_p_mark]:border-neutral-600 ` +
@@ -651,7 +644,7 @@ export const TipTapCodeEditor = ({
         onFocus={() => editor.chain().selectTextblockEnd().focus()}
         className={
           `p-1 flex flex-col rounded border border-neutral-700 ` +
-          `transition-all duration-300 focus-within:border-theme-color ` +
+          `transition-all duration-300 ` + // focus-within:border-theme-color
           `[&_.tiptap.ProseMirror]:h-[312px] [&_.tiptap.ProseMirror]:overflow-y-auto ` +
           `[&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6 [&_.tiptap.ProseMirror]:rounded-b-xs ` +
           `[&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all ` +
@@ -776,40 +769,6 @@ const CustomCodeBlockShiki = CodeBlockShiki.extend({
 });
 
 // ------------------------------==========IMAGE==========------------------------------
-const IMG_BTN_CLASSNAMES =
-  `relative transition-ring duration-300 size-10 flex items-center justify-center cursor-pointer ` +
-  `disabled:cursor-auto disabled:text-neutral-600 disabled:bg-neutral-800 ` +
-  `focus-visible:z-10 focus-visible:ring-3 focus-visible:ring-neutral-100 focus-visible:bg-neutral-800 ` +
-  `hover:bg-neutral-800 ` +
-  `active:bg-neutral-900 `;
-
-const D_N_D_CLASSNAMES =
-  `w-[70%] h-full p-2 shrink-0 ` +
-  `after:absolute after:right-0 after:w-[1px] ` +
-  `after:top-0 after:bottom-0 ` +
-  `after:bg-neutral-700 `;
-
-const initialState: ImageState = {
-  preview: null,
-  filename: null,
-  size: null,
-  type: "--",
-  width: null,
-  height: null,
-  date: "--",
-};
-
-function reducer(state: ImageState, action: ImageStateAction): ImageState {
-  switch (action.type) {
-    case "SET_ALL":
-      return { ...state, ...action.payload };
-    case "RESET":
-      return initialState;
-    default:
-      return state;
-  }
-}
-
 const downloadImage = (imageData: ImageState) => {
   if (imageData?.preview) {
     const a = document.createElement("a");
@@ -817,227 +776,6 @@ const downloadImage = (imageData: ImageState) => {
     a.download = imageData.filename ?? "downloaded-image";
     a.click();
   }
-};
-
-function getImageWidthAndHeight(
-  file: File
-): Promise<{ width: number; height: number }> {
-  return new Promise((resolve, reject) => {
-    const img = new window.Image(); // Conflict with Next.js Image component
-    img.onload = () => {
-      resolve({
-        width: img.width,
-        height: img.height,
-      });
-    };
-    img.onerror = reject;
-    img.src = URL.createObjectURL(file);
-  });
-}
-
-const ClearImageButton = ({
-  dispatch,
-}: {
-  dispatch: ActionDispatch<[action: ImageStateAction]>;
-}) => (
-  <ToolTipWrapper tooltip="Limpar">
-    <li>
-      <button
-        type="button"
-        onClick={() =>
-          dispatch({
-            type: "RESET",
-          })
-        }
-        className={IMG_BTN_CLASSNAMES}
-      >
-        <TrashBinIcon size={16} />
-      </button>
-    </li>
-  </ToolTipWrapper>
-);
-
-const CopyImageURLButton = ({ imageData }: { imageData?: ImageState }) => (
-  <ToolTipWrapper tooltip="Copiar link">
-    <li>
-      <button
-        type="button"
-        disabled={!imageData?.preview}
-        onClick={() => {
-          if (imageData?.preview)
-            navigator.clipboard.writeText(imageData.preview);
-        }}
-        className={IMG_BTN_CLASSNAMES}
-      >
-        <LinkIcon size={24} />
-      </button>
-    </li>
-  </ToolTipWrapper>
-);
-
-const DownloadImageButton = ({ imageData }: { imageData?: ImageState }) => (
-  <ToolTipWrapper tooltip="Baixar">
-    <li>
-      <button
-        type="button"
-        disabled={!imageData?.preview}
-        onClick={() => {
-          if (imageData?.preview) downloadImage(imageData);
-        }}
-        className={IMG_BTN_CLASSNAMES}
-      >
-        <DownloadIcon size={16} />
-      </button>
-    </li>
-  </ToolTipWrapper>
-);
-
-const FilePickerButton = ({
-  inputRef,
-}: {
-  inputRef: React.Ref<HTMLInputElement> | null;
-}) => {
-  const openFilePicker = () => {
-    if (inputRef && typeof inputRef !== "function" && inputRef.current) {
-      inputRef.current.click();
-    }
-  };
-
-  return (
-    <ToolTipWrapper tooltip="Enviar">
-      <li>
-        <button
-          type="button"
-          onClick={openFilePicker}
-          className={IMG_BTN_CLASSNAMES}
-        >
-          <UploadIcon size={15} />
-        </button>
-      </li>
-    </ToolTipWrapper>
-  );
-};
-
-const ImageEditorButtonsList = ({
-  imageData,
-  inputRef,
-  dispatch,
-}: {
-  imageData?: ImageState;
-  inputRef: React.Ref<HTMLInputElement> | null;
-  dispatch: ActionDispatch<[action: ImageStateAction]>;
-}) => (
-  <ul
-    className={
-      `z-10 absolute right-2 top-2 ml-auto mr-0 ` +
-      `w-fit flex justify-center items-center ` +
-      `rounded border border-neutral-700 bg-neutral-900 ` +
-      `[&_li_*]:outline-none ` +
-      `[&_li]:not-last:[&_button]:border-r [&_li]:not-last:[&_button]:border-neutral-700 ` +
-      `[&_li]:first:[&_button]:rounded-l [&_li]:last:[&_button]:rounded-r `
-      // + `[&_li_button]:transition-ring [&_li_button]:duration-300 `
-      // + `[&_li_button]:size-10 [&_li_button]:flex [&_li_button]:items-center [&_li_button]:justify-center `
-      // + `[&_li_button]:cursor-pointer [&_li_button]:hover:bg-neutral-800 `
-      // + `[&_li_button]:focus-visible:ring-3 [&_li_button]:focus-visible:ring-neutral-100 `
-      // + `[&_li_button]:disabled:cursor-auto [&_li_button]:disabled:text-neutral-600 [&_li_button]:disabled:bg-neutral-800 `
-      // + `[&_li_button]:focus-visible:bg-neutral-800 `
-      // + `[&_li_button]:active:bg-neutral-900 `
-    }
-  >
-    <ClearImageButton dispatch={dispatch} />
-    <CopyImageURLButton imageData={imageData} />
-    <DownloadImageButton imageData={imageData} />
-    <FilePickerButton inputRef={inputRef} />
-  </ul>
-);
-
-const DropPlaceholder = () => (
-  <div
-    className={
-      `absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 ` +
-      `flex justify-center items-center ` +
-      `w-96 h-60 rounded-xl pointer-events-none ` +
-      `border-2 border-dashed border-neutral-800 ` +
-      `opacity-100 animate-opacity delay-[250ms] ` +
-      `max-lg:w-60 max-lg:h-48 `
-    }
-  >
-    <p className="text-3xl max-lg:text-xl text-neutral-500 delay-[250ms]">
-      Arraste e solte
-    </p>
-  </div>
-);
-
-const DragAndDropZone = ({
-  imageData,
-  inputRef,
-  dispatch,
-  setFilename,
-  onFileChange,
-}: {
-  imageData: ImageState;
-  inputRef: React.Ref<HTMLInputElement> | null;
-  dispatch: ActionDispatch<[action: ImageStateAction]>;
-  setFilename: (filename: string) => void;
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-}) => {
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-
-    if (isNotImageFile(file)) {
-      return;
-    }
-
-    const url = URL.createObjectURL(file);
-    const { width, height } = await getImageWidthAndHeight(file);
-    const today = new Date();
-
-    setFilename(file.name);
-
-    dispatch({
-      type: "SET_ALL",
-      payload: {
-        preview: url,
-        filename: file.name,
-        size: file.size,
-        type: file.type.replace("image/", ""),
-        width,
-        height,
-        date: comercialDate(today),
-      },
-    });
-  };
-
-  const props = { imageData, inputRef, dispatch };
-  return (
-    <div
-      onDragOver={(e) => e.preventDefault()}
-      className={`relative ${D_N_D_CLASSNAMES}`}
-      onDrop={handleDrop}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={onFileChange}
-      />
-      <ImageEditorButtonsList {...props} />
-      {imageData.preview ? (
-        <Image
-          src={imageData.preview}
-          alt="preview"
-          fill
-          className="absolute object-cover"
-        />
-      ) : (
-        <DropPlaceholder />
-      )}
-    </div>
-  );
 };
 
 const ImageDataInfo = ({ imageData }: { imageData: ImageState }) => (
@@ -1074,6 +812,240 @@ const ImageDataInfo = ({ imageData }: { imageData: ImageState }) => (
   </div>
 );
 
+export const ImageEditorButtonList = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <ul
+    className={cn(
+      `z-10 absolute right-2 top-2 ml-auto mr-0 ` +
+        `w-fit flex justify-center items-center ` +
+        `rounded border border-neutral-700 bg-neutral-900 ` +
+        `[&_li_*]:outline-none ` +
+        `[&_li]:not-last:[&_button]:border-r [&_li]:not-last:[&_button]:border-neutral-700 ` +
+        `[&_li]:first:[&_button]:rounded-l [&_li]:last:[&_button]:rounded-r `,
+      // + `[&_li_button]:transition-ring [&_li_button]:duration-300 `
+      // + `[&_li_button]:size-10 [&_li_button]:flex [&_li_button]:items-center [&_li_button]:justify-center `
+      // + `[&_li_button]:cursor-pointer [&_li_button]:hover:bg-neutral-800 `
+      // + `[&_li_button]:focus-visible:ring-3 [&_li_button]:focus-visible:ring-neutral-100 `
+      // + `[&_li_button]:disabled:cursor-auto [&_li_button]:disabled:text-neutral-600 [&_li_button]:disabled:bg-neutral-800 `
+      // + `[&_li_button]:focus-visible:bg-neutral-800 `
+      // + `[&_li_button]:active:bg-neutral-900 `
+      className
+    )}
+  >
+    {children}
+  </ul>
+);
+
+export const ImageEditorButtonLi = ({
+  children,
+  tooltip,
+  ...props
+}: React.LiHTMLAttributes<HTMLLIElement> & {
+  children: React.ReactNode;
+  tooltip?: string;
+}) => {
+  const listElement = <li {...props}>{children}</li>;
+
+  return tooltip ? (
+    <ToolTipWrapper tooltip={tooltip}>{listElement}</ToolTipWrapper>
+  ) : (
+    listElement
+  );
+};
+
+export const ImageEditorButton = ({
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: React.ReactNode;
+}) => (
+  <button
+    type="button"
+    {...props}
+    className={
+      `relative transition-ring duration-300 size-10 flex items-center justify-center cursor-pointer ` +
+      `disabled:cursor-auto disabled:text-neutral-600 disabled:bg-neutral-800 ` +
+      `focus-visible:z-10 focus-visible:ring-3 focus-visible:ring-neutral-100 focus-visible:bg-neutral-800 ` +
+      `hover:bg-neutral-800 ` +
+      `active:bg-neutral-900 `
+    }
+  >
+    {children}
+  </button>
+);
+
+export const getImageWidthAndHeight = (
+  file: File
+): Promise<{ width: number; height: number }> => {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image(); // Conflict with Next.js Image component
+    img.onload = () => {
+      resolve({
+        width: img.width,
+        height: img.height,
+      });
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+export const DropPlaceholder = ({ text }: { text?: string }) => (
+  <div
+    className={
+      `absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 ` +
+      `flex justify-center items-center ` +
+      `w-96 h-60 mx-auto rounded-xl pointer-events-none ` +
+      `border-2 border-dashed border-neutral-800 ` +
+      `max-lg:w-60 max-lg:h-48 `
+    }
+  >
+    <p className="text-3xl max-lg:text-xl text-neutral-500 ">
+      {text ?? "Arraste e solte"}
+    </p>
+  </div>
+);
+
+interface DragAndDropZoneProps {
+  imageData: ImageState;
+  inputRef: React.Ref<HTMLInputElement> | null;
+  dispatch: ActionDispatch<[action: ImageStateAction]>;
+  setFilename: (filename: string) => void;
+  setAlt: (alt: string) => void;
+  setCaption: (caption: string) => void;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+}
+
+export const DragAndDropZone = ({
+  imageData,
+  inputRef,
+  dispatch,
+  setFilename,
+  setAlt,
+  setCaption,
+  onFileChange,
+}: DragAndDropZoneProps) => {
+  const openFilePicker = () => {
+    if (inputRef && typeof inputRef !== "function" && inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    if (isNotImageFile(file)) {
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    const { width, height } = await getImageWidthAndHeight(file);
+    const today = new Date();
+
+    setFilename(file.name);
+
+    dispatch({
+      type: "SET_ALL",
+      payload: {
+        preview: url,
+        filename: file.name,
+        file,
+        size: file.size,
+        type: file.type.replace("image/", ""),
+        width,
+        height,
+        date: comercialDate(today),
+      },
+    });
+  };
+
+  return (
+    <div
+      onDragOver={(e) => e.preventDefault()}
+      className={
+        `relative w-[70%] min-h-96 h-full shrink-0 ` +
+        `after:absolute after:right-0 after:w-[1px] after:top-0 after:bottom-0 after:bg-neutral-700 `
+      }
+      onDrop={handleDrop}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={onFileChange}
+      />
+      <ImageEditorButtonList>
+        <ImageEditorButtonLi tooltip="Limpar">
+          <ImageEditorButton
+            onClick={() => {
+              dispatch({ type: "RESET" });
+              setFilename("");
+              setAlt("");
+              setCaption("");
+            }}
+          >
+            <TrashBinIcon className="size-4" />
+          </ImageEditorButton>
+        </ImageEditorButtonLi>
+        <ImageEditorButtonLi tooltip="Copiar link">
+          <ImageEditorButton
+            disabled={!imageData?.preview}
+            onClick={() => {
+              if (imageData?.preview)
+                navigator.clipboard.writeText(imageData.preview);
+            }}
+          >
+            <LinkIcon className="size-6 p-1" />
+          </ImageEditorButton>
+        </ImageEditorButtonLi>
+        <ImageEditorButtonLi tooltip="Copiar link">
+          <ImageEditorButton
+            disabled={!imageData?.preview}
+            onClick={() => {
+              if (imageData?.preview) downloadImage(imageData);
+            }}
+          >
+            <DownloadIcon className="size-4" />
+          </ImageEditorButton>
+        </ImageEditorButtonLi>
+        <ImageEditorButtonLi tooltip="Copiar link">
+          <ImageEditorButton onClick={openFilePicker}>
+            <UploadIcon className="size-[15px]" />
+          </ImageEditorButton>
+        </ImageEditorButtonLi>
+      </ImageEditorButtonList>
+      {imageData.preview ? (
+        <NextImage
+          src={imageData.preview}
+          alt="preview"
+          fill
+          className="absolute object-cover"
+        />
+      ) : (
+        <DropPlaceholder />
+      )}
+    </div>
+  );
+};
+
+interface ImageDataInputProps {
+  filename: string;
+  caption: string;
+  alt: string;
+  setFilename: (filename: string) => void;
+  setAlt: (alt: string) => void;
+  setCaption: (caption: string) => void;
+}
+
 const ImageDataInput = ({
   filename,
   alt,
@@ -1081,24 +1053,17 @@ const ImageDataInput = ({
   setFilename,
   setCaption,
   setAlt,
-}: {
-  filename: string;
-  caption: string;
-  alt: string;
-  setFilename: (filename: string) => void;
-  setAlt: (alt: string) => void;
-  setCaption: (caption: string) => void;
-}) => (
+}: ImageDataInputProps) => (
   <div className="p-2 pt-0">
     <FloatingInput
-      id="1"
+      id="1" // TODO
       label="Nome da imagem"
       placeholder=""
       value={filename}
       setValue={(e) => setFilename(e.target.value)}
     />
     <FloatingInput
-      id="2"
+      id="2" // TODO
       label="Nome Alternativo"
       placeholder=""
       value={alt}
@@ -1110,7 +1075,7 @@ const ImageDataInput = ({
       </p>
     </small>
     <FloatingInput
-      id="3"
+      id="3" // TODO
       label="Rodapé"
       placeholder=""
       value={caption}
@@ -1119,7 +1084,7 @@ const ImageDataInput = ({
   </div>
 );
 
-const InfoZone = ({
+export const InfoZone = ({
   imageData,
   filename,
   alt,
@@ -1149,111 +1114,10 @@ const InfoZone = ({
   </div>
 );
 
-const isNotImageFile = (file: File) => {
+export const isNotImageFile = (file: File) => {
   if (!file.type.startsWith("image/")) {
     console.warn("Invalid file:", file.type);
     return true;
   }
-};
-
-export const ImageFieldset = ({
-  src,
-  alt,
-  filename,
-  caption,
-  setSrc,
-  setAlt,
-  setFilename,
-  setCaption,
-}: {
-  src: string;
-  alt: string;
-  filename: string;
-  caption: string;
-  setSrc: (src: string) => void;
-  setAlt: (alt: string) => void;
-  setFilename: (filename: string) => void;
-  setCaption: (caption: string) => void;
-}) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [imageData, dispatch] = useReducer(reducer, initialState);
-
-  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    // <input type="file"> triggers onChange only if (.value) changes
-    // Reseting input.value = "" avoids several unexpected behaviors
-    const input = e.currentTarget;
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (isNotImageFile(file)) {
-      input.value = ""; // Select the same file again
-      return;
-    }
-
-    if (imageData?.preview && imageData.preview.startsWith("blob:")) {
-      try {
-        URL.revokeObjectURL(imageData.preview);
-      } catch {}
-    }
-
-    const url = URL.createObjectURL(file);
-
-    let width: number | null = null;
-    let height: number | null = null;
-
-    try {
-      const dims = await getImageWidthAndHeight(file);
-      width = dims.width;
-      height = dims.height;
-    } catch (err) {
-      console.error("Error(getImageWidthAndHeight):", err);
-    }
-
-    const today = new Date();
-
-    dispatch({
-      type: "SET_ALL",
-      payload: {
-        preview: url,
-        size: file.size,
-        type: file.type.replace("image/", ""),
-        width,
-        height,
-        date: comercialDate(today),
-      },
-    });
-
-    setFilename(file.name);
-
-    input.value = ""; // Select the same file again
-  };
-
-  const props = { imageData, inputRef, dispatch, setFilename, onFileChange };
-
-  useEffect(() => {
-    // Preventing memmory leak
-    const prev = imageData.preview;
-    return () => {
-      if (prev && prev.startsWith("blob:")) {
-        try {
-          URL.revokeObjectURL(prev);
-        } catch {}
-      }
-    };
-  }, [imageData.preview]);
-
-  return (
-    <div className="flex justify-center items-center w-full h-full">
-      <DragAndDropZone {...props} />
-      <InfoZone
-        imageData={imageData}
-        filename={filename}
-        alt={alt}
-        caption={caption}
-        setAlt={setAlt}
-        setFilename={setFilename}
-        setCaption={setCaption}
-      />
-    </div>
-  );
+  return false;
 };

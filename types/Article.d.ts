@@ -25,15 +25,16 @@ type BlockType<T extends object> = T & {
     | "quote"
     | "accordion"
     | "alert"
-    | "img"
-    | "imgCarousel"
+    | "image"
+    | "imageCarousel"
     | "quiz";
 };
 
-type Body = { body: string };
-type Code = { filename: string; code: string; language: BundledLanguage };
-type Quote = { author: string; quote: string };
-type Image = {
+type BlogBody = { body: string };
+type BlogCode = { filename: string; code: string; language: BundledLanguage };
+type BlogQuote = { author: string; quote: string };
+type BlogImage = {
+  file?: File;
   src: string;
   alt: string;
   filename: string;
@@ -41,9 +42,9 @@ type Image = {
 };
 
 type TextBlock = { data?: { body: string } };
-type CodeBlock = { data?: Code };
-type QuoteBlock = { data?: Quote };
-type ImageBlock = { data?: Image };
+type CodeBlock = { data?: BlogCode };
+type QuoteBlock = { data?: BlogQuote };
+type ImageBlock = { data?: BlogImage };
 
 type Block =
   | BlockType<TextBlock>
@@ -52,8 +53,8 @@ type Block =
   | BlockType<ImageBlock>;
 
 type ArticleBodyText = BlockType<{ data: { body: string } }>;
-type ArticleBodyCode = BlockType<{ data: Code }>;
-type ArticleQuoteText = BlockType<{ data: Quote }>;
+type ArticleBodyCode = BlockType<{ data: BlogCode }>;
+type ArticleQuoteText = BlockType<{ data: BlogQuote }>;
 type ArticleImage = BlockType<{ data: Image }>;
 
 type ImageStateAction =
@@ -62,6 +63,7 @@ type ImageStateAction =
 
 type ImageState = {
   preview: string | null;
+  file?: File | null;
   filename: string | null;
   size: number | null;
   type: string;

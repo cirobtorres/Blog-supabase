@@ -10,6 +10,69 @@ import {
 import { slugify } from "@/utils/strings";
 import { SupabaseClient } from "@supabase/supabase-js";
 
+// Função para upload de imagens
+const uploadImagesInBody = async (
+  supabase: SupabaseClient,
+  slug: string,
+  body: Block[]
+): Promise<Block[]> => {
+  return await Promise.all(
+    body.map(async (block) => {
+      console.log("uploadImagesInBody");
+      if (block.type === "image") {
+        const imageBlock = block as any;
+        console.log(
+          "uploadImagesInBody -> imagem",
+          typeof imageBlock,
+          imageBlock,
+          imageBlock.data.file
+        );
+
+        if (imageBlock.file) {
+          console.log("imageBlock.file");
+          const fileExt = imageBlock.file.name.split(".").pop();
+          const fileName = `${slug}-${Date.now()}.${fileExt}`;
+          const filePath = `articles/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from("articles")
+            .upload(filePath, imageBlock.file);
+
+          if (uploadError) throw new Error(uploadError.message);
+          console.log("Passei de uploadError");
+
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from("articles").getPublicUrl(filePath);
+          console.log("RETORNADO");
+
+          return { ...imageBlock, url: publicUrl, file: undefined };
+        }
+
+        // if (imageBlock.base64) {
+        //   const blob = await fetch(imageBlock.base64).then((res) => res.blob());
+        //   const fileName = `${slug}-${Date.now()}.png`;
+        //   const filePath = `articles/${fileName}`;
+
+        //   const { error: uploadError } = await supabase.storage
+        //     .from("articles")
+        //     .upload(filePath, blob);
+
+        //   if (uploadError) throw new Error(uploadError.message);
+
+        //   const {
+        //     data: { publicUrl },
+        //   } = supabase.storage.from("articles").getPublicUrl(filePath);
+
+        //   return { ...imageBlock, url: publicUrl, base64: undefined };
+        // }
+      }
+
+      return block; // blocos que não são imagem
+    })
+  );
+};
+
 export const postArticle = async (
   prevState: {
     ok: boolean;
@@ -26,20 +89,20 @@ export const postArticle = async (
 }> => {
   const title = formData.get(getTitleFormDataValue);
   const subtitle = formData.get(getSubtitleFormDataValue);
-  const body = formData.get(getEditorFormDataValue);
-
+  const body = formData.get(getEditorFormDataValue) as string; // JSON string
   const profile_id = formData.get("profile_id");
 
   if (!title || !body)
     return {
       ok: false,
       success: null,
-      error: "O título e o subtítulo são obrigatórios.",
+      error: "O título e o corpo são obrigatórios.",
       data: null,
     };
 
   const supabase = await createServerAppClient();
 
+  // Pegando o autor
   const { data: author, error: authorError } = await supabase
     .from("authors")
     .select("id")
@@ -52,13 +115,24 @@ export const postArticle = async (
   }
 
   const author_id = author.id;
-
   const slug = slugify(title as string);
   const sub_title = subtitle === "" ? null : subtitle;
 
+  // Transformando o JSON string em array de blocos
+  let blocks: Block[];
+  try {
+    blocks = JSON.parse(body as string) as Block[];
+  } catch (err) {
+    return { ok: false, success: null, error: "Corpo inválido", data: null };
+  }
+
+  // Faz upload das imagens e atualiza o body
+  const updatedBody = await uploadImagesInBody(supabase, slug, blocks);
+
+  // Inserindo artigo no banco
   const { data: article, error: articleError } = await supabase
     .from("articles")
-    .insert([{ title, slug, sub_title, body, author_id }])
+    .insert([{ title, slug, sub_title, body: updatedBody, author_id }])
     .select("*")
     .single();
 
@@ -82,6 +156,141 @@ export const postArticle = async (
   revalidatePath("/");
   return { ok: true, success: "Artigo publicado!", error: null, data: article };
 };
+
+// type ImageBlock = {
+//   type: "image";
+//   file?: File; // se você receber um File
+//   base64?: string; // ou se estiver em base64
+//   url?: string; // URL final
+//   alt?: string;
+// };
+
+// const uploadImagesInBody = async (
+//   supabase: SupabaseClient,
+//   slug: string,
+//   body: Block[]
+// ) => {
+//   const newBody = await Promise.all(
+//     body.map(async (block) => {
+//       if (block.type === "image") {
+//         const imageBlock = block as ImageBlock;
+
+//         if (imageBlock.file) {
+//           const fileExt = imageBlock.file.name.split(".").pop();
+//           const fileName = `${slug}-${Date.now()}.${fileExt}`;
+//           const filePath = `articles/${fileName}`;
+
+//           const { error: uploadError } = await supabase.storage
+//             .from("articles")
+//             .upload(filePath, imageBlock.file);
+
+//           if (uploadError) throw new Error(uploadError.message);
+
+//           const {
+//             data: { publicUrl },
+//           } = supabase.storage.from("articles").getPublicUrl(filePath);
+
+//           return { ...imageBlock, url: publicUrl, file: undefined };
+//         }
+
+//         if (imageBlock.base64) {
+//           const blob = await fetch(imageBlock.base64).then((res) => res.blob());
+//           const fileName = `${slug}-${Date.now()}.png`;
+//           const filePath = `articles/${fileName}`;
+
+//           const { error: uploadError } = await supabase.storage
+//             .from("articles")
+//             .upload(filePath, blob);
+
+//           if (uploadError) throw new Error(uploadError.message);
+
+//           const {
+//             data: { publicUrl },
+//           } = supabase.storage.from("articles").getPublicUrl(filePath);
+
+//           return { ...imageBlock, url: publicUrl, base64: undefined };
+//         }
+//       }
+
+//       return block; // blocos que não são imagem
+//     })
+//   );
+
+//   return newBody;
+// };
+
+// export const postArticle = async (
+//   prevState: {
+//     ok: boolean;
+//     success: string | null;
+//     error: string | null;
+//     data: Article | null;
+//   },
+//   formData: FormData
+// ): Promise<{
+//   ok: boolean;
+//   success: string | null;
+//   error: string | null;
+//   data: Article | null;
+// }> => {
+//   const title = formData.get(getTitleFormDataValue);
+//   const subtitle = formData.get(getSubtitleFormDataValue);
+//   const body = formData.get(getEditorFormDataValue);
+
+//   const profile_id = formData.get("profile_id");
+
+//   if (!title || !body)
+//     return {
+//       ok: false,
+//       success: null,
+//       error: "O título e o subtítulo são obrigatórios.",
+//       data: null,
+//     };
+
+//   const supabase = await createServerAppClient();
+
+//   const { data: author, error: authorError } = await supabase
+//     .from("authors")
+//     .select("id")
+//     .eq("profile_id", profile_id)
+//     .single();
+
+//   if (authorError) {
+//     console.error(authorError.message);
+//     return { ok: false, success: null, error: authorError.message, data: null };
+//   }
+
+//   const author_id = author.id;
+
+//   const slug = slugify(title as string);
+//   const sub_title = subtitle === "" ? null : subtitle;
+
+//   const { data: article, error: articleError } = await supabase
+//     .from("articles")
+//     .insert([{ title, slug, sub_title, body, author_id }])
+//     .select("*")
+//     .single();
+
+//   if (articleError) {
+//     console.error(articleError);
+//     if (articleError.code === "23505")
+//       return {
+//         ok: false,
+//         success: null,
+//         error: "Já existe um artigo com esse mesmo título",
+//         data: null,
+//       };
+//     return {
+//       ok: false,
+//       success: null,
+//       error: articleError.message,
+//       data: null,
+//     };
+//   }
+
+//   revalidatePath("/");
+//   return { ok: true, success: "Artigo publicado!", error: null, data: article };
+// };
 
 export const putArticle = async (
   id: string,

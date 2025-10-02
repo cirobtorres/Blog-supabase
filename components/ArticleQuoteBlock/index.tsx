@@ -1,7 +1,7 @@
 export const ArticleQuoteBlock = ({
   data: { author, quote },
 }: {
-  data: Quote;
+  data: BlogQuote;
 }) => (
   <div
     className={

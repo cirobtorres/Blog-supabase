@@ -22,12 +22,15 @@ import {
   useEffect,
   useRef,
   MouseEventHandler,
-  Dispatch,
-  SetStateAction,
 } from "react";
 import { toast } from "sonner";
 import { LoadingSpinning } from "@/components/LoadingSpinning";
-import { AlertIcon, CancelIcon, TrashBinIcon } from "@/components/Icons";
+import {
+  AlertIcon,
+  ArrowDownIcon,
+  CancelIcon,
+  TrashBinIcon,
+} from "@/components/Icons";
 import ToolTipWrapper from "@/components/ui/tooltip";
 
 const providers = [
@@ -367,14 +370,12 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
   );
 };
 
-export const DeleteEditor = ({
+export const DeleteEditorButton = ({
   onRemove,
-  dialogState,
 }: {
   onRemove: MouseEventHandler<HTMLButtonElement>;
-  dialogState: [boolean, Dispatch<SetStateAction<boolean>>];
 }) => {
-  const [isDialogOpen, setIsDialogOpen] = dialogState;
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleOpenDialog = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -399,7 +400,7 @@ export const DeleteEditor = ({
               `focus-visible:ring-[3px] focus-visible:ring-neutral-500 focus-visible:bg-neutral-800 ` // focus-visible:[&_*]:stroke-theme-color hover:[&_*]:stroke-theme-color
             }
           >
-            <TrashBinIcon size={16} />
+            <TrashBinIcon className="size-4" />
           </button>
         </AlertDialogTrigger>
       </ToolTipWrapper>
@@ -434,6 +435,28 @@ export const DeleteEditor = ({
     </AlertDialog>
   );
 };
+
+export const PushEditorDownButton = ({
+  moveToNext,
+}: {
+  moveToNext: MouseEventHandler<HTMLButtonElement>;
+}) => (
+  <ToolTipWrapper tooltip="Mover para Baixo">
+    <button
+      type="button"
+      className={
+        `z-10 p-1 cursor-pointer rounded ` +
+        `transition-all hover:[&_svg]:stroke-theme-color ` +
+        `border-none outline-none ` +
+        `focus-visible:ring-[3px] focus-visible:ring-neutral-500 ` +
+        `focus-visible:bg-neutral-800 `
+      }
+      onClick={moveToNext}
+    >
+      <ArrowDownIcon className="size-4 stroke-neutral-300" />
+    </button>
+  </ToolTipWrapper>
+);
 
 const Or = () => {
   return (

@@ -129,9 +129,10 @@ export const TitleFieldset = ({
 }) => (
   <fieldset
     className={
-      "relative p-2 pt-6 pr-1 flex flex-col rounded-lg transition-all duration-300 border border-neutral-700 " +
-      "hover:ring-3 hover:ring-neutral-100 focus-within:ring-3 focus-within:ring-neutral-100 " +
-      "bg-neutral-800 hover:bg-neutral-700 focus-within:bg-neutral-700 article-fieldset "
+      "relative p-2 pt-6 pr-1 flex flex-col rounded-sm transition-all duration-300 border border-neutral-700 " +
+      "hover:ring-2 hover:ring-theme-color hover:border-transparent " +
+      "focus-within:ring-2 focus-within:ring-theme-color focus-within:border-transparent " +
+      "bg-neutral-900 article-fieldset "
     }
   >
     <textarea
@@ -175,9 +176,10 @@ export const SubtitleFieldset = ({
 }) => (
   <fieldset
     className={
-      "relative p-2 pt-6 pr-1 flex flex-col rounded-lg transition-all duration-300 border border-neutral-700 " +
-      "hover:ring-3 hover:ring-neutral-100 focus-within:ring-3 focus-within:ring-neutral-100 " +
-      "bg-neutral-800 hover:bg-neutral-700 focus-within:bg-neutral-700 article-fieldset "
+      "relative p-2 pt-6 pr-1 flex flex-col rounded-sm transition-all duration-300 border border-neutral-700 " +
+      "hover:ring-2 hover:ring-theme-color hover:border-transparent " +
+      "focus-within:ring-2 focus-within:ring-theme-color focus-within:border-transparent " +
+      "bg-neutral-900 article-fieldset "
     }
   >
     <textarea

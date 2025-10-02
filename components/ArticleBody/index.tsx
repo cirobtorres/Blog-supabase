@@ -4,7 +4,7 @@ import parse, { DOMNode, domToReact } from "html-react-parser";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { ExternalLinkIcon, LinkIcon } from "../Icons";
+import { ExternalLinkIcon, LinkIcon, SearchIcon } from "../Icons";
 import { slugify } from "@/utils/strings";
 import { ArticleCodeBlock } from "../ArticleCodeBlock";
 import { ArticleQuoteBlock } from "../ArticleQuoteBlock";
@@ -63,36 +63,52 @@ export const ArticleBody = ({
                 const content = domToReact(domNode.children as DOMNode[]);
                 const href = domNode.attribs.href;
 
-                return (
+                return href.includes("http") ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Link
                         href={href}
-                        className="px-1 pr-2 py-0.5 underline outline-none group text-theme-color hover:text-neutral-100 bg-neutral-900 transition-all rounded-md border border-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+                        className={
+                          `px-1 pr-2 py-0.5 underline outline-none group transition-all ` +
+                          `rounded-md border border-neutral-800 ` +
+                          `text-theme-color hover:text-neutral-100 bg-neutral-900 ` +
+                          `focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
+                        }
                       >
                         {content}
-                        <ExternalLinkIcon
-                          size={16}
-                          className="inline-block align-top"
-                        />
+                        <ExternalLinkIcon className="size-3 inline-block align-top" />
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>{href}</p>
                     </TooltipContent>
                   </Tooltip>
+                ) : (
+                  <Link
+                    href={href}
+                    className={
+                      `px-1 pr-2 py-0.5 underline outline-none group transition-all ` +
+                      `rounded-md border border-neutral-800 ` +
+                      `text-theme-color hover:text-neutral-100 bg-neutral-900 ` +
+                      `focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
+                    }
+                  >
+                    {content}
+                  </Link>
                 );
               }
             },
           });
 
         case "code": {
-          return <ArticleCodeBlock key={block.id} data={block.data as Code} />;
+          return (
+            <ArticleCodeBlock key={block.id} data={block.data as BlogCode} />
+          );
         }
 
         case "quote":
           return (
-            <ArticleQuoteBlock key={block.id} data={block.data as Quote} />
+            <ArticleQuoteBlock key={block.id} data={block.data as BlogQuote} />
           );
         default:
           return;

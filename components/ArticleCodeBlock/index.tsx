@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 export const ArticleCodeBlock = ({
   data: { filename, language, code },
 }: {
-  data: Code;
+  data: BlogCode;
 }) => {
   const [shikiCode, setShikiCode] = useState<string>("");
 
