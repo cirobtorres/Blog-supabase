@@ -2,21 +2,14 @@
 
 import { useActionState, useState } from "react";
 import Image from "next/image";
-import { toast } from "sonner";
 import {
   ConfirmFormButton,
   ReturnToHome,
   ReturnToProfile,
   SaveFormButton,
 } from "@/components/Buttons";
-import {
-  getEditorFormDataValue,
-  getSubtitleFormDataValue,
-  getTitleFormDataValue,
-  SubtitleFieldset,
-  TitleFieldset,
-} from "@/components/Fieldsets";
-import { postArticle } from "@/services/article";
+import { SubtitleFieldset, TitleFieldset } from "@/components/Fieldsets";
+import { postArticlePublic, postArticleSave } from "@/services/article";
 import { BlockList, NewBlockButtons } from "../utils";
 import { useProfile } from "@/hooks/useProfile";
 import { useRouter } from "next/navigation";
@@ -36,114 +29,189 @@ import {
   TrashBinIcon,
   UploadIcon,
 } from "@/components/Icons";
+import { sonnerToastPromise } from "@/toasters";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+const initialPostState = {
+  ok: false,
+  success: null,
+  error: null,
+  data: null,
+};
+
+const initialSaveState = {
+  ok: false,
+  success: null,
+  error: null,
+  data: null,
+};
 
 export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
   const [htmlTitle, setHtmlTitle] = useState("");
-  const [htmlDescription, setHtmlDescription] = useState("");
+  const [htmlSubtitle, setHtmlSubtitle] = useState("");
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [isOpenState, setIsOpenState] = useState(false);
   const router = useRouter();
 
-  const [state, action, isPending] = useActionState(
-    async () => {
+  const [postState, postAction, isPendingPost] = useActionState(async () => {
+    try {
       const formData = new FormData();
-      formData.set(getTitleFormDataValue, htmlTitle);
-      formData.set(getSubtitleFormDataValue, htmlDescription);
-      formData.set("profile_id", profileId);
-      formData.set(getEditorFormDataValue, JSON.stringify(blocks));
 
-      const result = await postArticle(
-        { ok: false, success: null, error: null, data: null },
+      formData.set("profile_id", profileId);
+
+      formData.set("article_title", htmlTitle);
+      formData.set("article_subtitle", htmlSubtitle);
+      formData.set("article_body", JSON.stringify(blocks));
+
+      const success = () => {
+        const now = convertToLargeDate(new Date());
+        return "Artigo publicado!";
+      };
+
+      const error = () => {
+        setIsOpenState(true);
+        return "Artigo não publicado!";
+      };
+
+      const result = postArticlePublic(
+        {
+          ok: false,
+          success: null,
+          error: null,
+          data: null,
+        },
         formData
       );
 
-      if (!result.ok) {
-        toast.error("Artigo não publicado!"); // { description: state.error }
-        setIsOpenState(true);
-      } else {
-        const now = convertToLargeDate(new Date());
-        toast("Artigo publicado!", {
-          description: `${now}`,
-          action: {
-            label: "Link",
-            onClick: () => router.push(`/articles/${result.data?.id}`),
-            actionButtonStyle: {
-              color: "f5f5f5",
-              border: "1px solid #525252",
-              borderRadius: "6px",
-              padding: "2px 4px",
-              backgroundColor: "#171717",
-            },
-          },
+      const promise = new Promise((resolve, reject) => {
+        result.then((data) => {
+          if (data.ok) resolve(result);
+          else reject(result);
         });
-      }
+      });
+
+      sonnerToastPromise(promise, success, error, "Publicando artigo...");
+
       return result;
-    },
-    { ok: false, success: null, error: null, data: null }
-  );
+    } catch (e) {
+      console.error(e);
+      const error = {
+        ok: false,
+        success: null,
+        error: null,
+        data: null,
+      };
+      return error;
+    }
+  }, initialPostState);
 
   // TODO
-  // const [saveState, saveAction, isPendingSave] = useActionState(
-  //   async () => {
-  //     const formData = new FormData();
-  //     formData.set(getTitleFormDataValue, htmlTitle);
-  //     formData.set(getSubtitleFormDataValue, htmlDescription);
-  //     formData.set(getEditorFormDataValue, htmlBody);
-  //     formData.set("profile_id", profileId);
-  //     const result = await postArticle(
-  //       { ok: false, success: null, error: null },
-  //       formData
-  //     );
-  //     if (!result.ok) {
-  //       toast.error(result.error);
-  //     } else {
-  //       toast(result.success);
-  //     }
-  //     return result;
-  //   },
-  //   { ok: false, success: null, error: null }
-  // );
+  const [saveState, saveAction, isPendingSave] = useActionState(async () => {
+    try {
+      const formData = new FormData();
+
+      formData.set("profile_id", profileId);
+
+      formData.set("article_title", htmlTitle);
+      formData.set("article_subtitle", htmlSubtitle);
+      formData.set("article_body", JSON.stringify(blocks));
+
+      const success = () => {
+        const now = convertToLargeDate(new Date());
+        return "Artigo salvo!";
+      };
+
+      const error = () => {
+        setIsOpenState(true);
+        return "Artigo não salvo!";
+      };
+
+      const result = postArticleSave(
+        {
+          ok: false,
+          success: null,
+          error: null,
+          data: null,
+        },
+        formData
+      );
+
+      const promise = new Promise((resolve, reject) => {
+        result.then((data) => {
+          if (data.ok) resolve(result);
+          else reject(result);
+        });
+      });
+
+      sonnerToastPromise(promise, success, error, "Salvando artigo...");
+
+      return result;
+    } catch (e) {
+      console.error(e);
+      const error = {
+        ok: false,
+        success: null,
+        error: null,
+        data: null,
+      };
+      return error;
+    }
+  }, initialSaveState);
+
+  const PostArticleErrors = () =>
+    isOpenState &&
+    postState.error && (
+      <div className="flex items-center justify-between p-2 pl-3 mb-4 rounded-sm border border-red-500 bg-red-950">
+        <p className="text-red-200 font-medium">{postState.error}</p>
+        <button
+          type="button"
+          onClick={() => setIsOpenState(!isOpenState)}
+          className="p-0.5 cursor-pointer rounded-sm border border-red-500 bg-red-900"
+        >
+          <CancelIcon className="stroke-red-200" />
+        </button>
+      </div>
+    );
+
+  const SaveArticleErrors = () =>
+    isOpenState &&
+    saveState.error && (
+      <div className="flex items-center justify-between p-2 pl-3 mb-4 rounded-sm border border-red-500 bg-red-950">
+        <p className="text-red-200 font-medium">{saveState.error}</p>
+        <button
+          type="button"
+          onClick={() => setIsOpenState(!isOpenState)}
+          className="p-0.5 cursor-pointer rounded-sm border border-red-500 bg-red-900"
+        >
+          <CancelIcon className="stroke-red-200" />
+        </button>
+      </div>
+    );
 
   return (
-    <div className="w-full py-10 mx-4">
+    <div className="w-full mx-4">
       <div className="flex gap-10 max-sm:flex-col max-sm:gap-0 border-neutral-600">
         <ReturnToHome />
         <ReturnToProfile />
       </div>
-
-      {isOpenState && state.error && (
-        <div className="flex items-center justify-between p-2 pl-3 mb-4 rounded-sm border border-red-500 bg-red-950">
-          <p className="text-red-200 font-medium">{state.error}</p>
-          <button
-            type="button"
-            onClick={() => setIsOpenState(!isOpenState)}
-            className="p-0.5 cursor-pointer rounded-sm border border-red-500 bg-red-900"
-          >
-            <CancelIcon className="stroke-red-200" />
-          </button>
-        </div>
-      )}
-
-      <form
-        action={action}
-        className="grid gap-2 grid-cols-1 md:grid-cols-[minmax(450px,1fr)_minmax(200px,400px)]"
-      >
+      <PostArticleErrors />
+      <SaveArticleErrors />
+      <form className="grid gap-2 grid-cols-1 md:grid-cols-[minmax(450px,1fr)_minmax(200px,400px)]">
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-4">
             <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
-            <SubtitleFieldset
-              value={htmlDescription}
-              setVal={setHtmlDescription}
-            />
+            <SubtitleFieldset value={htmlSubtitle} setVal={setHtmlSubtitle} />
             <AuthorAvatar />
           </div>
           <AspectRatio
             ratio={16 / 9}
             className="relative rounded-sm overflow-hidden border border-neutral-700"
           >
-            <ImageEditorButtonList
-            // className="top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ml-0"
-            >
+            <ImageEditorButtonList>
               <ImageEditorButtonLi>
                 <ImageEditorButton>
                   <TrashBinIcon className="size-4" />
@@ -179,15 +247,28 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
         <div className="flex flex-col gap-1">
           <div className="flex flex-col gap-1 p-4 rounded-sm border border-neutral-700 bg-neutral-900">
             <div className="w-full flex gap-1">
-              <ConfirmFormButton label="Publicar" isPending={isPending} />
-              <button
-                type="button"
-                className="relative w-12 h-[38px] [&_svg]:absolute [&_svg]:top-1/2 [&_svg]:left-1/2 [&_svg]:-translate-y-1/2 [&_svg]:-translate-x-1/2 rounded-xs border border-neutral-700 bg-neutral-800 outline-none focus-within:ring-2 focus-within:ring-theme-color focus-within:border-transparent"
-              >
-                <EllipsisIcon />
-              </button>
+              <ConfirmFormButton
+                label="Publicar"
+                formAction={postAction}
+                isPending={isPendingPost}
+              />
+              <Popover>
+                <PopoverTrigger className="relative w-12 h-[38px] [&_svg]:absolute [&_svg]:top-1/2 [&_svg]:left-1/2 [&_svg]:-translate-y-1/2 [&_svg]:-translate-x-1/2 rounded-xs border border-neutral-700 bg-neutral-800 outline-none focus-within:ring-2 focus-within:ring-neutral-100 focus-within:border-transparent">
+                  <EllipsisIcon />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <ul>
+                    <li>Despublicar</li>
+                    <li>Preview</li>
+                  </ul>
+                </PopoverContent>
+              </Popover>
             </div>
-            <SaveFormButton label="Salvar" isPending={isPending} />
+            <SaveFormButton
+              label="Salvar"
+              formAction={saveAction}
+              isPending={isPendingSave}
+            />
           </div>
           <div className="min-h-48 p-3 rounded-lg border border-neutral-700">
             <p>Sumário???</p>

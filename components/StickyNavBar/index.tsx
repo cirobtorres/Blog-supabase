@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
+  ArticleAccordion,
+  ArticleAccordionContent,
+  ArticleAccordionItem,
+  ArticleAccordionTrigger,
 } from "../ui/accordion";
 
 export const AnchorTracker = ({ anchors }: { anchors: AnchorTracher }) => {
@@ -49,24 +49,23 @@ export const AnchorTracker = ({ anchors }: { anchors: AnchorTracher }) => {
   }, [anchors]);
 
   return (
-    anchors &&
-    anchors.length > 0 && (
-      <article className="text-sm">
+    <article className="text-sm">
+      {anchors && anchors.length > 0 && (
         <nav
           className={
-            "w-full border border-neutral-700 rounded-lg p-4 backdrop-blur-sm bg-neutral-900" +
-            " self-start sticky top-20 col-start-1 max-md:col-start-auto" +
-            " max-md:self-auto max-md:static"
+            "w-full border border-neutral-700 rounded-lg p-4 backdrop-blur-sm bg-neutral-900 " +
+            "self-start sticky top-20 col-start-1 max-md:col-start-auto " +
+            "max-md:self-auto max-md:static"
           }
         >
-          <Accordion type="single" defaultValue="item-1" collapsible>
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="pr-2 hover:bg-neutral-800 cursor-pointer">
+          <ArticleAccordion type="single" defaultValue="item-1" collapsible>
+            <ArticleAccordionItem value="item-1">
+              <ArticleAccordionTrigger className="pr-2 hover:bg-neutral-800 cursor-pointer">
                 <p className="text-lg px-2 rounded focus-visible:outline-2 focus-visible:outline-neutral-100">
                   Conteúdo
                 </p>
-              </AccordionTrigger>
-              <AccordionContent>
+              </ArticleAccordionTrigger>
+              <ArticleAccordionContent>
                 <div className="mt-2 relative">
                   <ul
                     ref={anchorListRef}
@@ -96,12 +95,12 @@ export const AnchorTracker = ({ anchors }: { anchors: AnchorTracher }) => {
                     })}
                   </ul>
                 </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+              </ArticleAccordionContent>
+            </ArticleAccordionItem>
+          </ArticleAccordion>
         </nav>
-      </article>
-    )
+      )}
+    </article>
   );
 };
 

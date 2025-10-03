@@ -14,7 +14,7 @@ export default async function RootProviders({
       <ProfileProvider loggedProfile={loggedProfile}>
         {children}
       </ProfileProvider>
-      <Toaster position="top-right" />
+      <Toaster position="top-center" />
     </>
   );
 }

@@ -3,6 +3,7 @@ import {
   GlobeLock,
   House,
   Images as LucideIconsImages,
+  Minus,
   NotebookPen,
 } from "lucide-react";
 
@@ -285,6 +286,10 @@ const PlusIcon = ({ className }: { className?: string }) => (
     <path d="M5 12h14" />
     <path d="M12 5v14" />
   </svg>
+);
+
+const MinusIcon = ({ className }: { className?: string }) => (
+  <Minus className={className} />
 );
 
 const TrashBinIcon = ({ className }: { className?: string }) => (
@@ -670,6 +675,7 @@ export {
   ImageCarouselEditorIcon,
   QuizEditorIcon,
   PlusIcon,
+  MinusIcon,
   TrashBinIcon,
   HeaderH2Icon,
   HeaderH3Icon,

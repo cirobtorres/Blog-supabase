@@ -1,4 +1,11 @@
-import { EditorFieldset, CodeFieldset, QuoteFieldset } from "../Fieldsets";
+import {
+  EditorFieldset,
+  CodeFieldset,
+  QuoteFieldset,
+  FloatingFieldset,
+  FloatingInput,
+  FloatingLabel,
+} from "../Fieldsets";
 import { BlockEditorWrapper } from "./utils";
 import {
   DragAndDropZone,
@@ -6,37 +13,157 @@ import {
   InfoZone,
   isNotImageFile,
 } from "../Fieldsets/ArticleEditor";
-import { MouseEventHandler, useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { comercialDate } from "@/utils/dates";
+import {
+  accordionReducer,
+  imageInitialState,
+  imageReducer,
+  initialAccordionState,
+} from "@/reducers";
+import { MinusIcon, PlusIcon } from "../Icons";
+import { Checkbox } from "../ui/checkbox";
 
-const AccordionEditor = ({
-  id,
-  onRemove,
-}: {
-  id: string;
-  onRemove: (id: string) => void;
-}) => <div>Accordion</div>;
+const AccordionEditor = (props: AccordionEditorProps) => {
+  // TODO: definir os seguintes atributos do accordion: type e defaultValue
+  const [accordions, accordDispatch] = useReducer(
+    accordionReducer,
+    initialAccordionState
+  );
 
-const AlertEditor = ({
-  id,
-  onRemove,
-}: {
-  id: string;
-  onRemove: (id: string) => void;
-}) => <div>Alert</div>;
+  const AddButton = () => (
+    <button
+      type="button"
+      onClick={() => accordDispatch({ type: "ADD" })}
+      className={
+        "flex justify-center items-center cursor-pointer p-1 rounded-sm outline-none transition-all duration-300 " +
+        "border border-neutral-700 " +
+        "bg-neutral-900 " +
+        "hover:border-neutral-600 hover:bg-neutral-800 " +
+        "focus-visible:ring-2 focus-visible:border-transparent focus-visible:ring-neutral-100 "
+      }
+    >
+      <PlusIcon />
+    </button>
+  );
 
-const CodeEditor = (props: {
-  id: string;
-  wrapperLabel: string;
-  filename: string;
-  code: string;
-  language: string;
-  setFilename: (data: string) => void;
-  setCode: (data: string) => void;
-  setLanguage: (language: string) => void;
-  moveToNext: any;
-  onRemove: (id: string) => void;
-}) => {
+  const RemoveButton = ({ accordionId: id }: { accordionId: string }) => (
+    <button
+      type="button"
+      onClick={() => accordDispatch({ type: "REMOVE", id })}
+      className={
+        "flex justify-center items-center cursor-pointer p-1 rounded-sm outline-none transition-all duration-300 " +
+        "border border-neutral-700 " +
+        "bg-neutral-900 " +
+        "hover:border-neutral-600 hover:bg-neutral-800 " +
+        "focus-visible:ring-2 focus-visible:border-transparent focus-visible:ring-neutral-100 "
+      }
+    >
+      <MinusIcon />
+    </button>
+  );
+
+  const CheckBoxes = () => {
+    return (
+      <div className="flex flex-col justify-center items-start gap-1 mr-10">
+        <div className="p-1 pr-4 rounded-sm border border-neutral-800 bg-neutral-900">
+          <fieldset>
+            <label
+              htmlFor="checkbox-accordion-type"
+              className="grid grid-cols-[24px_80px_1fr] items-center gap-2"
+            >
+              <Checkbox
+                id="checkbox-accordion-type"
+                // checked={true}
+                // onCheckedChange={}
+                className="cursor-pointer"
+              />
+              Único
+              <p className="text-neutral-500 text-xs">
+                Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+              </p>
+            </label>
+          </fieldset>
+        </div>
+        <div className="p-1 pr-4 rounded-sm border border-neutral-800 bg-neutral-900">
+          <fieldset>
+            <label
+              htmlFor="checkbox-accordion-collapsible"
+              className="grid grid-cols-[24px_80px_1fr] items-center gap-2"
+            >
+              <Checkbox
+                id="checkbox-accordion-collapsible"
+                // checked={true}
+                // onCheckedChange={}
+                className="cursor-pointer"
+              />
+              Colapsável
+              <p className="text-neutral-500 text-xs">
+                Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                Possimus voluptatem quia exercitationem deserunt inventore harum
+                expedita obcaecati delectus.
+              </p>
+            </label>
+          </fieldset>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <BlockEditorWrapper {...props}>
+      <div className="max-w-3xl mx-auto p-1 flex flex-col justify-center items-center gap-1 ">
+        <CheckBoxes />
+        {accordions.map((accordion, index) => (
+          <div
+            key={accordion.id}
+            className="w-full grid grid-cols-[200px_minmax(0,1fr)_36px] gap-1"
+          >
+            <FloatingFieldset>
+              <FloatingInput
+                id={`title-${accordion.id}`}
+                value={accordion.title}
+                onChange={(e) =>
+                  accordDispatch({
+                    type: "UPDATE_TITLE",
+                    id: accordion.id,
+                    value: e.target.value,
+                  })
+                }
+              />
+              <FloatingLabel htmlFor={`title-${accordion.id}`} label="Título" />
+            </FloatingFieldset>
+            <FloatingFieldset>
+              <FloatingInput
+                id={`message-${accordion.id}`}
+                value={accordion.message}
+                onChange={(e) =>
+                  accordDispatch({
+                    type: "UPDATE_MESSAGE",
+                    id: accordion.id,
+                    value: e.target.value,
+                  })
+                }
+              />
+              <FloatingLabel
+                htmlFor={`message-${accordion.id}`}
+                label="Mensagem"
+              />
+            </FloatingFieldset>
+            {index > 0 && <RemoveButton accordionId={accordion.id} />}
+          </div>
+        ))}
+        <AddButton />
+      </div>
+    </BlockEditorWrapper>
+  );
+}; // TODO
+
+const AlertEditor = (props: AlertEditorProps) => (
+  <BlockEditorWrapper {...props}>Alert</BlockEditorWrapper>
+); // TODO
+
+const CodeEditor = (props: CodeEditorProps) => {
   return (
     <BlockEditorWrapper {...props}>
       <CodeFieldset {...props} />
@@ -44,58 +171,13 @@ const CodeEditor = (props: {
   );
 };
 
-const TextEditor = (props: {
-  id: string;
-  wrapperLabel: string;
-  value: string;
-  setVal: (data: string) => void;
-  onRemove: (id: string) => void;
-  moveToNext: any;
-}) => {
-  return (
-    <BlockEditorWrapper {...props}>
-      <EditorFieldset id={props.id} value={props.value} setVal={props.setVal} />
-    </BlockEditorWrapper>
-  );
-};
+const HoverCardEditor = (props: HoverCardEditorProps) => (
+  <BlockEditorWrapper {...props}>HoverCard</BlockEditorWrapper>
+); // TODO
 
-const initialState: ImageState = {
-  preview: null,
-  filename: null,
-  file: null,
-  size: null,
-  type: "--",
-  width: null,
-  height: null,
-  date: "--",
-};
-
-const reducer = (state: ImageState, action: ImageStateAction): ImageState => {
-  switch (action.type) {
-    case "SET_ALL":
-      return { ...state, ...action.payload };
-    case "RESET":
-      return initialState;
-    default:
-      return state;
-  }
-};
-
-interface ImageEditorProps {
-  id: string;
-  src: string;
-  alt: string;
-  filename: string;
-  caption: string;
-  setFile: (file: File) => void;
-  setSrc: (src: string) => void;
-  setAlt: (alt: string) => void;
-  setFilename: (filename: string) => void;
-  setCaption: (caption: string) => void;
-  wrapperLabel: string;
-  moveToNext: any;
-  onRemove: (id: string) => void;
-}
+const ImageCarouselEditor = (props: ImageCarouselEditorProps) => (
+  <BlockEditorWrapper {...props}>ImageCarousel</BlockEditorWrapper>
+); // TODO
 
 const ImageEditor = ({
   id,
@@ -113,7 +195,7 @@ const ImageEditor = ({
   onRemove,
 }: ImageEditorProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [imageData, dispatch] = useReducer(reducer, initialState);
+  const [imageData, dispatch] = useReducer(imageReducer, imageInitialState);
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     // <input type="file"> triggers onChange only if (.value) changes
@@ -210,46 +292,32 @@ const ImageEditor = ({
   );
 };
 
-const ImageCarouselEditor = ({
-  id,
-  onRemove,
-}: {
-  id: string;
-  onRemove: (id: string) => void;
-}) => <div>ImgCarousel</div>;
+const QuizEditor = (props: QuizEditorProps) => (
+  <BlockEditorWrapper {...props}>Quiz</BlockEditorWrapper>
+); // TODO
 
-const QuoteEditor = (props: {
-  id: string;
-  wrapperLabel: string;
-  author: string;
-  setAuthor: (author: string) => void;
-  quote: string;
-  setQuote: (author: string) => void;
-  moveToNext: any;
-  onRemove: (id: string) => void;
-}) => (
+const QuoteEditor = (props: QuoteEditorProps) => (
   <BlockEditorWrapper {...props}>
     <QuoteFieldset {...props} />
   </BlockEditorWrapper>
 );
 
-const QuizEditor = ({
-  id,
-  onRemove,
-}: {
-  id: string;
-  onRemove: (id: string) => void;
-}) => <div>Quiz</div>;
-
-const HoverCardEditor = () => <div />; // TODO
+const TextEditor = (props: TextEditorProps) => {
+  return (
+    <BlockEditorWrapper {...props}>
+      <EditorFieldset id={props.id} value={props.value} setVal={props.setVal} />
+    </BlockEditorWrapper>
+  );
+};
 
 export {
   AccordionEditor,
   AlertEditor,
   CodeEditor,
-  TextEditor,
-  ImageEditor,
+  HoverCardEditor,
   ImageCarouselEditor,
-  QuoteEditor,
+  ImageEditor,
   QuizEditor,
+  QuoteEditor,
+  TextEditor,
 };

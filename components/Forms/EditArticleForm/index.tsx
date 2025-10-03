@@ -2,23 +2,17 @@
 
 import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { putArticle } from "@/services/article";
+import { putArticlePublic, putArticleSave } from "@/services/article";
 import { convertToLargeDate } from "@/utils/dates";
 import {
   ConfirmFormButton,
   ReturnToHome,
   SaveFormButton,
 } from "@/components/Buttons";
-import {
-  getEditorFormDataValue,
-  getSubtitleFormDataValue,
-  getTitleFormDataValue,
-  SubtitleFieldset,
-  TitleFieldset,
-} from "@/components/Fieldsets";
+import { SubtitleFieldset, TitleFieldset } from "@/components/Fieldsets";
 import { BlockList, NewBlockButtons } from "../utils";
 import Link from "next/link";
+import { sonnerToastPromise } from "@/toasters";
 
 export const EditArticleForm = ({
   profileId,
@@ -28,44 +22,91 @@ export const EditArticleForm = ({
   article: Article;
 }) => {
   const [htmlTitle, setHtmlTitle] = useState(title);
-  const [htmlDescription, setHtmlDescription] = useState(sub_title || "");
+  const [htmlSubtitle, setHtmlSubtitle] = useState(sub_title || "");
   const [blocks, setBlocks] = useState<Block[]>(JSON.parse(body));
+  const [isOpenState, setIsOpenState] = useState(false);
   const router = useRouter();
 
-  const [state, action, isPending] = useActionState(
+  const [postState, postAction, isPendingPost] = useActionState(
     async () => {
       const formData = new FormData();
 
-      formData.set(getTitleFormDataValue, htmlTitle);
-      formData.set(getSubtitleFormDataValue, htmlDescription);
       formData.set("profile_id", profileId);
-      formData.set(getEditorFormDataValue, JSON.stringify(blocks));
 
-      const result = await putArticle(
+      formData.set("article_title", htmlTitle);
+      formData.set("article_subtitle", htmlSubtitle);
+      formData.set("article_body", JSON.stringify(blocks));
+
+      const success = () => {
+        const now = convertToLargeDate(new Date());
+        return "Artigo publicado!";
+      };
+
+      const error = () => {
+        setIsOpenState(true);
+        return "Artigo não publicado!";
+      };
+
+      const result = putArticlePublic(
         article_id,
         { ok: false, success: null, error: null, data: null },
         formData
       );
 
-      if (!result.ok) {
-        toast.error("Artigo não salvo!"); // { description: state.error }
-      } else {
-        const now = convertToLargeDate(new Date());
-        toast("Artigo salvo!", {
-          description: `${now}`,
-          action: {
-            label: "Link",
-            onClick: () => router.push(`/articles/${result.data?.id}`),
-            actionButtonStyle: {
-              color: "f5f5f5",
-              border: "1px solid #525252",
-              borderRadius: "6px",
-              padding: "2px 4px",
-              backgroundColor: "#171717",
-            },
-          },
+      const promise = new Promise((resolve, reject) => {
+        result.then((data) => {
+          if (data.ok) resolve(result);
+          else reject(result);
         });
-      }
+      });
+
+      sonnerToastPromise(promise, success, error, "Publicando artigo...");
+
+      return result;
+    },
+    {
+      ok: false,
+      success: null,
+      error: null,
+      data: null,
+    }
+  );
+
+  const [saveState, saveAction, isPendingSave] = useActionState(
+    async () => {
+      const formData = new FormData();
+
+      formData.set("profile_id", profileId);
+
+      formData.set("article_title", htmlTitle);
+      formData.set("article_subtitle", htmlSubtitle);
+      formData.set("article_body", JSON.stringify(blocks));
+
+      const success = () => {
+        const now = convertToLargeDate(new Date());
+        return "Artigo salvo!";
+      };
+
+      const error = () => {
+        setIsOpenState(true);
+        return "Artigo não salvo!";
+      };
+
+      const result = putArticleSave(
+        article_id,
+        { ok: false, success: null, error: null, data: null },
+        formData
+      );
+
+      const promise = new Promise((resolve, reject) => {
+        result.then((data) => {
+          if (data.ok) resolve(result);
+          else reject(result);
+        });
+      });
+
+      sonnerToastPromise(promise, success, error, "Salvando artigo...");
+
       return result;
     },
     {
@@ -80,22 +121,24 @@ export const EditArticleForm = ({
     <main className="pt-10 max-w-7xl mx-auto flex justify-center items-center">
       <div className="w-full mx-4">
         <ReturnToHome />
-        <form
-          action={action}
-          className="grid gap-2 grid-cols-1 md:grid-cols-[1fr_300px]"
-        >
+        <form className="grid gap-2 grid-cols-1 md:grid-cols-[1fr_300px]">
           <div className="flex flex-col gap-2">
             <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
-            <SubtitleFieldset
-              value={htmlDescription}
-              setVal={setHtmlDescription}
-            />
+            <SubtitleFieldset value={htmlSubtitle} setVal={setHtmlSubtitle} />
             <BlockList blocks={blocks} setBlocks={setBlocks} />
             <NewBlockButtons blocks={blocks} setBlocks={setBlocks} />
           </div>
           <div className="flex flex-col gap-1">
-            <ConfirmFormButton label="Publicar" isPending={isPending} />
-            <SaveFormButton label="Salvar" isPending={isPending} />
+            <ConfirmFormButton
+              formAction={postAction}
+              label="Publicar"
+              isPending={isPendingPost}
+            />
+            <SaveFormButton
+              formAction={saveAction}
+              label="Salvar"
+              isPending={isPendingSave}
+            />
             <Link
               href={`/articles/${article_id}`}
               className="h-[38px] py-2 text-sm text-center rounded-lg transition-all duration-300 text-[#b98351] border border-neutral-700 bg-neutral-800 hover:bg-neutral-800/75"
@@ -103,8 +146,8 @@ export const EditArticleForm = ({
               Visitar artigo
             </Link>
             <div className="min-h-48 p-3 rounded-lg border border-neutral-700">
-              {state.error && (
-                <p className="text-red-500 font-medium">{state.error}</p>
+              {postState.error && (
+                <p className="text-red-500 font-medium">{postState.error}</p>
               )}
             </div>
           </div>

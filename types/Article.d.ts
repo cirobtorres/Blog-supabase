@@ -57,10 +57,6 @@ type ArticleBodyCode = BlockType<{ data: BlogCode }>;
 type ArticleQuoteText = BlockType<{ data: BlogQuote }>;
 type ArticleImage = BlockType<{ data: Image }>;
 
-type ImageStateAction =
-  | { type: "SET_ALL"; payload: Partial<ImageState> }
-  | { type: "RESET" };
-
 type ImageState = {
   preview: string | null;
   file?: File | null;
@@ -77,3 +73,9 @@ type AnchorTracher = {
   text: string | React.ReactNode;
   tag: string;
 }[];
+
+type AccordionItem = {
+  id: string;
+  title: string;
+  message: string;
+};

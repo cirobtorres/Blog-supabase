@@ -172,7 +172,9 @@ const BlockList = ({
           <AccordionEditor
             key={block.id}
             id={block.id}
+            wrapperLabel="Acordeão"
             onRemove={removeBlock}
+            moveToNext={moveBlockToNextPosition}
           />
         );
       case "image":
@@ -199,16 +201,30 @@ const BlockList = ({
           <ImageCarouselEditor
             key={block.id}
             id={block.id}
+            wrapperLabel="Carrossel de Imagem"
             onRemove={removeBlock}
+            moveToNext={moveBlockToNextPosition}
           />
         );
       case "alert":
         return (
-          <AlertEditor key={block.id} id={block.id} onRemove={removeBlock} />
+          <AlertEditor
+            key={block.id}
+            id={block.id}
+            wrapperLabel="Alerta"
+            onRemove={removeBlock}
+            moveToNext={moveBlockToNextPosition}
+          />
         );
       case "quiz":
         return (
-          <QuizEditor key={block.id} id={block.id} onRemove={removeBlock} />
+          <QuizEditor
+            key={block.id}
+            id={block.id}
+            wrapperLabel="Quiz"
+            onRemove={removeBlock}
+            moveToNext={moveBlockToNextPosition}
+          />
         );
       default:
         return null;
@@ -280,7 +296,7 @@ const NewBlockButtons = ({
             setIsMenuOpen(!isMenuOpen);
           }}
           className={
-            `w-fit mx-auto p-1 cursor-pointer rounded-xl ` +
+            `size-10 flex justify-center items-center mx-auto p-1 cursor-pointer rounded-xl ` +
             `outline-none border border-neutral-700 ` +
             `transition-all duration-200 hover:bg-neutral-700 hover:ring-3 hover:ring-neutral-100 ` +
             `focus-within:ring-3 focus-within:ring-neutral-100 focus-within:bg-neutral-700 ` +
@@ -372,4 +388,4 @@ const BlockEditorWrapper = ({
   </BlkEdWrapperAccordion>
 );
 
-export { BlockList, BlockEditorWrapper, NewBlockButtons };
+export { BlockList, NewBlockButtons, BlockEditorWrapper };

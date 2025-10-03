@@ -23,7 +23,7 @@ export const ArticleCodeBlock = ({
   }, [filename, language, code]);
 
   return (
-    <div className="overflow-hidden mb-8 rounded-lg border border-neutral-600 bg-[#1E1E1E] group">
+    <div className="overflow-hidden mb-8 rounded border border-neutral-600 bg-[#1E1E1E] group">
       <div className="flex justify-between p-3 font-medium text-sm border-b border-neutral-600">
         <p className="pb-0! text-neutral-300">{filename}</p>
         <p className="pb-0! text-neutral-500">

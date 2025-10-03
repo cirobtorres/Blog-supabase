@@ -3,23 +3,28 @@ import { LoadingSpinning } from "../LoadingSpinning";
 
 export const ConfirmFormButton = ({
   label,
+  formAction,
   isPending,
 }: {
   label: string;
+  formAction: () => void;
   isPending?: boolean;
 }) => (
   <button
     type="submit"
     disabled={isPending}
+    formAction={formAction}
     className={
-      `w-full cursor-pointer h-[38px] py-2 not-disabled:transition-all not-disabled:duration-300 outline-none ` +
+      `relative w-full cursor-pointer h-[38px] py-2 not-disabled:transition-all not-disabled:duration-300 outline-none ` +
       `text-sm text-neutral-100 rounded-xs border border-theme-color bg-theme-color-light ` +
-      `focus-visible:ring-2 focus-visible:ring-theme-color focus-visible:border-transparent ` +
-      `disabled:cursor-auto disabled:text-neutral-400 disabled:border-neutral-600 disabled:bg-neutral-700 `
+      `focus-visible:ring-2 focus-visible:ring-neutral-100 focus-visible:border-transparent ` +
+      `disabled:cursor-auto ` // disabled:text-neutral-400 disabled:border-neutral-600 disabled:bg-neutral-700
     }
   >
     {isPending ? (
-      <LoadingSpinning loadingState={isPending} className="my-0" />
+      <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
+        <LoadingSpinning loadingState={isPending} className="my-0" />
+      </div>
     ) : (
       label
     )}
@@ -28,24 +33,29 @@ export const ConfirmFormButton = ({
 
 export const SaveFormButton = ({
   label,
+  formAction,
   isPending,
 }: {
   label: string;
   isPending?: boolean;
+  formAction: () => void;
 }) => (
   <button
-    type="button"
+    type="submit"
     disabled={isPending}
+    formAction={formAction}
     className={
-      `w-full cursor-pointer h-[38px] py-2 not-disabled:transition-all not-disabled:duration-300 ` +
+      `relative w-full cursor-pointer h-[38px] py-2 not-disabled:transition-all not-disabled:duration-300 ` +
       `text-sm text-neutral-100 rounded-xs border border-neutral-700 bg-neutral-800 ` +
-      `hover:border-neutral-600 hover:bg-neutral-800 ` +
-      `focus-visible:ring-[3px] focus-visible:ring-neutral-100 focus-visible:bg-neutral-800 ` +
-      `disabled:cursor-auto disabled:text-neutral-400 disabled:border-neutral-600 disabled:bg-neutral-700 `
+      `not-disabled:hover:border-neutral-600 not-disabled:hover:bg-neutral-800 ` +
+      `focus-visible:ring-2 focus-visible:ring-neutral-100 focus-visible:border-transparent ` +
+      `disabled:cursor-auto ` // disabled:text-neutral-400 disabled:border-neutral-600 disabled:bg-neutral-700
     }
   >
     {isPending ? (
-      <LoadingSpinning loadingState={isPending} className="my-0" />
+      <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
+        <LoadingSpinning loadingState={isPending} className="my-0" />
+      </div>
     ) : (
       label
     )}

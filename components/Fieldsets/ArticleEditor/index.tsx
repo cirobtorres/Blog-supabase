@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../../ui/alert-dialog";
-import { FloatingInput } from "..";
+import { DeprecatingFloatingInput } from "..";
 import { buttonVariants } from "../../ui/button";
 import { cn } from "../../../utils/classnames";
 import {
@@ -403,13 +403,13 @@ export const TipTapTextEditor = ({
                   o texto será o próprio link.
                 </AlertDialogDescription>
                 <div className="px-3">
-                  <FloatingInput
+                  <DeprecatingFloatingInput
                     id="text-link"
                     label="Texto"
                     value={textLinkInput}
                     setValue={(e) => setTextLinkInput(e.target.value)}
                   />
-                  <FloatingInput
+                  <DeprecatingFloatingInput
                     id="text-url"
                     label="URL"
                     value={linkInput}
@@ -1055,14 +1055,14 @@ const ImageDataInput = ({
   setAlt,
 }: ImageDataInputProps) => (
   <div className="p-2 pt-0">
-    <FloatingInput
+    <DeprecatingFloatingInput
       id="1" // TODO
       label="Nome da imagem"
       placeholder=""
       value={filename}
       setValue={(e) => setFilename(e.target.value)}
     />
-    <FloatingInput
+    <DeprecatingFloatingInput
       id="2" // TODO
       label="Nome Alternativo"
       placeholder=""
@@ -1074,7 +1074,7 @@ const ImageDataInput = ({
         Texto exibido no lugar da imagem caso o recurso esteja indisponível.
       </p>
     </small>
-    <FloatingInput
+    <DeprecatingFloatingInput
       id="3" // TODO
       label="Rodapé"
       placeholder=""

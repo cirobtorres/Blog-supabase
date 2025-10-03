@@ -6,7 +6,7 @@ import {
 } from "./ArticleEditor";
 import { ChangeEventHandler, Dispatch, SetStateAction } from "react";
 
-export const FloatingInput = ({
+export const DeprecatingFloatingInput = ({
   id,
   label,
   placeholder = " ",
@@ -22,7 +22,13 @@ export const FloatingInput = ({
   return (
     <fieldset
       id={`floating-fieldset-${id}`}
-      className="relative mt-2 transition-[border] duration-300 rounded border border-neutral-700 focus-within:border-theme-color bg-neutral-800 group"
+      className={
+        "relative mt-2 rounded group " +
+        "transition-all duration-300 " +
+        "border border-neutral-700 " +
+        "bg-neutral-800 " +
+        "focus-within:border-transparent focus-within:ring-2 focus-within:ring-neutral-100 "
+      } // TODO: Remover esse mt-2 e ajustar todos os mt-0 nos <FloatingInput /> usados
     >
       <input
         id={`floating-input-${id}`}
@@ -37,7 +43,7 @@ export const FloatingInput = ({
           `px-2 pb-0.5 pt-4 ` +
           `appearance-none border-none placeholder:text-transparent placeholder:select-none bg-transparent ` +
           `transition-all duration-300 rounded outline-none ` +
-          `focus:placeholder:text-neutral-500 ` + // focus-visible:ring-theme-color focus-visible:ring-1
+          `focus:placeholder:text-neutral-500 ` +
           `peer `
         }
       />
@@ -251,7 +257,7 @@ export const CodeFieldset = ({
   setLanguage: (data: string) => void;
 }) => (
   <fieldset className="h-full flex flex-col gap-1 p-1 [&_fieldset]:mt-0">
-    <FloatingInput
+    <DeprecatingFloatingInput
       id={"-filename-" + id} // input-filename-1,2,3,4,...,n
       label="Caminho do Arquivo"
       placeholder="path/to/my/file.py"
@@ -283,7 +289,7 @@ export const QuoteFieldset = ({
   setQuote: (data: string) => void;
 }) => (
   <fieldset className="h-full flex flex-col gap-1 p-1 [&_fieldset]:mt-0">
-    <FloatingInput
+    <DeprecatingFloatingInput
       id={"-author-" + id} // input-author-1,2,3,4,...,n
       label="Autor da citação"
       placeholder="Arthur Schopenhauer"
@@ -303,4 +309,95 @@ export const getEmailFormDataValue = inputId("E-mail");
 export const getPasswordFormDataValue = inputId("Password");
 export const getTitleFormDataValue = inputId("Title");
 export const getSubtitleFormDataValue = inputId("Subtitle");
-export const getEditorFormDataValue = inputId("Body");
+
+export const FloatingFieldset = ({
+  children,
+  ...props
+}: React.FieldsetHTMLAttributes<HTMLFieldSetElement> & {
+  children: React.ReactNode;
+}) => {
+  return (
+    <fieldset
+      {...props}
+      className={
+        "relative rounded group w-full " +
+        "transition-all duration-300 " +
+        "has-disabled:[&_label]:text-neutral-700 " +
+        "bg-neutral-800 has-disabled:border-neutral-800 has-disabled:bg-neutral-900 " +
+        "border border-neutral-700 focus-within:border-transparent " +
+        "focus-within:ring-2 focus-within:ring-neutral-100 "
+      }
+    >
+      {children}
+    </fieldset>
+  );
+};
+
+export const FloatingInput = ({
+  id,
+  value,
+  onChange,
+  placeholder = " ",
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement> & FloatingInputProps) => (
+  <input
+    id={id}
+    name={id}
+    type="text"
+    autoComplete="off"
+    value={value}
+    onChange={onChange}
+    placeholder={placeholder}
+    {...props}
+    className={
+      "h-full w-full px-2 pt-4 pb-0.5 text-sm font-medium rounded peer " +
+      "transition-all duration-300 " +
+      "appearance-none border-none outline-none " +
+      "placeholder:text-transparent placeholder:select-none " +
+      "text-neutral-400 bg-transparent " +
+      "focus:placeholder:text-neutral-500 "
+    }
+  />
+);
+
+export const FloatingLabel = ({
+  htmlFor,
+  label,
+  ...props
+}: React.LabelHTMLAttributes<HTMLLabelElement> & {
+  htmlFor: string;
+  label: string;
+}) => (
+  <label
+    htmlFor={htmlFor}
+    {...props}
+    className={
+      `absolute top-1/2 z-10 origin-[0] start-1 px-1 font-medium select-none ` +
+      `-translate-y-5 scale-75 peer-focus:-translate-y-5 peer-focus:scale-75 text-neutral-100 peer-focus:text-neutral-100 ` + // text-theme-color peer-focus:text-theme-color
+      `peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white ` +
+      `text-sm pointer-events-none bg-transparent bg-opacity-50 ` +
+      `transform transition-top duration-100 `
+    }
+  >
+    {label}
+  </label>
+);
+
+type ControlledFloatingInputProps = {
+  id: string;
+  placeholder?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
+type UncontrolledFloatingInputProps = {
+  id: string;
+  placeholder?: string;
+  value?: undefined;
+  onChange?: undefined;
+  defaultValue?: string;
+};
+
+type FloatingInputProps =
+  | ControlledFloatingInputProps
+  | UncontrolledFloatingInputProps;
