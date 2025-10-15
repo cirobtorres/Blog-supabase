@@ -1,0 +1,270 @@
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import CommentAvatar from "../../CommentAvatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useProfile } from "@/hooks/useProfile";
+import {
+  AlertIcon,
+  CancelIcon,
+  DeleteIcon,
+  EditIcon,
+  OptionIcon,
+  ReportIcon,
+} from "@/components/Icons";
+import { deleteComment, useAsyncFn } from "@/services/comment";
+import { toast } from "sonner";
+import { buttonVariants } from "@/styles/classNames";
+import { convertDateToYouTubeLike } from "@/utils/dates";
+import { useComment } from "@/hooks/useComment";
+
+const CommentAvatarRow = ({
+  comment,
+  setIsDeleted,
+  isEditingState,
+}: {
+  comment: CommentsSafe;
+  setIsDeleted: (value: boolean) => void;
+  isEditingState: [
+    isEditing: boolean,
+    setIsEditing: Dispatch<SetStateAction<boolean>>
+  ];
+}) => (
+  <div className="grid grid-cols-[40px_1fr_40px] items-center gap-2">
+    <CommentAvatar profile={comment.profiles} />
+    <CommentSubHeader comment={comment} />
+    <CommentOptions
+      comment={comment}
+      setIsDeleted={setIsDeleted}
+      isEditingState={isEditingState}
+    />
+  </div>
+);
+
+const DatetimeFormater = ({
+  createdAt,
+  updatedAt,
+}: {
+  createdAt: Date;
+  updatedAt: Date | null;
+}) => {
+  return (
+    <>
+      <span className="text-[#808080]">
+        {useMemo(() => convertDateToYouTubeLike(createdAt), [createdAt])}
+      </span>
+      <span className="text-[#808080]">
+        {updatedAt && updatedAt > createdAt && "(editado)"}
+      </span>
+    </>
+  );
+};
+
+const CommentSubHeader = ({ comment }: { comment?: CommentsSafe }) => {
+  const { loggedProfile: currentUser } = useProfile();
+
+  if (comment) {
+    const commentAuthor = comment.profiles.id;
+    const isUserComment = commentAuthor === currentUser?.id;
+
+    return (
+      <p
+        className={`flex gap-1 items-end text-sm 
+        ${isUserComment ? "text-theme-color" : "text-neutral-200"}`}
+      >
+        {comment.profiles ? (
+          <>
+            {comment.profiles.username}
+            <DatetimeFormater
+              createdAt={comment.created_at}
+              updatedAt={comment.updated_at}
+            />
+          </>
+        ) : (
+          "[usuário excluído]"
+        )}
+      </p>
+    );
+  }
+  return (
+    <p className="flex gap-1 items-end text-sm text-[#808080]">
+      &#91;Excluído pelo autor&#93;
+    </p>
+  );
+};
+
+const CommentOptions = ({
+  comment,
+  setIsDeleted,
+  isEditingState,
+}: {
+  comment: CommentsSafe;
+  setIsDeleted: (value: boolean) => void;
+  isEditingState: [
+    isEditing: boolean,
+    setIsEditing: Dispatch<SetStateAction<boolean>>
+  ];
+}) => {
+  const { loggedProfile } = useProfile();
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isEditing, setIsEditing] = isEditingState;
+
+  return (
+    loggedProfile &&
+    !comment.is_deleted && (
+      <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+        <PopoverTrigger
+          className={`relative p-2 size-10 cursor-pointer hover:bg-neutral-800 rounded-full outline-none transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50 ${
+            isMenuOpen ? "bg-neutral-800" : ""
+          }`}
+        >
+          <OptionIcon className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
+        </PopoverTrigger>
+        <PopoverContent>
+          <EditComment
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+            setIsMenuOpen={setIsMenuOpen}
+          />
+          <DeleteComment commentId={comment.id} setIsDeleted={setIsDeleted} />
+          <ReportComment
+            loggedProfile={loggedProfile}
+            profile={comment.profiles}
+          />
+        </PopoverContent>
+      </Popover>
+    )
+  );
+};
+
+const EditComment = ({
+  isEditing,
+  setIsEditing,
+  setIsMenuOpen,
+}: {
+  isEditing: boolean;
+  setIsEditing: (value: boolean) => void;
+  setIsMenuOpen: (value: boolean) => void;
+}) => (
+  <button
+    type="button"
+    onClick={() => {
+      setIsMenuOpen(false);
+      setIsEditing(!isEditing);
+    }}
+    tabIndex={0}
+    className="w-full flex justify-between items-center p-2 cursor-pointer rounded-md hover:bg-neutral-800 outline-none transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50"
+  >
+    Editar
+    <EditIcon className="size-[14px]" />
+  </button>
+);
+
+const DeleteComment = ({
+  commentId,
+  setIsDeleted,
+}: {
+  commentId: string;
+  setIsDeleted: (value: boolean) => void;
+}) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const commentContext = useComment();
+  const removeComments = commentContext?.removeComments; // Delete locally (client side). Alters the provider state
+  const deleteCommentFn = useAsyncFn(deleteComment, [], false); // Delete remotelly (server side). Alters the database state
+
+  const onCommentDelete = async () => {
+    return deleteCommentFn
+      .execute({
+        id: commentId,
+      })
+      .then(() => {
+        removeComments(commentId);
+        toast("Comentário deletado!");
+        setIsDialogOpen(false);
+        setIsDeleted(true);
+      })
+      .catch((e) => {
+        console.error(e);
+        toast("Erro ao tentar deletar o comentário");
+      })
+      .finally(() => setIsDeleted(true));
+  };
+
+  return (
+    <AlertDialog open={isDialogOpen}>
+      <AlertDialogTrigger
+        onClick={() => setIsDialogOpen(true)}
+        className="w-full p-2 cursor-pointer rounded-md hover:bg-neutral-800 outline-none transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50"
+      >
+        <div className="flex justify-between items-center">
+          Deletar
+          <DeleteIcon className="size-[14px]" />
+        </div>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center justify-between">
+            Deletar artigo?
+            <AlertDialogCancel
+              className="has-[>svg]:px-1 h-fit py-1"
+              onClick={() => setIsDialogOpen(false)}
+            >
+              <CancelIcon />
+            </AlertDialogCancel>
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-warning flex items-center gap-2 border-y border-neutral-800 bg-neutral-950">
+            <AlertIcon className="size-5" />
+            Essa ação não poderá ser desfeita!
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex items-center gap-2">
+          <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>
+            Cancelar
+          </AlertDialogCancel>
+          <AlertDialogAction
+            type="button"
+            onClick={onCommentDelete}
+            className={buttonVariants({ variant: "destructive" })}
+          >
+            Confirmar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
+const ReportComment = ({
+  loggedProfile,
+  profile,
+}: {
+  loggedProfile: Profile | null;
+  profile: ProfileSafe;
+}) => {
+  const isNotCommentOwner = loggedProfile?.id !== profile.id;
+  return (
+    isNotCommentOwner && (
+      <div>
+        Reportar
+        <ReportIcon />
+      </div>
+    )
+  );
+};
+
+export default CommentAvatarRow;

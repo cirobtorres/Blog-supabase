@@ -1,0 +1,153 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HomePage matches the snapshot 1`] = `
+<DocumentFragment>
+  <main
+    class="max-w-7xl mx-auto min-h-screen bg-slate-900"
+  >
+    <section
+      class="grid grid-rows-[32px_100px_1fr] py-10 mx-10 bg-slate-800"
+    >
+      <div
+        class="flex justify-between mx-4 bg-slate-950"
+      >
+        <div
+          class="flex items-center gap-2"
+        >
+          <a
+            class="w-fit py-1 px-2 bg-slate-700"
+            href="/articles"
+          >
+            Articles
+          </a>
+        </div>
+        <div
+          class="flex items-center gap-2"
+        >
+          <p>
+            UserTest
+          </p>
+          <button
+            class="py-1 cursor-pointer bg-slate-700"
+          >
+            Sign out
+          </button>
+          <a
+            class="w-fit py-1 px-2 bg-slate-700"
+            href="/articles/create-article"
+          >
+            Create Article
+          </a>
+        </div>
+      </div>
+      <div
+        class="flex items-center mx-4 bg-slate-800"
+      >
+        <h1>
+          Feed
+        </h1>
+      </div>
+      <ul
+        class="flex flex-col mx-4 [&_li]:not-last:mb-10 bg-slate-700"
+      >
+        <li
+          class="w-fit hover:underline"
+          id="5d6da210-1710-4c6b-b777-7c6e0c29080f"
+        >
+          <a
+            href="articles/5d6da210-1710-4c6b-b777-7c6e0c29080f"
+          >
+            <h2>
+              Acsi enim comparo unde labore strues defessus quisquam clam absque.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="daa7057b-7720-4c5f-a358-c7158ac208c0"
+        >
+          <a
+            href="articles/daa7057b-7720-4c5f-a358-c7158ac208c0"
+          >
+            <h2>
+              Cotidie acquiro amor sperno thermae.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="b3ac39ba-94bf-46c0-8d36-41e587231845"
+        >
+          <a
+            href="articles/b3ac39ba-94bf-46c0-8d36-41e587231845"
+          >
+            <h2>
+              Corrupti tepesco tandem placeat cuius subiungo abduco terga vel.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="a26e9c87-d19f-483d-94b8-f9d0f15f0dd7"
+        >
+          <a
+            href="articles/a26e9c87-d19f-483d-94b8-f9d0f15f0dd7"
+          >
+            <h2>
+              Voluptates comitatus vomito repellat corrupti umquam quaerat.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="50ab9a22-8e27-4672-b54d-c69284daa17f"
+        >
+          <a
+            href="articles/50ab9a22-8e27-4672-b54d-c69284daa17f"
+          >
+            <h2>
+              Consequatur calco damno crebro delinquo volva copia teres.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="216c3c43-066a-4120-a1a6-58fdbe0175e7"
+        >
+          <a
+            href="articles/216c3c43-066a-4120-a1a6-58fdbe0175e7"
+          >
+            <h2>
+              Tempus delinquo bene adhuc comminor adfero suasoria spargo curvo.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="34d61e3d-e798-49d4-8e91-39322d9f5999"
+        >
+          <a
+            href="articles/34d61e3d-e798-49d4-8e91-39322d9f5999"
+          >
+            <h2>
+              Celer cogo corrigo caries nulla subito aequitas volup.
+            </h2>
+          </a>
+        </li>
+        <li
+          class="w-fit hover:underline"
+          id="4de5ae1e-3da5-42ad-adaf-9365f6f82151"
+        >
+          <a
+            href="articles/4de5ae1e-3da5-42ad-adaf-9365f6f82151"
+          >
+            <h2>
+              Derelinquo convoco cetera vesper crepusculum depromo caterva vae crebro.
+            </h2>
+          </a>
+        </li>
+      </ul>
+    </section>
+  </main>
+</DocumentFragment>
+`;
