@@ -2,6 +2,7 @@ type Profile = {
   id: string;
   email: string;
   username: string;
+  admin: boolean;
   avatar_url: string | null;
   updated_at: Date | null;
   created_at: Date;

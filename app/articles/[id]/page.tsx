@@ -3,7 +3,6 @@ import { Footer } from "../../../components/Footer";
 import { createServerAppClient } from "../../../supabase/server";
 import { Article } from "@/components/Article";
 import { RelatedArticles } from "@/components/RelatedArticles";
-import { getProfile } from "@/services/user";
 import { ArticleTitle } from "../../../components/ArticleTitle";
 import { ArticleCover } from "@/components/ArticleCover";
 import { CommentProvider } from "@/providers/CommentProvider";
@@ -32,7 +31,15 @@ export default async function ArticlePage({
       </main>
     );
 
-  const profile: Profile | null = await getProfile();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user?.id)
+    .single();
 
   return (
     <>

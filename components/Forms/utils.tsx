@@ -27,6 +27,8 @@ import {
   BlkEdWrapperAccordionItem,
   BlkEdWrapperAccordionTrigger,
 } from "../ui/accordion";
+import { cn } from "@/utils/classnames";
+import { focusWithinWhiteRing } from "@/styles/classNames";
 
 interface BlockIcons {
   svg: React.ReactNode;
@@ -212,6 +214,8 @@ const BlockList = ({
             key={block.id}
             id={block.id}
             wrapperLabel="Alerta"
+            value={(block.data as { body: string })?.body ?? ""}
+            setVal={(val) => updateBlock(block.id, { body: val })}
             onRemove={removeBlock}
             moveToNext={moveBlockToNextPosition}
           />
@@ -290,38 +294,37 @@ const NewBlockButtons = ({
 
   return (
     <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-      <PopoverTrigger asChild>
-        <button
-          onClick={() => {
-            setIsMenuOpen(!isMenuOpen);
-          }}
-          className={
-            `size-10 flex justify-center items-center mx-auto p-1 cursor-pointer rounded-xl ` +
-            `outline-none border border-neutral-700 ` +
-            `transition-all duration-200 hover:bg-neutral-700 hover:ring-3 hover:ring-neutral-100 ` +
-            `focus-within:ring-3 focus-within:ring-neutral-100 focus-within:bg-neutral-700 ` +
-            `${isMenuOpen ? "bg-neutral-700" : "bg-neutral-800"} `
-          }
-        >
-          <PlusIcon
-            className={`transition-all duration-200 ${
-              isMenuOpen ? "-rotate-[135deg] -translate-x-0.5" : "rotate-0"
-            }`}
-          />
-        </button>
+      <PopoverTrigger
+        onClick={() => {
+          setIsMenuOpen(!isMenuOpen);
+        }}
+        className={cn(
+          "size-10 flex justify-center items-center mx-auto p-1 cursor-pointer transition-all duration-300 rounded-xl outline-none border border-neutral-700 hover:border-neutral-600",
+          focusWithinWhiteRing,
+          isMenuOpen ? "bg-neutral-700" : "bg-neutral-800 hover:bg-neutral-700"
+        )}
+      >
+        <PlusIcon
+          className={`transition-all duration-300 ${
+            isMenuOpen
+              ? "stroke-neutral-100 -rotate-[135deg] -translate-x-0.5"
+              : "stroke-neutral-500 rotate-0"
+          }`}
+        />
       </PopoverTrigger>
       <PopoverContentClipPath className="data-[state=open]:animate-circular-open rounded-2xl bg-neutral-900">
         <ul
           className={
             `grid grid-cols-3 gap-2 mx-auto rounded overflow-hidden outline-none p-3 ` +
             `[&_li_button]:flex [&_li_button]:justify-center [&_li_button]:items-center ` +
-            `[&_li_button]:size-12 [&_li_button]:cursor-pointer [&_li_button]:rounded-xl ` +
+            `[&_li_button]:size-12 [&_li_button]:cursor-pointer [&_li_button]:rounded-xs ` +
             `[&_li_button]:outline-none [&_li_button]:border [&_li_button]:border-neutral-700 [&_li_button]:bg-neutral-800 ` +
             `[&_li_button]:transition-all [&_li_button]:duration-300 ` +
             `[&_li_button]:text-neutral-300 [&_li_button]:fill-neutral-700 ` +
-            `[&_li_button]:hover:bg-neutral-700 [&_li_button]:active:bg-neutral-700 [&_li_button]:focus-within:bg-neutral-700 ` +
-            // `[&_li_button]:hover:text-theme-color [&_li_button]:hover:ring-3 [&_li_button]:hover:ring-neutral-100 ` +
-            `[&_li_button]:focus-within:ring-3 [&_li_button]:focus-within:ring-neutral-100 ` // [&_li_button]:focus-within:text-theme-color
+            `[&_li_button]:hover:bg-neutral-700 [&_li_button]:active:bg-neutral-700 ` +
+            `[&_li_button]:focus-within:ring-2 [&_li_button]:focus-within:ring-neutral-100 ` +
+            `[&_li_button]:focus-within:ring-offset-2 [&_li_button]:focus-within:ring-offset-neutral-950 ` +
+            `[&_li_button]:focus-within:bg-neutral-700 `
           }
         >
           {newBlockArray.map((prop, index) => (
@@ -373,7 +376,7 @@ const BlockEditorWrapper = ({
   onRemove,
   moveToNext,
 }: BlockEditorWrapperProps) => (
-  <BlkEdWrapperAccordion type="single" collapsible>
+  <BlkEdWrapperAccordion type="single" collapsible className="w-full">
     <BlkEdWrapperAccordionItem value="item-1">
       <BlkEdWrapperAccordionTrigger
         label={wrapperLabel}

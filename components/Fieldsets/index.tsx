@@ -3,9 +3,17 @@ import {
   TipTapTextEditor,
   TipTapCodeEditor,
   TipTapQuoteEditor,
+  TipTapAlertTextEditor,
 } from "./ArticleEditor";
 import { ChangeEventHandler, Dispatch, SetStateAction } from "react";
 import { cn } from "@/utils/classnames";
+import {
+  focusVisibleWhiteRing,
+  focusWithinThemeRing,
+  focusWithinWhiteRing,
+  hoverThemeRing,
+} from "@/styles/classNames";
+import { ClosedEyeIcon, EyeIcon } from "../Icons";
 
 export const DeprecatingFloatingInput = ({
   id,
@@ -66,29 +74,6 @@ export const DeprecatingFloatingInput = ({
   );
 };
 
-export const DisplayNameFieldset = ({
-  placeholder,
-}: {
-  placeholder?: string;
-}) => (
-  <fieldset className="flex flex-col">
-    <label
-      id={labelId("Display Name")}
-      htmlFor={getDisplayNameFormDataValue}
-      className="py-1"
-    >
-      Display Name
-    </label>
-    <input
-      id={getDisplayNameFormDataValue}
-      name={getDisplayNameFormDataValue}
-      type="text"
-      placeholder={placeholder || ""}
-      className="p-1 transition-all rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
-    />
-  </fieldset>
-);
-
 export const EmailFieldset = ({ placeholder }: { placeholder?: string }) => (
   <fieldset className="flex flex-col">
     <label
@@ -135,12 +120,11 @@ export const TitleFieldset = ({
   setVal: Dispatch<SetStateAction<string>>;
 }) => (
   <fieldset
-    className={
-      "relative p-2 pt-6 pr-1 flex flex-col rounded-sm transition-all duration-300 border border-neutral-700 " +
-      "hover:ring-2 hover:ring-theme-color hover:border-transparent " +
-      "focus-within:ring-2 focus-within:ring-theme-color focus-within:border-transparent " +
-      "bg-neutral-900 article-fieldset "
-    }
+    className={cn(
+      "relative p-2 pt-6 pr-1 flex flex-col rounded-sm transition-all duration-300 border border-neutral-700 bg-neutral-900 article-fieldset-scrollbar",
+      hoverThemeRing,
+      focusWithinThemeRing
+    )}
   >
     <textarea
       id={getTitleFormDataValue}
@@ -182,12 +166,11 @@ export const SubtitleFieldset = ({
   setVal: Dispatch<SetStateAction<string>>;
 }) => (
   <fieldset
-    className={
-      "relative p-2 pt-6 pr-1 flex flex-col rounded-sm transition-all duration-300 border border-neutral-700 " +
-      "hover:ring-2 hover:ring-theme-color hover:border-transparent " +
-      "focus-within:ring-2 focus-within:ring-theme-color focus-within:border-transparent " +
-      "bg-neutral-900 article-fieldset "
-    }
+    className={cn(
+      "relative p-2 pt-6 pr-1 flex flex-col rounded-sm transition-all duration-300 border border-neutral-700 bg-neutral-900 article-fieldset-scrollbar",
+      hoverThemeRing,
+      focusWithinThemeRing
+    )}
   >
     <textarea
       id={getSubtitleFormDataValue}
@@ -220,20 +203,36 @@ export const SubtitleFieldset = ({
   </fieldset>
 );
 
-export const EditorFieldset = ({
+export const AlertFieldset = ({
   id,
   value,
   setVal,
-  defaultValue,
 }: {
   id: string;
   value: string;
   setVal: (data: any) => void;
-  defaultValue?: string;
+}) => (
+  <fieldset className="h-full flex flex-col p-1">
+    <TipTapAlertTextEditor
+      id={"input-alert-" + id} // input-alert-text-1, 2, 3, 4, ..., n
+      setVal={setVal}
+      defaultValue={value}
+    />
+  </fieldset>
+);
+
+export const EditorFieldset = ({
+  id,
+  value,
+  setVal,
+}: {
+  id: string;
+  value: string;
+  setVal: (data: any) => void;
 }) => (
   <fieldset className="h-full flex flex-col p-1">
     <TipTapTextEditor
-      id={inputId("-body-" + id)} // input-body-text-1,2,3,4,...,n
+      id={"input-body-" + id} // input-body-text-1, 2, 3, 4, ..., n
       setVal={setVal}
       defaultValue={value}
     />
@@ -258,20 +257,24 @@ export const CodeFieldset = ({
   setLanguage: (data: string) => void;
 }) => (
   <fieldset className="h-full flex flex-col gap-1 p-1 [&_fieldset]:mt-0">
-    <DeprecatingFloatingInput
-      id={"-filename-" + id} // input-filename-1,2,3,4,...,n
-      label="Caminho do Arquivo"
-      placeholder="path/to/my/file.py"
-      value={filename}
-      setValue={(e) => setFilename(e.target.value)}
-    />
+    <FloatingFieldset>
+      <FloatingInput
+        id={"input-filename-" + id} // input-filename-1, 2, 3, 4, ..., n
+        placeholder="path/to/my/file.py"
+        value={filename}
+        onChange={(e) => setFilename(e.target.value)}
+      />
+      <FloatingLabel
+        htmlFor={"input-filename-" + id}
+        label="Caminho do Arquivo"
+      />
+    </FloatingFieldset>
     <TipTapCodeEditor
-      id={inputId("-codebody-" + id)} // input-codebody-1,2,3,4,...,n
+      id={"input-codebody-" + id} // input-codebody-1, 2, 3, 4, ..., n
       defaultCode={code}
       defaultlanguage={language}
       setVal={setCode}
       setLanguage={setLanguage}
-      autoFocus
     />
   </fieldset>
 );
@@ -290,15 +293,17 @@ export const QuoteFieldset = ({
   setQuote: (data: string) => void;
 }) => (
   <fieldset className="h-full flex flex-col gap-1 p-1 [&_fieldset]:mt-0">
-    <DeprecatingFloatingInput
-      id={"-author-" + id} // input-author-1,2,3,4,...,n
-      label="Autor da citação"
-      placeholder="Arthur Schopenhauer"
-      value={author}
-      setValue={(e) => setAuthor(e.target.value)}
-    />
+    <FloatingFieldset>
+      <FloatingInput
+        id={"input-author-" + id}
+        placeholder="Arthur Schopenhauer"
+        value={author}
+        onChange={(e) => setAuthor(e.target.value)}
+      />
+      <FloatingLabel htmlFor={"input-author-" + id} label="Autor da citação" />
+    </FloatingFieldset>
     <TipTapQuoteEditor
-      id={inputId("-quote-" + id)} // input-quote-text-1,2,3,4,...,n
+      id={"input-quote-" + id} // input-quote-text-1, 2, 3, 4, ..., n
       setVal={setQuote}
       defaultValue={quote}
     />
@@ -314,21 +319,20 @@ export const getSubtitleFormDataValue = inputId("Subtitle");
 export const FloatingFieldset = ({
   children,
   className,
+  error,
   ...props
 }: React.FieldsetHTMLAttributes<HTMLFieldSetElement> & {
   children: React.ReactNode;
   className?: string;
+  error?: boolean;
 }) => {
   return (
     <fieldset
       {...props}
       className={cn(
-        "relative rounded group w-full " +
-          "transition-all duration-300 " +
-          "has-disabled:[&_label]:text-neutral-700 " +
-          "bg-neutral-800 has-disabled:border-neutral-800 has-disabled:bg-neutral-900 " +
-          "border border-neutral-700 focus-within:border-transparent " +
-          "focus-within:ring-2 focus-within:ring-neutral-100 ",
+        "relative w-full transition-all duration-300 rounded-xs has-disabled:cursor-not-allowed has-disabled:[&_label]:text-neutral-700 bg-neutral-900 has-disabled:border-neutral-800 has-disabled:bg-neutral-900 border border-neutral-700 group",
+        focusWithinWhiteRing,
+        error && "border-red-500",
         className
       )}
     >
@@ -355,12 +359,7 @@ export const FloatingInput = ({
     placeholder={placeholder}
     {...props}
     className={cn(
-      "h-full w-full px-2 pt-4 pb-0.5 text-sm font-medium rounded peer " +
-        "transition-all duration-300 " +
-        "appearance-none border-none outline-none " +
-        "placeholder:text-transparent placeholder:select-none " +
-        "text-neutral-400 bg-transparent " +
-        "focus:placeholder:text-neutral-500 ",
+      "h-full w-full px-2 pt-4 pb-0.5 text-sm font-medium rounded peer transition-all duration-300 appearance-none border-none outline-none placeholder:text-transparent placeholder:select-none text-neutral-400 bg-transparent focus:placeholder:text-neutral-500 disabled:cursor-not-allowed ",
       className
     )}
   />
@@ -369,46 +368,53 @@ export const FloatingInput = ({
 export const FloatingLabel = ({
   htmlFor,
   label,
+  error,
   className,
   ...props
 }: React.LabelHTMLAttributes<HTMLLabelElement> & {
   htmlFor: string;
   label: string;
+  error?: boolean;
   className?: string;
 }) => (
   <label
     htmlFor={htmlFor}
     {...props}
     className={cn(
-      `absolute top-1/2 z-10 origin-[0] start-1 px-1 font-medium select-none ` +
-        `-translate-y-5 scale-75 peer-focus:-translate-y-5 peer-focus:scale-75 text-neutral-100 peer-focus:text-neutral-100 ` + // text-theme-color peer-focus:text-theme-color
-        `peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white ` +
-        `text-sm pointer-events-none bg-transparent bg-opacity-50 ` +
-        `transform transition-top duration-100 `,
-      className
+      "absolute origin-[0] top-1/2 z-10 start-1 px-1 font-medium select-none text-sm pointer-events-none bg-transparent bg-opacity-50 transform transition-top duration-100 -translate-y-5 scale-75 peer-focus:-translate-y-5 peer-focus:scale-75 text-neutral-100 peer-focus:text-neutral-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white",
+      className,
+      error &&
+        "text-red-500 peer-focus:text-red-500 peer-placeholder-shown:text-red-500"
     )}
   >
     {label}
   </label>
 );
 
-type ControlledFloatingInputProps = {
-  id: string;
-  placeholder?: string;
-  className?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
-
-type UncontrolledFloatingInputProps = {
-  id: string;
-  placeholder?: string;
-  className?: string;
-  value?: undefined;
-  onChange?: undefined;
-  defaultValue?: string;
-};
-
-type FloatingInputProps =
-  | ControlledFloatingInputProps
-  | UncontrolledFloatingInputProps;
+export const FloatingPassTypeBtn = ({
+  state,
+  setState,
+}: {
+  state: "password" | "text";
+  setState: (value: SetStateAction<"text" | "password">) => void;
+}) => (
+  <button
+    type="button"
+    onClick={() => {
+      setState((state) => {
+        if (state === "password") return "text";
+        else return "password";
+      });
+    }}
+    className={cn(
+      "cursor-pointer absolute top-1/2 -translate-y-1/2 right-2 p-0.5 transition-shadow duration-300 rounded-xs",
+      focusVisibleWhiteRing
+    )}
+  >
+    {state !== "password" ? (
+      <EyeIcon className="size-5 stroke-neutral-500" />
+    ) : (
+      <ClosedEyeIcon className="size-5 stroke-neutral-500" />
+    )}
+  </button>
+);

@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction } from "react";
-import { usePathname } from "next/navigation";
+import { Dispatch, SetStateAction, useActionState, useState } from "react";
+import { redirect, usePathname } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,13 +10,21 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { CancelIcon } from "@/components/Icons";
-import { EmailFieldset, PasswordFieldset } from "@/components/Fieldsets";
+import {
+  FloatingFieldset,
+  FloatingInput,
+  FloatingLabel,
+  FloatingPassTypeBtn,
+} from "@/components/Fieldsets";
 import { ProvidersRowButtons } from "@/components/Buttons/client";
 import {
   hasLiked as hasLikedFn,
   dislikeComment,
   likeComment,
 } from "@/services/comment";
+import { cn } from "@/utils/classnames";
+import { focusVisibleWhiteRing } from "@/styles/classNames";
+import { signIn } from "@/services/authentication";
 
 const CommentFooterRow = ({
   comment,
@@ -163,6 +171,10 @@ const LikeButton = ({
   const toggleLike = async () => {
     if (currentUser === null) return;
 
+    // TODO:
+    // Mover a lógica do userHasLiked para dentro do provider.
+    // Ter de buscar no DB antes de um like está atrasando a ação do like.
+    // Essas informações já devem estar prontamente disponibilizadas antes do usuário fazer o like.
     const userHasLiked = await hasLikedFn({
       comment_id: comment.id,
       profile_id: currentUser.id,
@@ -200,10 +212,10 @@ const LikeButton = ({
     <button
       type="button"
       onClick={toggleLike}
-      className={
-        `relative shrink-0 size-7 rounded-full cursor-pointer outline-none ` +
-        `transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50 `
-      }
+      className={cn(
+        "relative shrink-0 size-7 rounded-full cursor-pointer outline-none transition-all duration-300 focus-visible:bg-neutral-900",
+        focusVisibleWhiteRing
+      )}
     >
       <ArrowUpIcon hasLiked={hasLiked} />
     </button>
@@ -255,56 +267,113 @@ const ReplyButton = ({
     setIsReplying: Dispatch<SetStateAction<boolean>>
   ];
 }) => {
+  if (currentUser === null) {
+    return <UserNotSignedInAlertDialog />;
+  }
+  return <SubmitReplyButton replyWindowState={replyWindowState} />;
+};
+
+const UserNotSignedInAlertDialog = () => {
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [type, setType] = useState<"password" | "text">("password");
   const pathname = usePathname();
   const redirectTo = process.env.NEXT_PUBLIC_CLIENT_URL + pathname;
   // process.env.NEXT_PUBLIC_CLIENT_URL + pathname + "#Comments-section";
-  if (currentUser === null) {
-    return (
-      <AlertDialog>
-        <AlertDialogTrigger
-          className={
-            `relative text-sm px-2 py-0.5 cursor-pointer outline-none rounded ` +
-            `text-neutral-500 hover:text-theme-color ` +
-            `transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50 ` +
-            `after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[2px] after:bg-theme-color `
-          }
+
+  const [state, action] = useActionState(
+    async () => {
+      const formData = new FormData();
+
+      formData.set("floating-email-signIn", email);
+      formData.set("floating-password-signIn", password);
+
+      const response = await signIn(state, formData);
+
+      // redirect(pathname);
+
+      return response;
+    },
+    { ok: false, success: null, error: {}, data: null }
+  );
+
+  return (
+    <AlertDialog
+      open={openDialog}
+      onOpenChange={() => {
+        setEmail("");
+        setPassword("");
+        return setOpenDialog(!openDialog);
+      }}
+    >
+      <AlertDialogTrigger
+        className={cn(
+          "relative text-sm px-2 py-0.5 transition-all duration-300 cursor-pointer outline-none rounded text-neutral-500 hover:text-neutral-100 focus-visible:bg-neutral-900",
+          "after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[2px] after:bg-theme-color",
+          focusVisibleWhiteRing
+        )}
+      >
+        Responder
+      </AlertDialogTrigger>
+      <AlertDialogContent className="rounded-4xl p-8">
+        <AlertDialogCancel className="relative size-10 rounded-full mr-0 ml-auto">
+          <CancelIcon />
+        </AlertDialogCancel>
+        <AlertDialogTitle
+          asChild
+          className="relative text-center text-3xl text-neutral-300 uppercase"
         >
-          Responder
-        </AlertDialogTrigger>
-        <AlertDialogContent className="rounded-4xl p-8">
-          <AlertDialogCancel className="relative size-10 rounded-full mr-0 ml-auto">
-            <CancelIcon />
-          </AlertDialogCancel>
-          <AlertDialogTitle
-            asChild
-            className="relative text-center text-3xl text-neutral-300 uppercase"
-          >
-            <h1>Cadastrar-se</h1>
-          </AlertDialogTitle>
-          <AlertDialogDescription className="text-neutral-500 font-medium">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. A maiores
-            atque debitis veritatis eveniet minus ab quae, aperiam voluptates
-            officiis distinctio repellat, suscipit maxime ducimus quibusdam
-            natus? Recusandae, in temporibus!
-          </AlertDialogDescription>
-          <form className="flex flex-col gap-2">
-            <EmailFieldset />
-            <PasswordFieldset />
-            <div className="flex items-center justify-end gap-2">
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction>Confirmar</AlertDialogAction>
-            </div>
-          </form>
-          <ProvidersRowButtons redirectTo={redirectTo} />
-          {/* <AlertDialogFooter className="flex items-center gap-2">
+          <h1>Cadastrar-se</h1>
+        </AlertDialogTitle>
+        <AlertDialogDescription className="text-neutral-500 font-medium">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. A maiores
+          atque debitis veritatis eveniet minus ab quae, aperiam voluptates
+          officiis distinctio repellat, suscipit maxime ducimus quibusdam natus?
+          Recusandae, in temporibus!
+        </AlertDialogDescription>
+        <form className="flex flex-col gap-2">
+          <FloatingFieldset>
+            <FloatingInput
+              id="floating-email-signIn-reply"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="johndoe@email.com"
+            />
+            <FloatingLabel
+              htmlFor="floating-email-signIn-reply"
+              label="Email"
+            />
+          </FloatingFieldset>
+          <FloatingFieldset>
+            <FloatingInput
+              id="floating-password-signIn-reply"
+              value={password}
+              type={type}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <FloatingLabel
+              htmlFor="floating-password-signIn-reply"
+              label="Senha"
+            />
+            <FloatingPassTypeBtn state={type} setState={setType} />
+          </FloatingFieldset>
+          <div className="flex items-center justify-end gap-2">
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction type="submit" formAction={action}>
+              Confirmar
+            </AlertDialogAction>
+          </div>
+        </form>
+        <ProvidersRowButtons redirectTo={redirectTo} />
+        {/* <AlertDialogFooter className="flex items-center gap-2">
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction>Confirmar</AlertDialogAction>
           </AlertDialogFooter> */}
-        </AlertDialogContent>
-      </AlertDialog>
-    );
-  }
-  return <SubmitReplyButton replyWindowState={replyWindowState} />;
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 };
 
 const SubmitReplyButton = ({
@@ -323,17 +392,17 @@ const SubmitReplyButton = ({
       onClick={() => {
         setIsReplying(!isReplying);
       }}
-      className={
+      className={cn(
         `${
           isReplying
             ? "text-theme-color"
-            : "text-neutral-500 hover:text-theme-color"
-        } ` +
-        `relative text-sm px-2 py-0.5 cursor-pointer outline-none rounded ` +
-        `transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50 ` +
-        `after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[2px] after:bg-theme-color ` +
-        `${isReplying && "after:duration-200 after:w-full"} `
-      }
+            : "text-neutral-500 hover:text-neutral-100"
+        } relative text-sm px-2 py-0.5 transition-all duration-300 cursor-pointer outline-none rounded focus-visible:bg-neutral-900`,
+        `after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[2px] after:bg-theme-color ${
+          isReplying && "after:duration-200 after:w-full"
+        }`,
+        focusVisibleWhiteRing
+      )}
     >
       Responder
     </button>
@@ -344,11 +413,10 @@ const ReportButton = ({ differentUser }: { differentUser: boolean }) => {
   return (
     differentUser && (
       <button
-        className={
-          `flex items-center gap-1 px-2 py-0.5 cursor-pointer rounded outline-none ` +
-          `text-sm text-neutral-500 hover:text-theme-color ` +
-          `transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50 `
-        }
+        className={cn(
+          "flex items-center gap-1 px-2 py-0.5 transition-all duration-300 cursor-pointer rounded outline-none text-sm text-neutral-500 hover:text-theme-color focus-visible:bg-neutral-900",
+          focusVisibleWhiteRing
+        )}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

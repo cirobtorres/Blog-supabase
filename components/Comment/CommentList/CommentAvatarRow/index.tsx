@@ -27,9 +27,10 @@ import {
 } from "@/components/Icons";
 import { deleteComment, useAsyncFn } from "@/services/comment";
 import { toast } from "sonner";
-import { buttonVariants } from "@/styles/classNames";
+import { buttonVariants, focusVisibleWhiteRing } from "@/styles/classNames";
 import { convertDateToYouTubeLike } from "@/utils/dates";
 import { useComment } from "@/hooks/useComment";
+import { cn } from "@/utils/classnames";
 
 const CommentAvatarRow = ({
   comment,
@@ -127,14 +128,10 @@ const CommentOptions = ({
     loggedProfile &&
     !comment.is_deleted && (
       <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <PopoverTrigger
-          className={`relative p-2 size-10 cursor-pointer hover:bg-neutral-800 rounded-full outline-none transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50 ${
-            isMenuOpen ? "bg-neutral-800" : ""
-          }`}
-        >
-          <OptionIcon className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2" />
+        <PopoverTrigger className={buttonVariants()}>
+          <OptionIcon />
         </PopoverTrigger>
-        <PopoverContent>
+        <PopoverContent className="[&_button]:rounded-xs">
           <EditComment
             isEditing={isEditing}
             setIsEditing={setIsEditing}
@@ -167,7 +164,10 @@ const EditComment = ({
       setIsEditing(!isEditing);
     }}
     tabIndex={0}
-    className="w-full flex justify-between items-center p-2 cursor-pointer rounded-md hover:bg-neutral-800 outline-none transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50"
+    className={cn(
+      "w-full flex justify-between items-center p-2 cursor-pointer hover:bg-neutral-800 outline-none transition-all duration-300 focus-visible:text-neutral-100 focus-visible:bg-neutral-800/50",
+      focusVisibleWhiteRing
+    )}
   >
     Editar
     <EditIcon className="size-[14px]" />
@@ -209,12 +209,15 @@ const DeleteComment = ({
     <AlertDialog open={isDialogOpen}>
       <AlertDialogTrigger
         onClick={() => setIsDialogOpen(true)}
-        className="w-full p-2 cursor-pointer rounded-md hover:bg-neutral-800 outline-none transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50"
+        className={cn(
+          "w-full p-2 cursor-pointer hover:bg-neutral-800 outline-none transition-all duration-300 focus-visible:text-neutral-100 focus-visible:bg-neutral-800/50",
+          focusVisibleWhiteRing
+        )}
       >
-        <div className="flex justify-between items-center">
+        <p className="flex justify-between items-center">
           Deletar
           <DeleteIcon className="size-[14px]" />
-        </div>
+        </p>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -249,6 +252,7 @@ const DeleteComment = ({
   );
 };
 
+// TODO
 const ReportComment = ({
   loggedProfile,
   profile,

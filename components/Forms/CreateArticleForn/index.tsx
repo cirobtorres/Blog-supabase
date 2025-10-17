@@ -3,10 +3,9 @@
 import { useActionState, useState } from "react";
 import Image from "next/image";
 import {
-  ConfirmFormButton,
   ReturnToHome,
   ReturnToProfile,
-  SaveFormButton,
+  SubmitFormButton,
 } from "@/components/Buttons";
 import { SubtitleFieldset, TitleFieldset } from "@/components/Fieldsets";
 import { postArticlePublic, postArticleSave } from "@/services/article";
@@ -35,6 +34,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { focusVisibleWhiteRing } from "@/styles/classNames";
+import { cn } from "@/utils/classnames";
 
 const initialPostState = {
   ok: false,
@@ -201,34 +202,34 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
       <PostArticleErrors />
       <SaveArticleErrors />
       <form className="grid gap-2 grid-cols-1 md:grid-cols-[minmax(450px,1fr)_minmax(200px,400px)]">
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-4">
+        <div className="w-full flex flex-col items-center gap-3">
+          <div className="w-full flex flex-col gap-4">
             <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
             <SubtitleFieldset value={htmlSubtitle} setVal={setHtmlSubtitle} />
             <AuthorAvatar />
           </div>
           <AspectRatio
-            ratio={16 / 9}
+            ratio={25 / 9}
             className="relative rounded-sm overflow-hidden border border-neutral-700"
           >
             <ImageEditorButtonList>
               <ImageEditorButtonLi>
-                <ImageEditorButton>
+                <ImageEditorButton className="size-9">
                   <TrashBinIcon className="size-4" />
                 </ImageEditorButton>
               </ImageEditorButtonLi>
               <ImageEditorButtonLi>
-                <ImageEditorButton>
+                <ImageEditorButton className="size-9">
                   <LinkIcon className="size-4" />
                 </ImageEditorButton>
               </ImageEditorButtonLi>
               <ImageEditorButtonLi>
-                <ImageEditorButton>
+                <ImageEditorButton className="size-9">
                   <DownloadIcon className="size-4" />
                 </ImageEditorButton>
               </ImageEditorButtonLi>
               <ImageEditorButtonLi>
-                <ImageEditorButton>
+                <ImageEditorButton className="size-9">
                   <UploadIcon className="size-4" />
                 </ImageEditorButton>
               </ImageEditorButtonLi>
@@ -247,7 +248,7 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
         <div className="flex flex-col gap-1">
           <div className="flex flex-col gap-1 p-4 rounded-sm border border-neutral-700 bg-neutral-900">
             <div className="w-full flex gap-1">
-              <ConfirmFormButton
+              <SubmitFormButton
                 label="Publicar"
                 formAction={postAction}
                 isPending={isPendingPost}
@@ -264,10 +265,14 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
                 </PopoverContent>
               </Popover>
             </div>
-            <SaveFormButton
+            <SubmitFormButton
               label="Salvar"
               formAction={saveAction}
               isPending={isPendingSave}
+              className={cn(
+                "transition-all duration-300 border-neutral-700 bg-neutral-900 hover:border-neutral-600 hover:bg-[#202020] focus-visible:bg-[#202020]",
+                focusVisibleWhiteRing
+              )}
             />
           </div>
           <div className="min-h-48 p-3 rounded-lg border border-neutral-700">

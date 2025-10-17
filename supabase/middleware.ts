@@ -1,4 +1,3 @@
-import { protectedRoutes } from "@/routes/protectedRoutes";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -12,16 +11,8 @@ export async function updateSession(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookiesToSet) => {
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           );
@@ -32,34 +23,31 @@ export async function updateSession(request: NextRequest) {
   // DO NOT WRITE CODE HERE!!!
   const {
     data: { user },
-  } = await supabase.auth.getUser(); // DO NOT REMOVE auth.getUser()
+  } = await supabase.auth.getUser();
+
+  let profile = null;
+
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("admin")
+      .eq("id", user.id)
+      .single();
+
+    profile = data;
+  }
 
   const url = request.nextUrl.clone();
   const currentPath = url.pathname;
 
-  // TODO: BUG
-  // Se o usuário admin "deslogar" no painel admin, ele não é redirecionado para HOME.
-  if (!user && protectedRoutes.some((regex) => regex.test(currentPath))) {
-    // ERRO:
-    // I chose error instead redirect in order to maintain admin pannel "hidden".
-    // Next.js standard behave is to raise an error for non existing routes.
-    // If suddenly the page redirects, the malicious user would then know that is a hidden/protected route.
-    // Protected routes of this app should not be accessible to commom users.
+  if (
+    (currentPath.startsWith("/admin") && !profile?.admin) ||
+    (currentPath.startsWith("/user") && profile?.admin)
+  ) {
     return NextResponse.error();
-    // REDIRECT:
-    // url.pathname = "/";
-    // return NextResponse.redirect(url);
   }
 
   // http://supabase.com/docs/guides/auth/server-side/nextjs
-
-  // CREATING A NEW RESPONSE:
-  // const myNewResponse = NextResponse.next({ request })
-  // myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // ---
-  // ALTER myNewResponse HERE, BUT AVOID CHANGING THE COOKIES!!!
-  // ---
-  // return myNewResponse
 
   return supabaseResponse;
 }

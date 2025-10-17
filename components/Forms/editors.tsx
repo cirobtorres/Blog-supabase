@@ -5,11 +5,12 @@ import {
   FloatingFieldset,
   FloatingInput,
   FloatingLabel,
+  AlertFieldset,
 } from "../Fieldsets";
 import { BlockEditorWrapper } from "./utils";
 import {
   DragAndDropZone,
-  getImageWidthAndHeight,
+  getImageDimensionsByFile,
   InfoZone,
   isNotImageFile,
 } from "../Fieldsets/ArticleEditor";
@@ -174,7 +175,9 @@ const AccordionEditor = (props: AccordionEditorProps) => {
 }; // TODO
 
 const AlertEditor = (props: AlertEditorProps) => (
-  <BlockEditorWrapper {...props}>Alert</BlockEditorWrapper>
+  <BlockEditorWrapper {...props}>
+    <AlertFieldset {...props} />
+  </BlockEditorWrapper>
 ); // TODO
 
 const CodeEditor = (props: CodeEditorProps) => {
@@ -235,7 +238,7 @@ const ImageEditor = ({
     let height: number | null = null;
 
     try {
-      const dims = await getImageWidthAndHeight(file);
+      const dims = await getImageDimensionsByFile(file);
       width = dims.width;
       height = dims.height;
     } catch (err) {

@@ -35,10 +35,14 @@ export const ArticleBreadcrumb = ({ className }: { className?: string }) => {
             {articles}
           </Link>
         </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>{article}</BreadcrumbPage>
-        </BreadcrumbItem>
+        {article !== undefined && (
+          <>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{article}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </>
+        )}
       </BreadcrumbList>
     </Breadcrumb>
   );

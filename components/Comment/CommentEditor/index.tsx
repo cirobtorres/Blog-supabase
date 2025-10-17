@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -9,6 +9,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/utils/classnames";
 import Placeholder from "@tiptap/extension-placeholder";
 import { LoadingSpinning } from "../../LoadingSpinning";
+import { buttonVariants } from "@/styles/classNames";
 
 export const CommentEditor = ({
   id,
@@ -115,7 +116,10 @@ export const CommentEditor = ({
 
   return (
     <>
-      <form onSubmit={handleOnSubmit} className="w-full flex flex-col shrink-0">
+      <form
+        onSubmit={handleOnSubmit}
+        className="w-full flex flex-col shrink-0 mb-4"
+      >
         <EditorContent
           key={uniqueKey}
           id={uniqueKey}
@@ -188,14 +192,7 @@ const CancelButton = ({ closeEditorFunc }: { closeEditorFunc: () => void }) => {
   return (
     <button
       type="button"
-      className={
-        `w-24 shrink-0 cursor-pointer rounded px-3 outline-none ` +
-        `text-neutral-400 hover:text-neutral-100 ` +
-        `border border-neutral-800 focus-within:border-neutral-700 hover:border-neutral-700 ` +
-        `hover:bg-neutral-800 focus-within:bg-neutral-800 ` +
-        `focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] ` +
-        `transition-all `
-      }
+      className={buttonVariants()}
       onClick={closeEditorFunc}
     >
       Cancelar
@@ -207,11 +204,7 @@ const ConfirmButton = ({ disable }: { disable: boolean }) => {
   return (
     <button
       type="submit"
-      className={`transition-all shrink-0 w-24 rounded px-3 border ${
-        disable
-          ? "bg-[#3a3a3a] text-[#919191] border-[#646464]"
-          : "cursor-pointer bg-neutral-900 border-neutral-800 text-theme-color hover:border-neutral-700 hover:bg-neutral-800 outline-none focus-within:border-neutral-700 focus-within:bg-neutral-800 focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
-      }`}
+      className={cn(buttonVariants({ variant: "outline" }))}
       disabled={disable}
     >
       Comentar

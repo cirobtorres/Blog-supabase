@@ -1,56 +1,28 @@
 import Link from "next/link";
 import { LoadingSpinning } from "../LoadingSpinning";
+import { focusVisibleWhiteRing } from "@/styles/classNames";
+import { cn } from "@/utils/classnames";
 
-export const ConfirmFormButton = ({
+export const SubmitFormButton = ({
   label,
   formAction,
   isPending,
+  className,
 }: {
   label: string;
-  formAction: () => void;
+  formAction?: () => void;
   isPending?: boolean;
+  className?: string;
 }) => (
   <button
     type="submit"
     disabled={isPending}
     formAction={formAction}
-    className={
-      `relative w-full cursor-pointer h-[38px] py-2 not-disabled:transition-all not-disabled:duration-300 outline-none ` +
-      `text-sm text-neutral-100 rounded-xs border border-theme-color bg-theme-color-light ` +
-      `focus-visible:ring-2 focus-visible:ring-neutral-100 focus-visible:border-transparent ` +
-      `disabled:cursor-auto ` // disabled:text-neutral-400 disabled:border-neutral-600 disabled:bg-neutral-700
-    }
-  >
-    {isPending ? (
-      <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
-        <LoadingSpinning loadingState={isPending} className="my-0" />
-      </div>
-    ) : (
-      label
+    className={cn(
+      "relative cursor-pointer w-full h-[38px] transition-shadow duration-300 py-2 outline-none text-sm text-neutral-100 rounded-xs border border-theme-color bg-theme-color-light disabled:cursor-auto not-disabled:transition-all not-disabled:duration-300",
+      focusVisibleWhiteRing,
+      className
     )}
-  </button>
-);
-
-export const SaveFormButton = ({
-  label,
-  formAction,
-  isPending,
-}: {
-  label: string;
-  isPending?: boolean;
-  formAction: () => void;
-}) => (
-  <button
-    type="submit"
-    disabled={isPending}
-    formAction={formAction}
-    className={
-      `relative w-full cursor-pointer h-[38px] py-2 not-disabled:transition-all not-disabled:duration-300 ` +
-      `text-sm text-neutral-100 rounded-xs border border-neutral-700 bg-neutral-800 ` +
-      `not-disabled:hover:border-neutral-600 not-disabled:hover:bg-neutral-800 ` +
-      `focus-visible:ring-2 focus-visible:ring-neutral-100 focus-visible:border-transparent ` +
-      `disabled:cursor-auto ` // disabled:text-neutral-400 disabled:border-neutral-600 disabled:bg-neutral-700
-    }
   >
     {isPending ? (
       <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
@@ -66,10 +38,10 @@ export const ReturnToHome = () => {
   return (
     <Link
       href="/"
-      className={
-        `w-fit text-sm flex gap-2 items-center uppercase mb-6 ` +
-        `transition-all hover:text-neutral-100 rounded outline-none focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
-      }
+      className={cn(
+        "w-fit text-sm flex gap-2 items-center uppercase mb-6 transition-all duration-300 rounded outline-none hover:text-neutral-100 focus-visible:text-neutral-100",
+        focusVisibleWhiteRing
+      )}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -95,10 +67,10 @@ export const ReturnToProfile = () => {
   return (
     <Link
       href="/admin"
-      className={
-        `w-fit text-sm flex gap-2 items-center uppercase mb-6 ` +
-        `transition-all hover:text-neutral-100 rounded outline-none focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
-      }
+      className={cn(
+        "w-fit text-sm flex gap-2 items-center uppercase mb-6 transition-all duration-300 rounded outline-none hover:text-neutral-100 focus-visible:text-neutral-100",
+        focusVisibleWhiteRing
+      )}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

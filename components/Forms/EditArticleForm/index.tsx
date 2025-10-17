@@ -4,15 +4,13 @@ import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import { putArticlePublic, putArticleSave } from "@/services/article";
 import { convertToLargeDate } from "@/utils/dates";
-import {
-  ConfirmFormButton,
-  ReturnToHome,
-  SaveFormButton,
-} from "@/components/Buttons";
+import { ReturnToHome, SubmitFormButton } from "@/components/Buttons";
 import { SubtitleFieldset, TitleFieldset } from "@/components/Fieldsets";
 import { BlockList, NewBlockButtons } from "../utils";
 import Link from "next/link";
 import { sonnerToastPromise } from "@/toasters";
+import { cn } from "@/utils/classnames";
+import { focusVisibleWhiteRing } from "@/styles/classNames";
 
 export const EditArticleForm = ({
   profileId,
@@ -122,22 +120,26 @@ export const EditArticleForm = ({
       <div className="w-full mx-4">
         <ReturnToHome />
         <form className="grid gap-2 grid-cols-1 md:grid-cols-[1fr_300px]">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
             <SubtitleFieldset value={htmlSubtitle} setVal={setHtmlSubtitle} />
             <BlockList blocks={blocks} setBlocks={setBlocks} />
             <NewBlockButtons blocks={blocks} setBlocks={setBlocks} />
           </div>
           <div className="flex flex-col gap-1">
-            <ConfirmFormButton
+            <SubmitFormButton
               formAction={postAction}
               label="Publicar"
               isPending={isPendingPost}
             />
-            <SaveFormButton
+            <SubmitFormButton
               formAction={saveAction}
               label="Salvar"
               isPending={isPendingSave}
+              className={cn(
+                "transition-all duration-300 border-neutral-700 bg-neutral-900 hover:border-neutral-600 hover:bg-[#202020] focus-visible:bg-[#202020]",
+                focusVisibleWhiteRing
+              )}
             />
             <Link
               href={`/articles/${article_id}`}

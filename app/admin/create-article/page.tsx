@@ -1,11 +1,19 @@
-import { redirect } from "next/navigation";
-import { getProfile } from "../../../services/user";
 import { CreateArticleForm } from "../../../components/Forms/CreateArticleForn";
 import { ArticleBreadcrumb } from "@/components/Breadcrumb";
+import { createServerAppClient } from "@/supabase/server";
 
 export default async function CreateArticlePage() {
-  const profile = await getProfile();
-  if (!profile) redirect("/");
+  const supabase = await createServerAppClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user?.id)
+    .single();
 
   return (
     <>

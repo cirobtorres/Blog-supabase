@@ -4,7 +4,6 @@ import { StaticHeader } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ArticleFeedGrid } from "@/components/ArticleFeedGrid";
 import { ArticleCover } from "@/components/ArticleCover";
-import { getProfile } from "@/services/user";
 
 export default async function HomePage() {
   let articles: ArticleJoinAuthor[] = [];
@@ -30,7 +29,16 @@ export default async function HomePage() {
   }
 
   const supabase = await createServerAppClient();
-  const profile = await getProfile();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user?.id)
+    .single();
 
   const { data: author } = await supabase
     .from("authors")

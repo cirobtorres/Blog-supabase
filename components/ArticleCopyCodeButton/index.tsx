@@ -10,11 +10,9 @@ import {
 
 export default function ArticleCopyCodeButton({
   code,
-  iconSize = 24,
   className,
 }: {
   code: string;
-  iconSize?: number;
   className?: string;
 }) {
   const [copied, setCopied] = useState(false);
@@ -52,14 +50,12 @@ export default function ArticleCopyCodeButton({
             )}
           >
             <CheckIcon
-              size={iconSize}
               className={cn(
                 "absolute size-4 left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 stroke-neutral-400",
                 copied ? "visible animate-pop" : "invisible"
               )}
             />
             <CopyCodeIcon
-              size={iconSize}
               className={cn(
                 "absolute size-4 left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 stroke-neutral-400",
                 copied ? "invisible" : "visible"

@@ -16,10 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  focusVisibleThemeRing,
-  focusVisibleWhiteRing,
-} from "@/styles/classNames";
+import { focusVisibleThemeRing } from "@/styles/classNames";
 import { cn } from "@/utils/classnames";
 
 const className = "";

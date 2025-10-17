@@ -8,11 +8,10 @@
 
 @theme {
   --color-theme-color: hsl(30, 85%, 65%);
-  /* --color-theme-color-light: hsl(30, 85%, 65%, 50%); */
   --color-theme-color-light: hsl(30, 50%, 40%);
+  --color-theme-color-backdrop: hsla(30, 100%, 80%, 0.15);
   --color-theme-link: hsl(30, 85%, 65%);
   --color-theme-link-visited: hsl(246, 35%, 49%);
-  --color-theme-color-backdrop: hsla(30, 100%, 80%, 0.15);
   --color-warning: hsl(9, 100%, 64%); /* tomato */
 
   --animate-bouncing-arrow: bouncing-arrow 1s infinite;
@@ -195,28 +194,28 @@ body {
 
   /*------------------------------=====Article=====------------------------------*/
   /*SCROLLBAR*/
-  .article-fieldset > textarea::-webkit-scrollbar {
+  .article-fieldset-scrollbar > textarea::-webkit-scrollbar {
     width: 6px;
   }
 
-  .article-fieldset > textarea::-webkit-scrollbar-track {
+  .article-fieldset-scrollbar > textarea::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .article-fieldset > textarea::-webkit-scrollbar-thumb {
+  .article-fieldset-scrollbar > textarea::-webkit-scrollbar-thumb {
     cursor: default;
     border-radius: 9999px;
   }
 
-  .article-fieldset > textarea::-webkit-scrollbar-thumb {
+  .article-fieldset-scrollbar > textarea::-webkit-scrollbar-thumb {
     background: #525252;
   }
 
-  .article-fieldset > textarea::-webkit-scrollbar-thumb:hover {
+  .article-fieldset-scrollbar > textarea::-webkit-scrollbar-thumb:hover {
     background: #737373;
   }
 
-  .article-fieldset > textarea::-webkit-scrollbar-corner {
+  .article-fieldset-scrollbar > textarea::-webkit-scrollbar-corner {
     background: transparent;
   }
 

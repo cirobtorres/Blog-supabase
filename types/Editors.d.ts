@@ -9,6 +9,8 @@ type AccordionEditorProps = {
 type AlertEditorProps = {
   id: string;
   wrapperLabel: string;
+  value: string;
+  setVal: (data: string) => void;
   onRemove: (id: string) => void;
   moveToNext: (id: string) => void;
 };

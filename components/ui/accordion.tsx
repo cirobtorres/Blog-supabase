@@ -6,6 +6,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { DeleteEditorButton, PushEditorDownButton } from "../Buttons/client";
 import { MovableIcon } from "../Icons";
 import { cn } from "@/utils/classnames";
+import { focusWithinThemeRing, hoverThemeRing } from "@/styles/classNames";
 
 function BlkEdWrapperAccordion({
   ...props
@@ -21,10 +22,9 @@ function BlkEdWrapperAccordionItem({
     <AccordionPrimitive.Item
       data-slot="accordion-item"
       className={cn(
-        "w-full h-full rounded-sm overflow-hidden transition-all duration-300 " +
-          "border border-neutral-700 " +
-          "hover:ring-2 hover:border-transparent hover:ring-theme-color " +
-          "focus-within:ring-2 focus-within:border-transparent focus-within:ring-theme-color ",
+        "w-full h-full transition-all duration-300 rounded-sm overflow-hidden border border-neutral-700",
+        hoverThemeRing,
+        focusWithinThemeRing,
         className
       )}
       {...props}
@@ -48,11 +48,7 @@ function BlkEdWrapperAccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "cursor-pointer flex-1 flex items-center gap-4 p-3 outline-none " +
-            "text-left text-sm font-medium " +
-            "disabled:pointer-events-none disabled:opacity-50 " +
-            "transition-all [&[data-state=open]>svg]:rotate-180 " +
-            "bg-neutral-900 ",
+          "cursor-pointer flex-1 flex items-center gap-4 p-3 outline-none text-left text-sm font-medium disabled:pointer-events-none disabled:opacity-50 transition-all [&[data-state=open]>svg]:rotate-180 bg-neutral-900",
           className
         )}
         {...props}

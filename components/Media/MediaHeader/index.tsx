@@ -344,7 +344,7 @@ const FilePreviewCard = ({
                   type="button"
                   onClick={() => console.log("Editar")}
                   className={cn(
-                    "cursor-pointer shrink-0 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100 focus-visible:ring-2 focus-visible:ring-theme-color",
+                    "cursor-pointer shrink-0 transition-all duration-300 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100",
                     focusVisibleThemeRing
                   )}
                 >
@@ -359,7 +359,7 @@ const FilePreviewCard = ({
                   type="button"
                   onClick={() => removeFiles(file)}
                   className={cn(
-                    "cursor-pointer shrink-0 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100 focus-visible:ring-2 focus-visible:ring-theme-color",
+                    "cursor-pointer shrink-0 transition-all duration-300 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100",
                     focusVisibleThemeRing
                   )}
                 >

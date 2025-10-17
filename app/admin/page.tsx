@@ -1,6 +1,5 @@
 import { ArticleBreadcrumb } from "@/components/Breadcrumb";
 import { PlusIcon, UserIcon } from "@/components/Icons";
-import { getProfile } from "@/services/user";
 import { createServerAppClient } from "@/supabase/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,19 +8,23 @@ const ADMIN_MAIN_CONTAINER_CLASSES =
   "py-4 px-6 rounded border border-neutral-800 bg-neutral-900";
 
 export default async function AdminPage() {
-  const profile = await getProfile();
   const supabase = await createServerAppClient();
 
-  const { data: userAdmin, error } = await supabase
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user?.id)
+    .single();
+
+  const { data: userAdmin } = await supabase
     .from("authors")
     .select("*")
     .eq("profile_id", profile.id)
     .single();
-
-  if (error) {
-    console.error(error);
-    return <h1>ERRO</h1>;
-  }
 
   return (
     <>

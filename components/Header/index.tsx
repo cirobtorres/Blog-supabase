@@ -5,6 +5,8 @@ import { useEffect, useRef } from "react";
 import { ProgressBar } from "./ProgressBar";
 import { LogoutButton } from "../Buttons/client";
 import Image from "next/image";
+import { cn } from "@/utils/classnames";
+import { focusVisibleWhiteRing } from "@/styles/classNames";
 
 export const StaticHeader = ({ profile }: { profile: Profile | null }) => {
   return (
@@ -97,12 +99,24 @@ const HeaderContent = ({ profile }: { profile: Profile | null }) => {
               height={24}
               className="rounded-full"
             />
-            <Link
-              href="/admin"
-              className="w-fit text-sm text-theme-color ml-2 px-1 py-0.5 rounded outline-none hover:text-neutral-100 transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
-            >
-              {profile.username}
-            </Link>
+            {profile.admin ? (
+              <Link
+                href="/admin"
+                className="w-fit text-sm text-theme-color ml-2 px-1 py-0.5 rounded outline-none hover:text-neutral-100 transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+              >
+                {profile.username}
+              </Link>
+            ) : (
+              <Link
+                href="/user"
+                className={cn(
+                  "w-fit text-sm text-theme-color ml-2 px-1 py-0.5 rounded outline-none transition-all duration-300 hover:text-neutral-100",
+                  focusVisibleWhiteRing
+                )}
+              >
+                {profile.username}
+              </Link>
+            )}
           </div>
           <LogoutButton label="Sair" />
         </div>

@@ -1,10 +1,5 @@
 "use server";
 
-import {
-  getDisplayNameFormDataValue,
-  getEmailFormDataValue,
-  getPasswordFormDataValue,
-} from "@/components/Fieldsets";
 import { createServerAppClient } from "@/supabase/server";
 import { Provider } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
@@ -35,82 +30,200 @@ export const SignInOAuth = async (provider: Provider, redirectTo?: string) => {
 };
 
 export const signIn = async (
-  prevState: { error: string | null },
+  prevState: {
+    ok: boolean;
+    success: string | null;
+    error: Record<string, string[]>;
+    data: any;
+  },
   formData: FormData
 ): Promise<{
-  error: string | null;
+  ok: boolean;
+  success: string | null;
+  error: Record<string, string[]>;
+  data: any;
 }> => {
-  const email = formData.get(getEmailFormDataValue);
-  const password = formData.get(getPasswordFormDataValue);
+  const email = formData.get("floating-email-signIn");
+  const password = formData.get("floating-password-signIn");
 
-  if (email && password) {
-    const supabase = await createServerAppClient();
+  const error: Record<string, string[]> = {};
+  const supabase = await createServerAppClient();
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: String(email),
-      password: String(password),
-    });
+  if (!email) (error.email ??= []).push("Email é obrigatório");
+  if (!password) (error.password ??= []).push("Senha é obrigatória");
 
-    if (error) {
-      console.error(error);
-      if (error.status === 400)
-        return { error: "E-mail ou senha está incorreto." };
-      return { error: error.message };
-      // return returnState(error.status);
-    }
-
-    revalidatePath("/");
-    redirect("/");
+  if (Object.keys(error).length > 0) {
+    return {
+      ok: false,
+      success: null,
+      error,
+      data: null,
+    };
   }
 
+  const { data, error: supabaseError } = await supabase.auth.signInWithPassword(
+    {
+      email: String(email),
+      password: String(password),
+    }
+  );
+
+  if (supabaseError) {
+    console.error(supabaseError);
+    if (supabaseError.status === 400)
+      return {
+        ok: false,
+        success: null,
+        error: { server: ["E-mail ou senha está incorreto"] },
+        data: null,
+      };
+    return {
+      ok: false,
+      success: null,
+      error: { server: ["Ocorreu algum erro. Tente mais tarde."] },
+      data: null,
+    };
+  }
+
+  revalidatePath("/");
+
   return {
-    error: null,
+    ok: true,
+    success: null,
+    error: {},
+    data,
   };
 };
 
 export const signUp = async (
-  prevState: { error: string | null },
+  prevState: {
+    ok: boolean;
+    success: string | null;
+    error: Record<string, string[]>;
+    data: any;
+  },
   formData: FormData
 ): Promise<{
-  error: string | null;
+  ok: boolean;
+  success: string | null;
+  error: Record<string, string[]>;
+  data: any;
 }> => {
-  const displayName = formData.get(getDisplayNameFormDataValue);
-  const email = formData.get(getEmailFormDataValue);
-  const password = formData.get(getPasswordFormDataValue);
+  const full_name =
+    formData.get("floating-displayName-signUp")?.toString().trim() || "";
+  const email = formData.get("floating-email-signUp")?.toString().trim() || "";
+  const password =
+    formData.get("floating-password-signUp")?.toString().trim() || "";
+  const passwordConfirm =
+    formData.get("floating-password-confirmation-signUp")?.toString().trim() ||
+    "";
 
-  if (!displayName) return { error: "Display name is required." };
+  const error: Record<string, string[]> = {};
+  const supabase = await createServerAppClient();
 
-  if (email && password) {
-    const supabase = await createServerAppClient();
+  // -------------------- DISPLAYNAME --------------------
+  if (!full_name) (error.displayName ??= []).push("O nome é obrigatório");
 
-    const { error } = await supabase.auth.signUp({
-      email: email as string,
-      password: password as string,
-      options: {
-        // emailRedirectTo: "/", // TODO: if confirmation link is used
-        data: {
-          displayName,
-        },
-      },
-    });
+  if (full_name.length < 4)
+    (error.displayName ??= []).push("O nome deve ter mais de 4 caracteres");
 
-    if (error) {
-      console.error(error);
-      return { error: error.message };
-      // return returnState(error.status);
-    }
+  // -------------------- EMAIL --------------------
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    revalidatePath("/");
-    redirect("/");
+  if (!email) (error.email ??= []).push("Email é obrigatório");
+
+  if (!emailRegex.test(email)) (error.email ??= []).push("Email inválido");
+
+  const { data: existingEmail } = await supabase
+    .from("users")
+    .select("id")
+    .eq("email", email)
+    .single();
+
+  if (existingEmail) (error.email ??= []).push("Email já cadastrado");
+
+  // --- VALIDAR PASSWORD ---
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
+
+  if (!password) (error.password ??= []).push("Senha é obrigatória");
+
+  if (password.length < 6)
+    (error.password ??= []).push("Senha deve ter mais de 6 caracteres");
+
+  if (!passwordRegex.test(password))
+    (error.password ??= []).push(
+      // "Senha inválida"
+      "Senha deve conter ao menos uma letra minúscula, uma maiúscula, um dígito e um caractere especial"
+    );
+
+  if (
+    password !== passwordConfirm ||
+    (password === "" && passwordConfirm === "")
+  ) {
+    (error.password ??= []).push("Senhas devem ser iguais");
+    (error.passwordConfirm ??= []).push("Senhas devem ser iguais");
   }
 
+  // --- SE HOUVER ERROS ---
+  if (Object.keys(error).length > 0) {
+    return {
+      ok: false,
+      success: null,
+      error,
+      data: null,
+    };
+  }
+
+  const { data, error: supabaseError } = await supabase.auth.signUp({
+    email: email as string,
+    password: password as string,
+    options: {
+      // emailRedirectTo: "/", // TODO: if confirmation link is used
+      data: {
+        full_name,
+      },
+    },
+  });
+
+  if (supabaseError) {
+    console.error(supabaseError);
+    if (
+      supabaseError.code === "user_already_exists" &&
+      supabaseError.status === 422
+    ) {
+      return {
+        ok: false,
+        success: null,
+        error: { server: ["Usuário já cadastrado."] },
+        data: null,
+      };
+    }
+    return {
+      ok: false,
+      success: null,
+      error: { server: ["Ocorreu algum erro. Tente mais tarde."] },
+      data: null,
+    };
+  }
+
+  revalidatePath("/");
+  // redirect("/");
+
   return {
-    error: "E-mail or password is incorrect.",
+    ok: true,
+    success: "Usuário criado com sucesso",
+    error: {},
+    data,
   };
 };
 
-export const signOut = async () => {
+export const signOut = async (pathname?: string) => {
   const supabase = await createServerAppClient();
   const { error } = await supabase.auth.signOut();
-  if (error) console.error(error);
+  if (!error) {
+    if (pathname?.startsWith("/admin") || pathname?.startsWith("/user")) {
+      redirect("/");
+    }
+  }
+  console.error(error);
 };

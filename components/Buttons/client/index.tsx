@@ -31,20 +31,17 @@ import {
   TrashBinIcon,
 } from "@/components/Icons";
 import ToolTipWrapper from "@/components/ui/tooltip";
-import { buttonVariants } from "@/styles/classNames";
-
-const providers = [
-  { label: "Google", bgColor: "#e5322b", borderColor: "#ff645f" },
-  { label: "Linkedin", bgColor: "#0379b7", borderColor: "#45beff" },
-  { label: "Github", bgColor: "#000", borderColor: "#272727" },
-];
+import { buttonVariants, focusVisibleWhiteRing } from "@/styles/classNames";
+import { cn } from "@/utils/classnames";
+import { usePathname } from "next/navigation";
 
 export const LogoutButton = ({ label }: { label: string }) => {
+  const pathname = usePathname();
   return (
     <button
       onClick={(e) => {
         e.preventDefault();
-        signOut();
+        signOut(pathname);
       }}
       className="text-sm cursor-pointer px-1 py-0.5 rounded outline-none text-neutral-300 hover:text-neutral-100 transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
     >
@@ -67,27 +64,36 @@ export const ProvidersRowButtons = ({
     <>
       <Or />
       <form action={action} className="flex flex-col gap-2">
-        {providers.map((provider, index) => (
-          <button
-            key={index}
-            type="submit"
-            onClick={() =>
-              setState(
-                () => provider.label.toLowerCase() as "google" | "github"
-              )
-            }
-            className={
-              `w-full py-1 rounded-md cursor-pointer outline-none ` +
-              `transition-all focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[2px] focus-visible:bg-neutral-800/50`
-            }
-            style={{
-              backgroundColor: provider.bgColor,
-              border: `1px solid ${provider.borderColor}`,
-            }}
-          >
-            {provider.label}
-          </button>
-        ))}
+        <button
+          type="submit"
+          onClick={() => setState("google")}
+          className={cn(
+            "transition-shadow duration-300 cursor-pointer w-full h-[38px] rounded-xs outline-none border border-[#ff645f] bg-[#e5322b]",
+            focusVisibleWhiteRing
+          )}
+        >
+          Google
+        </button>
+        <button
+          type="submit"
+          onClick={() => setState("linkedin")}
+          className={cn(
+            "transition-shadow duration-300 cursor-pointer w-full h-[38px] rounded-xs outline-none border border-[#45beff] bg-[#0379b7]",
+            focusVisibleWhiteRing
+          )}
+        >
+          Linkedin
+        </button>
+        <button
+          type="submit"
+          onClick={() => setState("github")}
+          className={cn(
+            "transition-shadow duration-300 cursor-pointer w-full h-[38px] rounded-xs outline-none border border-[#272727] bg-[#000000]",
+            focusVisibleWhiteRing
+          )}
+        >
+          Github
+        </button>
       </form>
     </>
   );
@@ -231,18 +237,6 @@ export const BlockArticleButton = ({
     </form>
   );
 };
-
-// export const DeleteArticleButton = ({ id }: { id: string }) => {
-//   const pathname = usePathname();
-//   const [, action] = useActionState(() => deleteArticle(id, pathname), null);
-//   return (
-//     <form action={action} className="flex items-center">
-//       <button className="w-14 px-2 text-xs leading-5 cursor-pointer transition-colors duration-300 text-white bg-neutral-900 hover:bg-neutral-800">
-//         Delete
-//       </button>
-//     </form>
-//   );
-// };
 
 export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
   const diameter = 75;
@@ -393,12 +387,10 @@ export const DeleteEditorButton = ({
         <AlertDialogTrigger onClick={handleOpenDialog} asChild>
           <button
             type="button"
-            className={
-              `cursor-pointer p-1 ` +
-              `rounded border border-transparent outline-none ` +
-              `transition-all [&_svg]:transition-all hover:[&_svg]:stroke-theme-color ` +
-              `focus-visible:ring-[3px] focus-visible:ring-neutral-500 focus-visible:bg-neutral-800 ` // focus-visible:[&_*]:stroke-theme-color hover:[&_*]:stroke-theme-color
-            }
+            className={cn(
+              "cursor-pointer p-1 rounded-xs border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800",
+              focusVisibleWhiteRing
+            )}
           >
             <TrashBinIcon className="size-4" />
           </button>
@@ -444,18 +436,33 @@ export const PushEditorDownButton = ({
   <ToolTipWrapper tooltip="Mover para Baixo">
     <button
       type="button"
-      className={
-        `z-10 p-1 cursor-pointer rounded ` +
-        `transition-all hover:[&_svg]:stroke-theme-color ` +
-        `border-none outline-none ` +
-        `focus-visible:ring-[3px] focus-visible:ring-neutral-500 ` +
-        `focus-visible:bg-neutral-800 `
-      }
+      className={cn(
+        "cursor-pointer p-1 rounded-xs border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800",
+        focusVisibleWhiteRing
+      )}
       onClick={moveToNext}
     >
       <ArrowDownIcon className="size-4 stroke-neutral-300" />
     </button>
   </ToolTipWrapper>
+);
+
+export const LinkButton = ({
+  href,
+  label,
+}: {
+  href: string;
+  label: string;
+}) => (
+  <Link
+    href={href}
+    className={cn(
+      "rounded-xs transition-all duration-300 text-blue-500 hover:text-blue-400 focus-visible:text-blue-400",
+      focusVisibleWhiteRing
+    )}
+  >
+    {label}
+  </Link>
 );
 
 const Or = () => {

@@ -125,7 +125,7 @@ export default function MediaList({
               type="button"
               // disabled={checkBoxList.length === 0}
               disabled={false}
-              className="cursor-pointer flex justify-center items-center gap-1 outline-none text-sm text-red-500 duration-300 rounded-xs font-medium px-3 py-1.5 border border-neutral-800 hover:border-neutral-700 bg-neutral-950 hover:bg-neutral-900 disabled:cursor-auto disabled:border-neutral-800 disabled:text-neutral-600 disabled:bg-neutral-900 focus-visible:ring-2 focus-visible:ring-neutral-100 focus-visible:bg-neutral-900 group"
+              className={cn(buttonVariants({ variant: "destructive" }))}
             >
               <TrashBinIcon className="size-4 duration-300 stroke-red-500 group-disabled:stroke-neutral-600" />
               Excluir
@@ -150,7 +150,6 @@ export default function MediaList({
                   type="submit"
                   disabled={checkBoxList.length === 0}
                   formAction={deleteCheckedItemsAction}
-                  className={cn(buttonVariants({ variant: "default" }))}
                 >
                   Confirmar
                 </AlertDialogAction>

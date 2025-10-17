@@ -1,8 +1,7 @@
 import { EditArticleForm } from "@/components/Forms/EditArticleForm";
 import { StaticHeader } from "@/components/Header";
-import { getProfile } from "@/services/user";
-import { createBrowserAppClient } from "@/supabase/client";
-import { redirect } from "next/navigation";
+import { createServerAppClient } from "@/supabase/server";
+import { notFound } from "next/navigation";
 
 interface Params {
   id: string;
@@ -10,9 +9,18 @@ interface Params {
 
 export default async function EditArticle({ params }: { params: Params }) {
   const { id } = await params;
-  const profile = await getProfile();
-  if (!profile) redirect("/");
-  const supabase = await createBrowserAppClient();
+
+  const supabase = await createServerAppClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user?.id)
+    .single();
 
   const { data: article, error } = await supabase
     .from("articles")
@@ -22,7 +30,7 @@ export default async function EditArticle({ params }: { params: Params }) {
 
   if (error) {
     console.error(error);
-    redirect("/");
+    notFound(); // Article to edit might not exist
   }
 
   return (

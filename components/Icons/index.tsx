@@ -1,5 +1,7 @@
 import { cn } from "@/utils/classnames";
 import {
+  Eye,
+  EyeOff,
   GlobeLock,
   House,
   ListFilter,
@@ -674,6 +676,14 @@ const FiltersIcon = ({ className }: { className?: string }) => (
   <ListFilter className={className} />
 );
 
+const EyeIcon = ({ className }: { className?: string }) => (
+  <Eye className={className} />
+);
+
+const ClosedEyeIcon = ({ className }: { className?: string }) => (
+  <EyeOff className={className} />
+);
+
 export {
   OptionIcon,
   CancelIcon,
@@ -715,4 +725,6 @@ export {
   GlobeIcon,
   UserIcon,
   FiltersIcon,
+  EyeIcon,
+  ClosedEyeIcon,
 };
