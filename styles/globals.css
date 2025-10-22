@@ -155,11 +155,11 @@ body {
 
 ::-moz-selection {
   /* Firefox */
-  background: #797979; /* #404040 */
+  background: #797979a2; /* #404040 */
 }
 
 ::selection {
-  background: #797979; /* #404040 */
+  background: #797979a2; /* #404040 */
 }
 
 @layer base {

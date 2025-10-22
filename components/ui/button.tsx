@@ -7,7 +7,6 @@ import { type VariantProps } from "class-variance-authority";
 function Button({
   className,
   variant,
-  size,
   asChild = false,
   ...props
 }: React.ComponentProps<"button"> &
@@ -19,10 +18,10 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, className }))}
       {...props}
     />
   );
 }
 
-export { Button, buttonVariants };
+export { Button };

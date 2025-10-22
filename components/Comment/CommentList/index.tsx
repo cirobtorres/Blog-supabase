@@ -21,7 +21,8 @@ export default function CommentList({
 
   const [isChildsHidden, setIsChildsHidden] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isDeleted, setIsDeleted] = useState(false);
+  // isDeleted
+  const [, setIsDeleted] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [likeCount, setLikeCount] = useState(comment.like_count);
   const [hasLiked, setHasLiked] = useState(false);

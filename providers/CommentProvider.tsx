@@ -12,6 +12,7 @@ type CommentMap = {
 };
 
 type CommentProviderProps = {
+  comments: CommentsSafe[];
   loading: boolean;
   readComments: (parent_id: string | null) => CommentsSafe[] | undefined;
   rootComments: CommentsSafe[];
@@ -21,6 +22,7 @@ type CommentProviderProps = {
 };
 
 export const CommentContext = React.createContext<CommentProviderProps>({
+  comments: [],
   loading: true,
   readComments: () => [],
   rootComments: [],
@@ -103,6 +105,7 @@ export function CommentProvider({ children }: { children: React.ReactNode }) {
   return (
     <CommentContext.Provider
       value={{
+        comments,
         loading,
         readComments,
         rootComments: readComments(null),

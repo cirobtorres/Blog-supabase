@@ -1,14 +1,16 @@
 import { useComment } from "@/hooks/useComment";
 import { LoadingSpinning } from "../../LoadingSpinning";
 
+// TODO (IMPORTANT): componente incompleto
 export default function LoadMoreButton() {
   const commentContext = useComment();
   const loading = commentContext?.loading;
   const loadMore = commentContext?.loadMore;
-  const hasDbMoreComments = commentContext?.hasDbMoreComments;
+  // const hasDbMoreComments = commentContext?.hasDbMoreComments;
 
   return (
-    hasDbMoreComments &&
+    // hasDbMoreComments &&
+    false &&
     (loading ? (
       <LoadingSpinning loadingState={true} />
     ) : (

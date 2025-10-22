@@ -40,7 +40,7 @@ export default function Comments() {
           toast.error("Erro ao criar comentário");
         });
     },
-    [article_id, profile_id]
+    [article_id, profile_id, exeCommentCreate, addComments]
   );
 
   return (

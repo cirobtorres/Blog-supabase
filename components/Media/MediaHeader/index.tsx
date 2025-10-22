@@ -19,6 +19,7 @@ import { formatType } from "@/utils/strings";
 import {
   buttonVariants,
   focusVisibleThemeRing,
+  focusVisibleWhiteRing,
 } from "../../../styles/classNames";
 import Image from "next/image";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
@@ -28,11 +29,36 @@ import {
   FloatingLabel,
 } from "@/components/Fieldsets";
 import { sonnerToastPromise } from "@/toasters";
-import { postFiles } from "@/services/media";
-import { convertToLargeDate } from "@/utils/dates";
+import { Spinner } from "@/components/ui/spinner";
+import { postFiles } from "@/services/media.client";
 
-const className =
-  "w-40 cursor-pointer flex justify-center items-center gap-2 rounded px-2 py-1 text-sm border duration-300 outline-none focus-visible:ring-2 focus-visible:ring-neutral-100 focus-visible:border-transparent";
+const className = cn(
+  "w-40 cursor-pointer flex justify-center items-center gap-2 rounded px-2 py-1 text-sm border duration-300 outline-none",
+  focusVisibleWhiteRing
+);
+
+interface DragAndDropZoneProps {
+  onFilesSelected: (files: File[]) => void;
+}
+
+type FileWithMetadata = {
+  file: File;
+  filename: string;
+  caption: string;
+  altText: string;
+};
+
+interface FilePreviewCardProps {
+  data: FileWithMetadata;
+  index: number;
+  updateFiles: (index: number, updates: Partial<FileWithMetadata>) => void;
+  removeFiles: (file: File) => void;
+}
+
+interface ConfirmExitButtonProps {
+  onConfirm: () => void;
+  children: React.ReactNode;
+}
 
 export default function MediaHeader() {
   return (
@@ -61,85 +87,75 @@ const CreateFile = () => (
   </button>
 );
 
-const initFilesToSubmitState: MediaStateProps = {
-  ok: false,
-  success: null,
-  error: null,
-  data: null,
-};
-
-interface MediaStateProps {
-  ok: boolean;
-  success: string | null;
-  error: string | null;
-  data: File | null;
-}
-
 const AddFile = () => {
   const [openStep, setOpenStep] = React.useState<"upload" | "preview" | null>(
     null
   );
-  const [files, setFiles] = React.useState<File[]>([]);
+  const [files, setFiles] = React.useState<FileWithMetadata[]>([]);
+  const [isPending, setIsPending] = React.useState(false);
 
   const handleFilesSelected = (newFiles: File[]) => {
-    setFiles(newFiles);
+    const mapped = newFiles.map((f) => ({
+      file: f,
+      filename: f.name,
+      caption: "",
+      altText: f.name,
+    }));
+    setFiles(mapped);
     setOpenStep("preview");
   };
 
+  const updateFiles = React.useCallback(
+    (index: number, updates: Partial<FileWithMetadata>) => {
+      setFiles((prev) => {
+        const newFiles = [...prev];
+        newFiles[index] = { ...newFiles[index], ...updates };
+        return newFiles;
+      });
+    },
+    []
+  );
+
   const removeFiles = (fileToRemove: File) => {
-    setFiles((prev) => {
-      const filteredFiles = prev.filter((file) => file !== fileToRemove);
-      if (filteredFiles.length === 0) {
-        setOpenStep(null);
-      }
-      return filteredFiles;
-    });
+    setFiles((prev) => prev.filter(({ file }) => file !== fileToRemove));
   };
 
-  const [state, submitFilesAction, isPending] = React.useActionState(
-    async (state: MediaStateProps) => {
-      try {
-        const formData = new FormData();
+  const handleSubmitFiles = async () => {
+    setIsPending(true);
+    try {
+      const formData = new FormData();
 
-        const success = () => {
-          const now = convertToLargeDate(new Date()); // TODO
-          return "Arquivos enviados!";
-        };
+      files.forEach((item, index) => {
+        formData.append("filesToSubmit", item.file);
+        formData.append(
+          `metadata_${index}`,
+          JSON.stringify({
+            filename: item.filename,
+            caption: item.caption,
+            altText: item.altText,
+          })
+        );
+      });
 
-        const error = () => {
-          return "Arquivos não enviados";
-        };
+      // console.log([...formData.entries()]); // DEBUG
 
-        formData.set("filesToSubmit", JSON.stringify(files));
+      const promise = postFiles(formData);
 
-        const result = postFiles(state, formData);
+      sonnerToastPromise(
+        promise,
+        () => "Arquivos enviados!",
+        () => "Falha ao enviar arquivos",
+        "Enviando arquivos..."
+      );
 
-        const promise = new Promise((resolve, reject) => {
-          result.then((data) => {
-            if (data.ok) {
-              resolve(result);
-            } else {
-              reject(result);
-            }
-          });
-        });
-
-        sonnerToastPromise(promise, success, error, "Enviando arquivos...");
-
-        return result;
-      } catch (e) {
-        console.error(e);
-        const error = {
-          ok: false,
-          success: null,
-          error: null,
-          data: null,
-        };
-        return error;
-      }
-    },
-    initFilesToSubmitState
-  );
+      await promise;
+      setOpenStep(null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   return (
     <AlertDialog
@@ -192,11 +208,12 @@ const AddFile = () => {
           </AlertDialogTitle>
           <div className="px-2 py-4">
             <div className="max-h-[502px] px-2 grid grid-cols-1 gap-2 scrollbar overflow-y-auto">
-              {files.map((file, index) => (
+              {files.map((item, index) => (
                 <FilePreviewCard
-                  key={`${file.name}-${index}`}
+                  key={`${item.file.name}-${index}`}
+                  data={item}
                   index={index}
-                  file={file}
+                  updateFiles={updateFiles}
                   removeFiles={removeFiles}
                 />
               ))}
@@ -211,33 +228,23 @@ const AddFile = () => {
                 Cancelar
               </button>
             </ConfirmExitButton>
-            <AlertDialogAction asChild>
+            <form>
               <button
-                // TODO: não funciona. Falta o form.
-                // TODO: o state de openStep não permite esse form funcionar.
                 type="submit"
-                formAction={submitFilesAction}
+                onClick={handleSubmitFiles}
+                disabled={isPending}
                 className={cn(buttonVariants({ variant: "outline" }))}
               >
-                Enviar {files.length} assets ao bucket
+                Enviar {files.length} assets ao bucket{" "}
+                {isPending && <Spinner />}
               </button>
-            </AlertDialogAction>
+            </form>
           </AlertDialogFooter>
         </AlertDialogContent>
       )}
     </AlertDialog>
   );
 };
-
-interface DragAndDropZoneProps {
-  onFilesSelected: (files: File[]) => void;
-}
-
-interface FilePreviewCardProps {
-  file: File;
-  index: number;
-  removeFiles: (file: File) => void;
-}
 
 const DragAndDropZone = ({ onFilesSelected }: DragAndDropZoneProps) => {
   const [isDragging, setIsDragging] = React.useState(false);
@@ -316,114 +323,121 @@ const DragAndDropZone = ({ onFilesSelected }: DragAndDropZoneProps) => {
   );
 };
 
-const FilePreviewCard = ({
-  file,
-  index,
-  removeFiles,
-}: FilePreviewCardProps) => {
-  const isImage = file.type.startsWith("image/");
-  const previewUrl = isImage ? URL.createObjectURL(file) : null;
-  const [caption, setCaption] = React.useState("");
-  const [altText, setAltText] = React.useState(file.name);
+const FilePreviewCard = React.memo(
+  ({ data, index, updateFiles, removeFiles }: FilePreviewCardProps) => {
+    const { file, filename, caption, altText } = data;
+    const isImage = file.type.startsWith("image/");
+    const previewUrl = isImage ? URL.createObjectURL(file) : null;
 
-  return (
-    <div className="w-full rounded grid grid-cols-[240px_1fr] border border-neutral-700 overflow-hidden">
-      <article
-        className={
-          "w-60 h-40 min-w-0 cursor-pointer duration-300 overflow-hidden outline-none " + // rounded
-          "grid grid-rows-[1fr_minmax(0,calc(16px_*_3_+_16px_+_1px))] " +
-          "border-r border-neutral-700 " +
-          "group "
-        }
-      >
-        <div className="relative">
-          <div className="z-10 absolute top-1 right-1 flex gap-2 group-focus-within:[&_button]:opacity-100">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={() => console.log("Editar")}
-                  className={cn(
-                    "cursor-pointer shrink-0 transition-all duration-300 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100",
-                    focusVisibleThemeRing
-                  )}
-                >
-                  <PencilIcon className="size-7 p-1.5 stroke-neutral-500" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent sideOffset={8}>Editar</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={() => removeFiles(file)}
-                  className={cn(
-                    "cursor-pointer shrink-0 transition-all duration-300 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100",
-                    focusVisibleThemeRing
-                  )}
-                >
-                  <TrashBinIcon className="size-7 p-1.5 stroke-neutral-500" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent sideOffset={8}>Remover</TooltipContent>
-            </Tooltip>
+    console.log("FilePreviewCard RENDERIZEI!");
+
+    return (
+      <div className="w-full rounded grid grid-cols-[240px_1fr] border border-neutral-700 overflow-hidden">
+        <article
+          className={
+            "w-60 h-40 min-w-0 cursor-pointer duration-300 overflow-hidden outline-none " +
+            "grid grid-rows-[1fr_minmax(0,calc(16px_*_3_+_16px_+_1px))] " +
+            "group "
+          }
+        >
+          <div className="relative">
+            <div className="z-10 absolute top-1 right-1 flex gap-2 group-focus-within:[&_button]:opacity-100">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => console.log("Editar")}
+                    className={cn(
+                      "cursor-pointer shrink-0 transition-all duration-300 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100",
+                      focusVisibleThemeRing
+                    )}
+                  >
+                    <PencilIcon className="size-7 p-1.5 stroke-neutral-500" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={8}>Editar</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => removeFiles(file)}
+                    className={cn(
+                      "cursor-pointer shrink-0 transition-all duration-300 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100",
+                      focusVisibleThemeRing
+                    )}
+                  >
+                    <TrashBinIcon className="size-7 p-1.5 stroke-neutral-500" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={8}>Remover</TooltipContent>
+              </Tooltip>
+            </div>
+            <HazardBorder />
+            <Image
+              src={previewUrl ?? "/images/no-image-avaiable.png"}
+              alt={file.name}
+              fill
+              sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className="absolute object-contain"
+            />
           </div>
-          <HazardBorder />
-          <Image
-            src={previewUrl ?? "/images/no-image-avaiable.png"}
-            alt={file.name}
-            fill
-            sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            className="absolute object-contain"
-          />
-        </div>
-        <div className="px-3 py-2 flex justify-between gap-2 items-start border-t border-neutral-700 bg-neutral-900">
-          <p className="text-xs text-neutral-300 font-medium line-clamp-3">
-            {file.name}
+          <div className="px-3 py-2 flex justify-between gap-2 items-start border-t border-neutral-700 bg-neutral-900">
+            <p className="text-xs text-neutral-300 font-medium line-clamp-3">
+              {file.name}
+            </p>
+            <div className="w-fit h-fit p-1.5 text-[10px] text-neutral-500 font-[600] flex justify-center items-center rounded bg-neutral-800">
+              <p>{formatType(file.type)}</p>
+            </div>
+          </div>
+        </article>
+        <div className="w-full flex flex-col gap-2 p-2 border-l border-neutral-700">
+          <FloatingFieldset>
+            <FloatingInput
+              value={filename}
+              id={`floating-filename-text-${file.name}-${index}`}
+              placeholder="Escreva um subtítulo"
+              onChange={(e) => updateFiles(index, { filename: e.target.value })}
+            />
+            <FloatingLabel
+              htmlFor={`floating-filename-text-${file.name}-${index}`}
+              label="Nome"
+            />
+          </FloatingFieldset>
+          <FloatingFieldset>
+            <FloatingInput
+              value={caption}
+              id={`floating-caption-text-${file.name}-${index}`}
+              placeholder="Escreva uma legenda"
+              onChange={(e) => updateFiles(index, { caption: e.target.value })}
+            />
+            <FloatingLabel
+              htmlFor={`floating-caption-text-${file.name}-${index}`}
+              label="Legenda"
+            />
+          </FloatingFieldset>
+          <FloatingFieldset>
+            <FloatingInput
+              id={`floating-alt-text-${file.name}-${index}`}
+              value={altText}
+              placeholder="Escreva um texto alternativo"
+              onChange={(e) => updateFiles(index, { altText: e.target.value })}
+            />
+            <FloatingLabel
+              htmlFor={`floating-alt-text-${file.name}-${index}`}
+              label="Alt"
+            />
+          </FloatingFieldset>
+          <p className="text-neutral-500 text-xs">
+            Alt é o texto apresentado caso a imagem não possa ser renderizada.
           </p>
-          <div className="w-fit h-fit p-1.5 text-[10px] text-neutral-500 font-[600] flex justify-center items-center rounded bg-neutral-800">
-            <p>{formatType(file.type)}</p>
-          </div>
         </div>
-      </article>
-      <div className="w-full flex flex-col gap-2 p-2">
-        <FloatingFieldset>
-          <FloatingInput
-            value={caption}
-            id={`floating-caption-text-${file.name}-${index}`}
-            placeholder="Escreva um subtítulo"
-            onChange={(e) => setCaption(e.target.value)}
-          />
-          <FloatingLabel
-            htmlFor={`floating-caption-text-${file.name}-${index}`}
-            label="Subtítulo"
-          />
-        </FloatingFieldset>
-        <FloatingFieldset>
-          <FloatingInput
-            id={`floating-alt-text-${file.name}-${index}`}
-            value={altText}
-            placeholder="Escreva um texto alternativo"
-            onChange={(e) => setAltText(e.target.value)}
-          />
-          <FloatingLabel
-            htmlFor={`floating-alt-text-${file.name}-${index}`}
-            label="Alt"
-          />
-        </FloatingFieldset>
-        <p className="text-neutral-500 text-xs">
-          Alt é o texto apresentado caso a imagem não possa ser renderizada.
-        </p>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
-interface ConfirmExitButtonProps {
-  onConfirm: () => void;
-  children: React.ReactNode;
-}
+FilePreviewCard.displayName = "FilePreviewCard";
 
 const ConfirmExitButton = ({ onConfirm, children }: ConfirmExitButtonProps) => {
   return (

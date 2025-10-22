@@ -44,15 +44,6 @@ export async function getFiles({
   return imagesSup;
 }
 
-export async function postFiles(
-  prevState: MediaStateProps,
-  formData: FormData
-) {
-  const filesToSubmit = formData.get("filesToSubmit");
-  console.log("SIM");
-  return { ok: true, success: "File(s) deleted", error: null, data: null };
-}
-
 export async function deleteFiles(
   prevState: MediaStateProps,
   formData: FormData

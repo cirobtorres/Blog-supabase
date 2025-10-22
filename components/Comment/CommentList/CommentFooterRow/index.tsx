@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useActionState, useState } from "react";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -191,7 +191,8 @@ const LikeButton = ({
         });
 
         return commentLikes;
-      } catch (e) {
+      } catch (e: unknown) {
+        console.error(e);
         setLikeCount((prev) => --prev);
         setHasLiked(false);
       }

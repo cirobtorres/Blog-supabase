@@ -5,14 +5,14 @@ import { useComment } from "@/hooks/useComment";
 import { countCommentsByArticleId } from "@/services/comment";
 
 const CommentCount = ({ article_id }: { article_id: string }) => {
-  const { parentComments } = useComment();
+  const { comments } = useComment();
   const [commentLength, setCommentLength] = useState<number | null>(null);
 
   useEffect(() => {
     countCommentsByArticleId(article_id).then((data) => {
       setCommentLength(data);
     });
-  }, [article_id, parentComments]);
+  }, [article_id, comments]);
 
   if (commentLength === null) {
     return (

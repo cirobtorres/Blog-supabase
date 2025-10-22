@@ -27,7 +27,7 @@ import {
   FloatingInput,
   FloatingLabel,
 } from "../../Fieldsets";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import {
   ImageDataInfo,
   ImageEditorButton,
@@ -35,21 +35,16 @@ import {
   ImageEditorButtonList,
 } from "../../Fieldsets/ArticleEditor";
 import { formatType } from "@/utils/strings";
-import { buttonVariants, focusVisibleThemeRing } from "@/styles/classNames";
+import {
+  buttonVariants,
+  focusVisibleWhiteRing,
+  hoverWhiteRing,
+} from "@/styles/classNames";
 import { cn } from "../../../utils/classnames";
-import { deleteFile, deleteFiles } from "../../../services/media";
+import { deleteFile, deleteFiles } from "../../../services/media.server";
 import { sonnerToastPromise } from "../../../toasters";
-import { convertToLargeDate } from "../../../utils/dates";
 import { Skeleton } from "../../../components/ui/skeleton";
-import { useImage } from "../../../hooks/useImage";
 import Link from "next/link";
-
-interface MediaStateProps {
-  ok: boolean;
-  success: string | null;
-  error: string | null;
-  data: File | null;
-}
 
 const initState: MediaStateProps = {
   ok: false,
@@ -60,20 +55,30 @@ const initState: MediaStateProps = {
 
 export default function MediaList({
   images,
+  checkedCards,
+  setCheckedCards,
 }: {
   images: SupabaseBucketImage[];
+  checkedCards: {
+    url: string;
+  }[];
+  setCheckedCards: Dispatch<
+    SetStateAction<
+      {
+        url: string;
+      }[]
+    >
+  >;
 }) {
-  const [checkBoxList, setCheckBoxList] = React.useState<{ url: string }[]>([]);
+  console.log("MediaList renderizou (PAI)"); // TODO: remover
 
-  console.log("MediaList renderizou"); // TODO: remover
-
-  const [checkedItemsState, deleteCheckedItemsAction] = React.useActionState(
+  const [, delCheckedAction, isDelCheckedPending] = React.useActionState(
     async (state: MediaStateProps) => {
       try {
         const formData = new FormData();
 
         const success = () => {
-          const now = convertToLargeDate(new Date()); // TODO
+          // const now = convertToLargeDate(new Date()); // TODO
           return "Arquivo excluído!";
         };
 
@@ -81,7 +86,7 @@ export default function MediaList({
           return "Arquivo não excluído!";
         };
 
-        formData.set("checkBoxList", JSON.stringify(checkBoxList));
+        formData.set("checkBoxList", JSON.stringify(checkedCards));
 
         const result = deleteFiles(state, formData);
 
@@ -89,7 +94,7 @@ export default function MediaList({
           result.then((data) => {
             if (data.ok) {
               resolve(result);
-              // removeFromCards(checkBoxList);
+              setCheckedCards([]);
             } else {
               reject(result);
             }
@@ -117,14 +122,13 @@ export default function MediaList({
     <>
       <div className="flex items-center gap-2">
         <p className="text-neutral-500">
-          {checkBoxList.length} arquivo{checkBoxList.length > 1 && "s"}
+          {checkedCards.length} arquivo{checkedCards.length > 1 && "s"}
         </p>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button
               type="button"
-              // disabled={checkBoxList.length === 0}
-              disabled={false}
+              disabled={checkedCards.length === 0}
               className={cn(buttonVariants({ variant: "destructive" }))}
             >
               <TrashBinIcon className="size-4 duration-300 stroke-red-500 group-disabled:stroke-neutral-600" />
@@ -140,7 +144,7 @@ export default function MediaList({
               <AlertIcon className="stroke-red-500" />{" "}
               <span className="text-red-500 font-medium">
                 Confirmar a exclusão{" "}
-                {checkBoxList.length > 1 ? "dos arquivos" : "do arquivo"}?
+                {checkedCards.length > 1 ? "dos arquivos" : "do arquivo"}?
               </span>
             </AlertDialogDescription>
             <AlertDialogFooter className="flex justify-between sm:justify-between bg-neutral-950">
@@ -148,8 +152,8 @@ export default function MediaList({
               <form>
                 <AlertDialogAction
                   type="submit"
-                  disabled={checkBoxList.length === 0}
-                  formAction={deleteCheckedItemsAction}
+                  disabled={checkedCards.length === 0 || isDelCheckedPending}
+                  formAction={delCheckedAction}
                 >
                   Confirmar
                 </AlertDialogAction>
@@ -161,18 +165,30 @@ export default function MediaList({
       <h2 className="text-xl font-extrabold text-neutral-300">
         Assets ({images.length})
       </h2>
-      <ul className="grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-2">
-        {images.map((image) => (
-          <ImagePreviewCard key={image.id} image={image} />
-        ))}
-      </ul>
+      {images.length > 0 && (
+        <ul className="grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-2">
+          {images.map((image) => (
+            <ImagePreviewCard
+              key={image.id}
+              image={image}
+              handleCheckbox={setCheckedCards}
+            />
+          ))}
+        </ul>
+      )}
     </>
   );
 }
 
 export const ImagePreviewCard = React.memo(
-  ({ image }: { image: SupabaseBucketImage }) => {
-    console.log("ImagePreviewCard renderizou"); // TODO: remover
+  ({
+    image,
+    handleCheckbox,
+  }: {
+    image: SupabaseBucketImage;
+    handleCheckbox: Dispatch<SetStateAction<{ url: string }[]>>;
+  }) => {
+    console.log("ImagePreviewCard renderizou (FILHO)"); // TODO: remover
 
     const Checkbox = () => (
       <fieldset className="size-6 absolute left-3 top-3 z-10">
@@ -182,6 +198,15 @@ export const ImagePreviewCard = React.memo(
             name="checkboxList[]"
             value={image.url}
             className="cursor-pointer"
+            onCheckedChange={(check) => {
+              if (check)
+                handleCheckbox((prev) => [...prev, { url: image.url }]);
+              else
+                handleCheckbox((prev) =>
+                  prev.filter((obj) => obj.url !== image.url)
+                );
+              return !check;
+            }}
           />
           <p className="sr-only">{`Arquivo (${image.name})`}</p>
         </label>
@@ -200,6 +225,8 @@ export const ImagePreviewCard = React.memo(
   }
 );
 
+ImagePreviewCard.displayName = "ImagePreviewCard";
+
 const ImagePreview = ({ image }: { image: SupabaseBucketImage }) => {
   const AbsoluteImagePreview = () => (
     <NextImage
@@ -215,7 +242,11 @@ const ImagePreview = ({ image }: { image: SupabaseBucketImage }) => {
     <Link
       href={image.url}
       target="_blank"
-      className="cursor-pointer w-full h-full grid grid-rows-[1fr_60px] duration-300 overflow-hidden rounded outline-none border border-neutral-700 focus-visible:ring-2 focus-visible:ring-neutral-100 focus-visible:border-transparent hover:ring-2 hover:ring-neutral-100"
+      className={cn(
+        "cursor-pointer w-full h-full grid grid-rows-[1fr_60px] transition-shadow duration-300 overflow-hidden rounded outline-none border border-neutral-700",
+        hoverWhiteRing,
+        focusVisibleWhiteRing
+      )}
     >
       <div className="h-full relative">
         <HazardBorder />
@@ -238,9 +269,7 @@ const ImagePreview = ({ image }: { image: SupabaseBucketImage }) => {
 };
 
 const ImageButtonList = ({ image }: { image: SupabaseBucketImage }) => {
-  const { removeFromCards } = useImage();
-
-  const [deleteState, deleteStateAction] = React.useActionState(
+  const [, delAction, isDelPending] = React.useActionState(
     async (state: MediaStateProps) => {
       try {
         const formData = new FormData();
@@ -248,7 +277,7 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketImage }) => {
         formData.set("fileURL", url);
 
         const success = () => {
-          const now = convertToLargeDate(new Date()); // TODO
+          // const now = convertToLargeDate(new Date()); // TODO
           return "Arquivo excluído!";
         };
 
@@ -262,7 +291,6 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketImage }) => {
           result.then((data) => {
             if (data.ok) {
               resolve(result);
-              removeFromCards([{ url }]);
             } else {
               reject(result);
             }
@@ -293,7 +321,7 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketImage }) => {
           <AlertDialogTrigger asChild>
             <ImageEditorButton
               onClick={(e) => e.stopPropagation()}
-              className={cn("size-8", focusVisibleThemeRing)}
+              className={cn("size-8", focusVisibleWhiteRing)}
             >
               <PencilIcon className="size-7 p-1.5 stroke-neutral-500" />
             </ImageEditorButton>
@@ -306,7 +334,7 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketImage }) => {
           <AlertDialogTrigger asChild>
             <ImageEditorButton
               onClick={(e) => e.stopPropagation()}
-              className={cn("size-8", focusVisibleThemeRing)}
+              className={cn("size-8", focusVisibleWhiteRing)}
             >
               <TrashBinIcon className="size-7 p-1.5 stroke-neutral-500" />
             </ImageEditorButton>
@@ -333,7 +361,11 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketImage }) => {
               Cancelar
             </AlertDialogCancel>
             <form>
-              <AlertDialogAction type="submit" formAction={deleteStateAction}>
+              <AlertDialogAction
+                type="submit"
+                formAction={delAction}
+                disabled={isDelPending}
+              >
                 Confirmar
               </AlertDialogAction>
             </form>
@@ -382,7 +414,7 @@ const AlertDialogContentMediaBody = ({
 }) => {
   const [filename, setFilename] = React.useState(image.name);
   const [alt, setAlt] = React.useState(image.name);
-  // const [caption, setCaption] = React.useState(image.caption);
+  const [caption, setCaption] = React.useState(""); // TODO: create caption table
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
@@ -467,18 +499,17 @@ const AlertDialogContentMediaBody = ({
             Alt é o texto apresentado caso a imagem não possa ser renderizada.
           </p>
         </div>
-        {/* <FloatingFieldset>
+        <FloatingFieldset>
           <FloatingInput
             id="alert-dialog-replace-media-caption"
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder=""
           />
           <FloatingLabel
             htmlFor="alert-dialog-replace-media-caption"
-            label="Caption"
+            label="Legenda"
           />
-        </FloatingFieldset> */}
+        </FloatingFieldset>
       </div>
     </div>
   );

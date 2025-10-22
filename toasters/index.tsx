@@ -11,7 +11,6 @@ export const sonnerToastError = (message: string) => {
   return toast.error(message, { style });
 };
 
-// TODO
 export const sonnerToastPromise = (
   promise: Promise<any>,
   success: (data: any) => string,

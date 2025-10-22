@@ -38,7 +38,6 @@ export const ArticleCodeBlock = ({
           className="overflow-x-auto max-w-full min-w-0 [&_pre_code]:py-4"
         />
         <ArticleCopyCodeButton
-          iconSize={16}
           code={code}
           className="transition-opacity duration-200 absolute top-1 right-1 bg-[#1e1e1e]" // opacity-0 group-hover:opacity-100
         />

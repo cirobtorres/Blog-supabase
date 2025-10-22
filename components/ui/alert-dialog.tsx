@@ -4,8 +4,8 @@ import * as React from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 
 import { buttonVariants } from "../../styles/classNames";
-import { cn } from "@/utils/classnames";
 import { CancelIcon } from "../Icons";
+import { cn } from "../../utils/classnames";
 
 function AlertDialog({
   ...props
@@ -148,7 +148,10 @@ function AlertDialogCancelIcon({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Cancel>) {
   return (
-    <AlertDialogCancel className="h-fit has-[>svg]:px-1 py-1">
+    <AlertDialogCancel
+      className={cn("h-fit has-[>svg]:px-1 py-1", className)}
+      {...props}
+    >
       <CancelIcon />
     </AlertDialogCancel>
   );

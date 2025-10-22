@@ -10,7 +10,7 @@ const LoadingSpinning = ({
 }) => {
   return (
     loadingState && (
-      <div className={cn("w-fit mx-auto animate-spin my-4", className)}>
+      <div className={cn("w-fit mx-auto animate-spin", className)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"

@@ -1,46 +1,43 @@
-// EDITORS
-type AccordionEditorProps = {
+// ---------------===== BLOCK ACCORDION =====---------------
+type BlockEditorWrapperProps = {
+  children: React.ReactNode;
   id: string;
   wrapperLabel: string;
   onRemove: (id: string) => void;
   moveToNext: (id: string) => void;
+};
+
+type AccordionBlockEditorWrapperProps = {
+  id: string;
+  wrapperLabel: string;
+  onRemove: (id: string) => void;
+  moveToNext: (id: string) => void;
+};
+
+// ---------------===== EDITORS =====---------------
+type AccordionEditorProps = {
+  type: boolean;
+  collapsible: boolean;
+  setType: (type: boolean) => void;
+  setCollapsible: (collapsible: boolean) => void;
+  setAccordions: (accordions: AccordionItem[]) => void;
 };
 
 type AlertEditorProps = {
-  id: string;
-  wrapperLabel: string;
   value: string;
   setVal: (data: string) => void;
-  onRemove: (id: string) => void;
-  moveToNext: (id: string) => void;
 };
 
 type CodeEditorProps = {
-  id: string;
-  wrapperLabel: string;
-  filename: string;
   code: string;
+  filename: string;
   language: string;
-  setFilename: (data: string) => void;
   setCode: (data: string) => void;
+  setFilename: (data: string) => void;
   setLanguage: (language: string) => void;
-  moveToNext: (id: string) => void;
-  onRemove: (id: string) => void;
 };
 
-type HoverCardEditorProps = {
-  id: string;
-  wrapperLabel: string;
-  onRemove: (id: string) => void;
-  moveToNext: (id: string) => void;
-};
-
-type ImageCarouselEditorProps = {
-  id: string;
-  wrapperLabel: string;
-  onRemove: (id: string) => void;
-  moveToNext: (id: string) => void;
-};
+type ImageCarouselEditorProps = {};
 
 type ImageEditorProps = {
   id: string;
@@ -58,12 +55,7 @@ type ImageEditorProps = {
   onRemove: (id: string) => void;
 };
 
-type QuizEditorProps = {
-  id: string;
-  wrapperLabel: string;
-  onRemove: (id: string) => void;
-  moveToNext: (id: string) => void;
-};
+type QuizEditorProps = {};
 
 type QuoteEditorProps = {
   id: string;
@@ -77,15 +69,11 @@ type QuoteEditorProps = {
 };
 
 type TextEditorProps = {
-  id: string;
-  wrapperLabel: string;
   value: string;
   setVal: (data: string) => void;
-  onRemove: (id: string) => void;
-  moveToNext: (id: string) => void;
 };
 
-// REDUCERS
+// ---------------===== REDUCERS =====---------------
 type ImageStateAction =
   | { type: "SET_ALL"; payload: Partial<ImageState> }
   | { type: "RESET" };
@@ -93,5 +81,6 @@ type ImageStateAction =
 type AccordionStateAction =
   | { type: "ADD" }
   | { type: "REMOVE"; id: string }
+  | { type: "UPDATE_CHECK"; id: string; value: boolean }
   | { type: "UPDATE_TITLE"; id: string; value: string }
   | { type: "UPDATE_MESSAGE"; id: string; value: string };

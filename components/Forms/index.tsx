@@ -17,14 +17,15 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "../ui/hover-card";
-import { AlertEditorIcon, AlertIcon } from "../Icons";
+import { AlertEditorIcon } from "../Icons";
 import { redirect } from "next/navigation";
+import { User } from "@supabase/supabase-js";
 
 const iniSignUpState: {
   ok: boolean;
   success: string | null;
   error: Record<string, string[]>;
-  data: any;
+  data: User | null;
 } = {
   ok: false,
   success: null,

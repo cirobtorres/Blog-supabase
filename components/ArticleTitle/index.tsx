@@ -8,7 +8,6 @@ export const ArticleTitle = ({
   id,
   title,
   sub_title,
-  slug,
   authors,
   created_at,
 }: ArticleJoinAuthor) => {
@@ -36,14 +35,7 @@ export const ArticleTitle = ({
   );
 };
 
-const ArticleTitleAuthorInfo = ({
-  id,
-  profile_id,
-  avatar_url,
-  username,
-  updated_at,
-  created_at,
-}: Author) => (
+const ArticleTitleAuthorInfo = ({ avatar_url, username }: Author) => (
   <div className="flex items-center gap-2 px-2 py-0.5">
     <Image
       src={avatar_url ? avatar_url : "/images/not-authenticated.png"}

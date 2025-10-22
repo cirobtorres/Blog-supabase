@@ -11,7 +11,7 @@ import Comments from "@/components/Comment";
 export default async function ArticlePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
   const supabase = await createServerAppClient();

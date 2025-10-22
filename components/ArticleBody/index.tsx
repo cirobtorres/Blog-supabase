@@ -4,10 +4,12 @@ import parse, { DOMNode, domToReact } from "html-react-parser";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { ExternalLinkIcon, LinkIcon, SearchIcon } from "../Icons";
+import { ExternalLinkIcon, LinkIcon } from "../Icons";
 import { slugify } from "@/utils/strings";
 import { ArticleCodeBlock } from "../ArticleCodeBlock";
 import { ArticleQuoteBlock } from "../ArticleQuoteBlock";
+import { cn } from "@/utils/classnames";
+import { focusVisibleWhiteRing } from "@/styles/classNames";
 
 export const ArticleBody = ({
   articleId,
@@ -37,7 +39,7 @@ export const ArticleBody = ({
                 const children = domToReact(domNode.children as DOMNode[]);
                 const id = slugify(
                   domNode.children
-                    .map((c) => (c.type === "text" ? (c as any).data : ""))
+                    .map((c) => (c.type === "text" ? c.data : ""))
                     .join(" ")
                 );
 
@@ -47,14 +49,17 @@ export const ArticleBody = ({
                   tag,
                   {
                     id,
-                    className: "scroll-mt-[var(--header-height)] group",
+                    className: cn(
+                      "transition-shadow duration-300 scroll-mt-[var(--header-height)] group",
+                      focusVisibleWhiteRing
+                    ),
                   },
                   <Link
                     href={`#${id}`}
-                    className="rounded transition-all text-neutral-100 outline-none focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+                    className={cn("rounded text-neutral-100")}
                   >
                     {children}
-                    <LinkIcon className="ml-2 mb-1 p-1 inline-block opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+                    <LinkIcon className="ml-2 mb-1 p-1 inline-block opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" />
                   </Link>
                 );
               }
@@ -68,30 +73,26 @@ export const ArticleBody = ({
                     <TooltipTrigger asChild>
                       <Link
                         href={href}
-                        className={
-                          `px-1 pr-2 py-0.5 underline outline-none group transition-all ` +
-                          `rounded-md border border-neutral-800 ` +
-                          `text-theme-color hover:text-neutral-100 bg-neutral-900 ` +
-                          `focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
-                        }
+                        className={cn(
+                          "px-1 pr-2 py-0.5 underline outline-none group transition-all duration-300 rounded-md border border-neutral-800 text-theme-color hover:text-neutral-100 bg-neutral-900",
+                          focusVisibleWhiteRing
+                        )}
                       >
                         {content}
                         <ExternalLinkIcon className="size-3 inline-block align-top" />
                       </Link>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent sideOffset={10}>
                       <p>{href}</p>
                     </TooltipContent>
                   </Tooltip>
                 ) : (
                   <Link
                     href={href}
-                    className={
-                      `px-1 pr-2 py-0.5 underline outline-none group transition-all ` +
-                      `rounded-md border border-neutral-800 ` +
-                      `text-theme-color hover:text-neutral-100 bg-neutral-900 ` +
-                      `focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
-                    }
+                    className={cn(
+                      "px-1 pr-2 py-0.5 underline outline-none group transition-all duration-300 rounded-md border border-neutral-800 text-theme-color hover:text-neutral-100 bg-neutral-900",
+                      focusVisibleWhiteRing
+                    )}
                   >
                     {content}
                   </Link>
@@ -117,18 +118,18 @@ export const ArticleBody = ({
 
     setParsedBody(boddies);
     anchorCallback(anchorsList);
-  }, [anchorCallback]);
+  }, [anchorCallback]); // TODO: tentar não depender desse useEffect
 
   return (
     <article
       id={articleId}
       className={
-        `min-w-0 flex flex-col rounded-md [&_p]:pb-6 [&_p]:text-neutral-400 [&_p]:font-medium [&_strong]:text-neutral-400 ` +
+        `min-w-0 flex flex-col [&_p]:pb-6 [&_p]:text-neutral-400 [&_p]:font-medium [&_strong]:text-neutral-400 ` +
         `[&_p_strong]:text-neutral-300 ` +
         `[&_p_a]:text-theme-color [&_p_a]:underline [&_p_a]:hover:text-neutral-100 [&_p_a]:transition-all ` +
-        `[&_p_a]:bg-neutral-900 [&_p_a]:border [&_p_a]:border-neutral-800 [&_p_a]:px-1 [&_p_a]:py-0.5 [&_p_a]:rounded-md ` +
+        `[&_p_a]:bg-neutral-900 [&_p_a]:border [&_p_a]:border-neutral-800 [&_p_a]:px-1 [&_p_a]:py-0.5 [&_p_a]:rounded ` +
         `[&_p_mark]:text-neutral-100 [&_p_mark]:bg-neutral-900 [&_p_mark]:border [&_p_mark]:border-neutral-800 ` +
-        `[&_p_mark]:px-1 [&_p_mark]:py-0.5 [&_p_mark]:rounded-md ` +
+        `[&_p_mark]:px-1 [&_p_mark]:py-0.5 [&_p_mark]:rounded ` +
         `[&_h2]:text-[2rem] [&_h2]:font-bold [&_h2]:pb-6 ` +
         `[&_h3]:text-2xl [&_h4]:text-xl [&_h3]:pb-6 [&_h4]:pb-6 ` +
         `[&_ul]:pb-6 [&_ul_li:last-child_p]:pb-0 [&_ul]:ml-5 [&_ul_li]:list-disc ` +

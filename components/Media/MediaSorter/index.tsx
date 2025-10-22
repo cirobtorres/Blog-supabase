@@ -18,14 +18,48 @@ import {
 } from "@/components/ui/select";
 import { focusVisibleThemeRing } from "@/styles/classNames";
 import { cn } from "@/utils/classnames";
+import { Dispatch, SetStateAction } from "react";
 
-const className = "";
-
-export default function MediaSorter() {
+export default function MediaSorter({
+  images,
+  setCheckedCards,
+}: {
+  images: SupabaseBucketImage[];
+  setCheckedCards: Dispatch<
+    SetStateAction<
+      {
+        url: string;
+      }[]
+    >
+  >;
+}) {
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-2">
-        <Checkbox />
+        <fieldset className="size-6">
+          <label htmlFor="all-checkboxList[]" className="cursor-pointer size-6">
+            <Checkbox
+              id="all-checkboxList[]"
+              name="all-checkboxList[]"
+              value="all-checkboxList[]"
+              className="cursor-pointer"
+              onCheckedChange={(check) => {
+                if (check) {
+                  setCheckedCards(() => {
+                    const allURLsArray = images.map((image) => ({
+                      url: image.url,
+                    }));
+                    return [...allURLsArray];
+                  });
+                } else {
+                  setCheckedCards([]);
+                }
+                return !check;
+              }}
+            />
+            <p className="sr-only">Selecionar todas as imagens</p>
+          </label>
+        </fieldset>
         <Select>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select a fruit" />

@@ -1,9 +1,6 @@
 import { ArticleBreadcrumb } from "../../../components/Breadcrumb";
-import MediaHeader from "@/components/Media/MediaHeader";
-import MediaSorter from "@/components/Media/MediaSorter";
-import MediaList from "@/components/Media/MediaList";
-import { getFiles } from "@/services/media";
-import MediaPagination from "@/components/Media/MediaPagination";
+import { getFiles } from "@/services/media.server";
+import Media from "@/components/Media";
 
 export default async function MediaPage() {
   const bucket = "articles";
@@ -25,12 +22,7 @@ export default async function MediaPage() {
   return (
     <>
       <ArticleBreadcrumb />
-      <div className="w-full flex flex-col justify-center gap-4">
-        <MediaHeader />
-        <MediaSorter />
-        <MediaList images={images} />
-        <MediaPagination />
-      </div>
+      <Media images={images} />
     </>
   );
 }

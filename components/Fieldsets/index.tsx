@@ -1,17 +1,10 @@
 import { labelId, inputId } from "@/utils/strings";
-import {
-  TipTapTextEditor,
-  TipTapCodeEditor,
-  TipTapQuoteEditor,
-  TipTapAlertTextEditor,
-} from "./ArticleEditor";
 import { ChangeEventHandler, Dispatch, SetStateAction } from "react";
 import { cn } from "@/utils/classnames";
 import {
   focusVisibleWhiteRing,
-  focusWithinThemeRing,
   focusWithinWhiteRing,
-  hoverThemeRing,
+  hoverWhiteRing,
 } from "@/styles/classNames";
 import { ClosedEyeIcon, EyeIcon } from "../Icons";
 
@@ -122,8 +115,8 @@ export const TitleFieldset = ({
   <fieldset
     className={cn(
       "relative p-2 pt-6 pr-1 flex flex-col rounded-sm transition-all duration-300 border border-neutral-700 bg-neutral-900 article-fieldset-scrollbar",
-      hoverThemeRing,
-      focusWithinThemeRing
+      hoverWhiteRing,
+      focusWithinWhiteRing
     )}
   >
     <textarea
@@ -168,8 +161,8 @@ export const SubtitleFieldset = ({
   <fieldset
     className={cn(
       "relative p-2 pt-6 pr-1 flex flex-col rounded-sm transition-all duration-300 border border-neutral-700 bg-neutral-900 article-fieldset-scrollbar",
-      hoverThemeRing,
-      focusWithinThemeRing
+      hoverWhiteRing,
+      focusWithinWhiteRing
     )}
   >
     <textarea
@@ -200,113 +193,6 @@ export const SubtitleFieldset = ({
     >
       Subtítulo do Artigo
     </label>
-  </fieldset>
-);
-
-export const AlertFieldset = ({
-  id,
-  value,
-  setVal,
-}: {
-  id: string;
-  value: string;
-  setVal: (data: any) => void;
-}) => (
-  <fieldset className="h-full flex flex-col p-1">
-    <TipTapAlertTextEditor
-      id={"input-alert-" + id} // input-alert-text-1, 2, 3, 4, ..., n
-      setVal={setVal}
-      defaultValue={value}
-    />
-  </fieldset>
-);
-
-export const EditorFieldset = ({
-  id,
-  value,
-  setVal,
-}: {
-  id: string;
-  value: string;
-  setVal: (data: any) => void;
-}) => (
-  <fieldset className="h-full flex flex-col p-1">
-    <TipTapTextEditor
-      id={"input-body-" + id} // input-body-text-1, 2, 3, 4, ..., n
-      setVal={setVal}
-      defaultValue={value}
-    />
-  </fieldset>
-);
-
-export const CodeFieldset = ({
-  id,
-  filename,
-  code,
-  language,
-  setFilename,
-  setCode,
-  setLanguage,
-}: {
-  id: string;
-  filename: string;
-  code: string;
-  language: string;
-  setFilename: (data: string) => void;
-  setCode: (data: string) => void;
-  setLanguage: (data: string) => void;
-}) => (
-  <fieldset className="h-full flex flex-col gap-1 p-1 [&_fieldset]:mt-0">
-    <FloatingFieldset>
-      <FloatingInput
-        id={"input-filename-" + id} // input-filename-1, 2, 3, 4, ..., n
-        placeholder="path/to/my/file.py"
-        value={filename}
-        onChange={(e) => setFilename(e.target.value)}
-      />
-      <FloatingLabel
-        htmlFor={"input-filename-" + id}
-        label="Caminho do Arquivo"
-      />
-    </FloatingFieldset>
-    <TipTapCodeEditor
-      id={"input-codebody-" + id} // input-codebody-1, 2, 3, 4, ..., n
-      defaultCode={code}
-      defaultlanguage={language}
-      setVal={setCode}
-      setLanguage={setLanguage}
-    />
-  </fieldset>
-);
-
-export const QuoteFieldset = ({
-  id,
-  author,
-  setAuthor,
-  quote,
-  setQuote,
-}: {
-  id: string;
-  author: string;
-  setAuthor: (data: string) => void;
-  quote: string;
-  setQuote: (data: string) => void;
-}) => (
-  <fieldset className="h-full flex flex-col gap-1 p-1 [&_fieldset]:mt-0">
-    <FloatingFieldset>
-      <FloatingInput
-        id={"input-author-" + id}
-        placeholder="Arthur Schopenhauer"
-        value={author}
-        onChange={(e) => setAuthor(e.target.value)}
-      />
-      <FloatingLabel htmlFor={"input-author-" + id} label="Autor da citação" />
-    </FloatingFieldset>
-    <TipTapQuoteEditor
-      id={"input-quote-" + id} // input-quote-text-1, 2, 3, 4, ..., n
-      setVal={setQuote}
-      defaultValue={quote}
-    />
   </fieldset>
 );
 
@@ -360,6 +246,31 @@ export const FloatingInput = ({
     {...props}
     className={cn(
       "h-full w-full px-2 pt-4 pb-0.5 text-sm font-medium rounded peer transition-all duration-300 appearance-none border-none outline-none placeholder:text-transparent placeholder:select-none text-neutral-400 bg-transparent focus:placeholder:text-neutral-500 disabled:cursor-not-allowed ",
+      className
+    )}
+  />
+);
+
+export const FloatingTextArea = ({
+  id,
+  value,
+  onChange,
+  placeholder = " ",
+  className,
+  ...props
+}: React.InputHTMLAttributes<HTMLTextAreaElement> & FloatingInputProps) => (
+  <textarea
+    id={id}
+    name={id}
+    type="text"
+    rows={3}
+    autoComplete="off"
+    value={value}
+    onChange={onChange}
+    placeholder={placeholder}
+    {...props}
+    className={cn(
+      "w-full h-full p-2 text-sm font-medium rounded peer transition-all duration-300 appearance-none border-none outline-none placeholder:select-none text-neutral-400 bg-transparent placeholder:text-neutral-500 disabled:cursor-not-allowed ",
       className
     )}
   />

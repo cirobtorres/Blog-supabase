@@ -9,10 +9,8 @@ import {
 } from "@/components/Buttons";
 import { SubtitleFieldset, TitleFieldset } from "@/components/Fieldsets";
 import { postArticlePublic, postArticleSave } from "@/services/article";
-import { BlockList, NewBlockButtons } from "../utils";
+import { BlockList, NewBlockButtons } from "../../Editors/blocks";
 import { useProfile } from "@/hooks/useProfile";
-import { useRouter } from "next/navigation";
-import { convertToLargeDate } from "@/utils/dates";
 import { AspectRatio } from "@/components/ui/aspect-ration";
 import {
   DropPlaceholder,
@@ -56,7 +54,6 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
   const [htmlSubtitle, setHtmlSubtitle] = useState("");
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [isOpenState, setIsOpenState] = useState(false);
-  const router = useRouter();
 
   const [postState, postAction, isPendingPost] = useActionState(async () => {
     try {
@@ -69,7 +66,7 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
       formData.set("article_body", JSON.stringify(blocks));
 
       const success = () => {
-        const now = convertToLargeDate(new Date());
+        // const now = convertToLargeDate(new Date());
         return "Artigo publicado!";
       };
 
@@ -122,7 +119,7 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
       formData.set("article_body", JSON.stringify(blocks));
 
       const success = () => {
-        const now = convertToLargeDate(new Date());
+        // const now = convertToLargeDate(new Date());
         return "Artigo salvo!";
       };
 
@@ -243,7 +240,7 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
             <DropPlaceholder />
           </AspectRatio>
           <BlockList blocks={blocks} setBlocks={setBlocks} />
-          <NewBlockButtons blocks={blocks} setBlocks={setBlocks} />
+          <NewBlockButtons setBlocks={setBlocks} />
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex flex-col gap-1 p-4 rounded-sm border border-neutral-700 bg-neutral-900">

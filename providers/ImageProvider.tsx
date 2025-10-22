@@ -1,7 +1,7 @@
 "use client";
 
-import { getImageDimensionsByString } from "@/components/Fieldsets/ArticleEditor";
-import { getFiles } from "@/services/media";
+import { getFiles } from "@/services/media.server";
+import { getImageDimensionsByString } from "@/utils/media";
 import React, { useCallback, useEffect, useState } from "react";
 
 type ImageProviderProps = {

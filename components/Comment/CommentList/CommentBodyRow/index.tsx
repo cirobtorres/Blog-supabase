@@ -83,7 +83,7 @@ const CommentBody = ({
       }
       return setHasLiked(false);
     })();
-  }, [comment.id, currentUser?.id]);
+  }, [comment.id, currentUser, setHasLiked]);
 
   return (
     <div className="items-center">

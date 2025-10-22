@@ -10,7 +10,7 @@ import {
 
 export default function MediaPagination() {
   return (
-    <Pagination>
+    <Pagination className="mb-0 mt-auto">
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious href="#" />
@@ -20,6 +20,23 @@ export default function MediaPagination() {
         </PaginationItem>
         <PaginationItem>
           <PaginationEllipsis />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#">3</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#" isActive>
+            4
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#">5</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#">10</PaginationLink>
         </PaginationItem>
         <PaginationItem>
           <PaginationNext href="#" />

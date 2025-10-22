@@ -1,12 +1,10 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { useRouter } from "next/navigation";
 import { putArticlePublic, putArticleSave } from "@/services/article";
-import { convertToLargeDate } from "@/utils/dates";
 import { ReturnToHome, SubmitFormButton } from "@/components/Buttons";
 import { SubtitleFieldset, TitleFieldset } from "@/components/Fieldsets";
-import { BlockList, NewBlockButtons } from "../utils";
+import { BlockList, NewBlockButtons } from "../../Editors/blocks";
 import Link from "next/link";
 import { sonnerToastPromise } from "@/toasters";
 import { cn } from "@/utils/classnames";
@@ -22,8 +20,8 @@ export const EditArticleForm = ({
   const [htmlTitle, setHtmlTitle] = useState(title);
   const [htmlSubtitle, setHtmlSubtitle] = useState(sub_title || "");
   const [blocks, setBlocks] = useState<Block[]>(JSON.parse(body));
-  const [isOpenState, setIsOpenState] = useState(false);
-  const router = useRouter();
+  // isOpenState
+  const [, setIsOpenState] = useState(false);
 
   const [postState, postAction, isPendingPost] = useActionState(
     async () => {
@@ -36,7 +34,7 @@ export const EditArticleForm = ({
       formData.set("article_body", JSON.stringify(blocks));
 
       const success = () => {
-        const now = convertToLargeDate(new Date());
+        // const now = convertToLargeDate(new Date());
         return "Artigo publicado!";
       };
 
@@ -70,7 +68,8 @@ export const EditArticleForm = ({
     }
   );
 
-  const [saveState, saveAction, isPendingSave] = useActionState(
+  // saveState
+  const [, saveAction, isPendingSave] = useActionState(
     async () => {
       const formData = new FormData();
 
@@ -81,7 +80,7 @@ export const EditArticleForm = ({
       formData.set("article_body", JSON.stringify(blocks));
 
       const success = () => {
-        const now = convertToLargeDate(new Date());
+        // const now = convertToLargeDate(new Date());
         return "Artigo salvo!";
       };
 
@@ -124,7 +123,7 @@ export const EditArticleForm = ({
             <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />
             <SubtitleFieldset value={htmlSubtitle} setVal={setHtmlSubtitle} />
             <BlockList blocks={blocks} setBlocks={setBlocks} />
-            <NewBlockButtons blocks={blocks} setBlocks={setBlocks} />
+            <NewBlockButtons setBlocks={setBlocks} />
           </div>
           <div className="flex flex-col gap-1">
             <SubmitFormButton

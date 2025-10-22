@@ -21,6 +21,7 @@ import {
   useEffect,
   useRef,
   MouseEventHandler,
+  useCallback,
 } from "react";
 import { toast } from "sonner";
 import { LoadingSpinning } from "@/components/LoadingSpinning";
@@ -30,7 +31,11 @@ import {
   CancelIcon,
   TrashBinIcon,
 } from "@/components/Icons";
-import ToolTipWrapper from "@/components/ui/tooltip";
+import ToolTipWrapper, {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { buttonVariants, focusVisibleWhiteRing } from "@/styles/classNames";
 import { cn } from "@/utils/classnames";
 import { usePathname } from "next/navigation";
@@ -68,7 +73,7 @@ export const ProvidersRowButtons = ({
           type="submit"
           onClick={() => setState("google")}
           className={cn(
-            "transition-shadow duration-300 cursor-pointer w-full h-[38px] rounded-xs outline-none border border-[#ff645f] bg-[#e5322b]",
+            "transition-shadow duration-300 cursor-pointer w-full h-[38px] text-sm rounded-xs outline-none border border-[#ff645f] bg-[#e5322b]",
             focusVisibleWhiteRing
           )}
         >
@@ -78,7 +83,7 @@ export const ProvidersRowButtons = ({
           type="submit"
           onClick={() => setState("linkedin")}
           className={cn(
-            "transition-shadow duration-300 cursor-pointer w-full h-[38px] rounded-xs outline-none border border-[#45beff] bg-[#0379b7]",
+            "transition-shadow duration-300 cursor-pointer w-full h-[38px] text-sm rounded-xs outline-none border border-[#45beff] bg-[#0379b7]",
             focusVisibleWhiteRing
           )}
         >
@@ -88,7 +93,7 @@ export const ProvidersRowButtons = ({
           type="submit"
           onClick={() => setState("github")}
           className={cn(
-            "transition-shadow duration-300 cursor-pointer w-full h-[38px] rounded-xs outline-none border border-[#272727] bg-[#000000]",
+            "transition-shadow duration-300 cursor-pointer w-full h-[38px] text-sm rounded-xs outline-none border border-[#272727] bg-[#000000]",
             focusVisibleWhiteRing
           )}
         >
@@ -128,16 +133,16 @@ export const EditOrDeleteArticleButtons = ({
     setInputString("");
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     setIsDialogOpen(false);
     clearInput();
-  };
+  }, []);
 
   useEffect(() => {
     if (!isPending && state === null) {
       handleCloseDialog();
     }
-  }, [isPending, state]);
+  }, [isPending, state, handleCloseDialog]);
 
   return (
     <div
@@ -283,82 +288,87 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
         data-testid="btt-btn-container"
         className="self-start sticky mx-auto top-1/2 -translate-y-1/2"
       >
-        <ToolTipWrapper tooltip="Voltar para topo">
-          <button
-            id="btt-btn"
-            data-testid="btt-btn"
-            type="button"
-            aria-label="Voltar ao topo da página"
-            // title="Voltar ao topo da página"
-            onClick={() => window.scrollTo(0, 0)}
-            // style={{ height: `${diameter}px` }}
-            // className="relative flex cursor-pointer group rounded focus-visible:outline-2 focus-visible:outline-white"
-            style={{
-              height: `${diameter}px`,
-              top: "50%",
-              bottom: "50%",
-              transform: "translateY(0,-50%)",
-            }}
-            className={
-              `relative flex cursor-pointer group ` +
-              `my-40 transition-all rounded outline-none ` +
-              `focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
-            }
-          >
-            <svg
-              className="relative -rotate-90"
-              role="presentation"
-              aria-hidden="true"
-              focusable="false"
-              style={{ width: `${diameter}px`, height: `${diameter}px` }}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              id="btt-btn"
+              data-testid="btt-btn"
+              type="button"
+              aria-label="Voltar ao topo da página"
+              // title="Voltar ao topo da página"
+              onClick={() => window.scrollTo(0, 0)}
+              // style={{ height: `${diameter}px` }}
+              // className="relative flex cursor-pointer group rounded focus-visible:outline-2 focus-visible:outline-white"
+              style={{
+                height: `${diameter}px`,
+                top: "50%",
+                bottom: "50%",
+                transform: "translateY(0,-50%)",
+              }}
+              className={
+                `relative flex cursor-pointer group ` +
+                `my-40 transition-all rounded outline-none ` +
+                `focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] `
+              }
             >
-              <circle
-                cx={outerRadius}
-                cy={outerRadius}
-                r={`${innerRadius}px`}
-                strokeWidth={`${strokeWidth}px`}
-                strokeDasharray={circunference.current}
-                className="w-fit h-fit fill-none stroke-neutral-800"
-                style={{ strokeDashoffset: 0 }}
-              />
-              <circle
-                id="progress-circle"
-                data-testid="progress-circle"
-                cx={outerRadius}
-                cy={outerRadius}
-                r={`${innerRadius}px`}
-                strokeWidth={`${strokeWidth}px`}
-                strokeDasharray={circunference.current}
-                style={{ strokeDashoffset: circunference.current }}
-                className="w-fit h-fit fill-none stroke-theme-color"
-              />
-              <circle
-                id="progress-circle-blur"
-                data-testid="progress-circle-blur"
-                cx={outerRadius}
-                cy={outerRadius}
-                r={`${innerRadius}px`}
-                strokeWidth={`${strokeWidth}px`}
-                strokeDasharray={circunference.current}
-                style={{ strokeDashoffset: circunference.current }}
-                className="w-fit h-fit fill-none stroke-theme-color blur-xs"
-              />
-            </svg>
-            <svg
-              id="btt-arrow-up"
-              stroke="currentColor"
-              fill="currentColor"
-              strokeWidth="0"
-              viewBox="0 0 448 512"
-              height="20px"
-              width="20px"
-              xmlns="http://www.w3.org/2000/svg"
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 group-hover:animate-bouncing-arrow"
-            >
-              <path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z" />
-            </svg>
-          </button>
-        </ToolTipWrapper>
+              <svg
+                className="relative -rotate-90"
+                role="presentation"
+                aria-hidden="true"
+                focusable="false"
+                style={{ width: `${diameter}px`, height: `${diameter}px` }}
+              >
+                <circle
+                  cx={outerRadius}
+                  cy={outerRadius}
+                  r={`${innerRadius}px`}
+                  strokeWidth={`${strokeWidth}px`}
+                  strokeDasharray={circunference.current}
+                  className="w-fit h-fit fill-none stroke-neutral-800"
+                  style={{ strokeDashoffset: 0 }}
+                />
+                <circle
+                  id="progress-circle"
+                  data-testid="progress-circle"
+                  cx={outerRadius}
+                  cy={outerRadius}
+                  r={`${innerRadius}px`}
+                  strokeWidth={`${strokeWidth}px`}
+                  strokeDasharray={circunference.current}
+                  style={{ strokeDashoffset: circunference.current }}
+                  className="w-fit h-fit fill-none stroke-theme-color"
+                />
+                <circle
+                  id="progress-circle-blur"
+                  data-testid="progress-circle-blur"
+                  cx={outerRadius}
+                  cy={outerRadius}
+                  r={`${innerRadius}px`}
+                  strokeWidth={`${strokeWidth}px`}
+                  strokeDasharray={circunference.current}
+                  style={{ strokeDashoffset: circunference.current }}
+                  className="w-fit h-fit fill-none stroke-theme-color blur-xs"
+                />
+              </svg>
+              <svg
+                id="btt-arrow-up"
+                stroke="currentColor"
+                fill="currentColor"
+                strokeWidth="0"
+                viewBox="0 0 448 512"
+                height="20px"
+                width="20px"
+                xmlns="http://www.w3.org/2000/svg"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 group-hover:animate-bouncing-arrow"
+              >
+                <path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z" />
+              </svg>
+            </button>
+          </TooltipTrigger>
+          <TooltipContent sideOffset={8}>
+            <p>Voltar para topo</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </article>
   );
@@ -383,19 +393,22 @@ export const DeleteEditorButton = ({
 
   return (
     <AlertDialog open={isDialogOpen}>
-      <ToolTipWrapper tooltip="Excluir">
-        <AlertDialogTrigger onClick={handleOpenDialog} asChild>
-          <button
-            type="button"
-            className={cn(
-              "cursor-pointer p-1 rounded-xs border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800",
-              focusVisibleWhiteRing
-            )}
-          >
-            <TrashBinIcon className="size-4" />
-          </button>
-        </AlertDialogTrigger>
-      </ToolTipWrapper>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <AlertDialogTrigger onClick={handleOpenDialog} asChild>
+            <button
+              type="button"
+              className={cn(
+                "cursor-pointer p-1 rounded-xs border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800",
+                focusVisibleWhiteRing
+              )}
+            >
+              <TrashBinIcon className="size-4" />
+            </button>
+          </AlertDialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent sideOffset={10}>Excluir</TooltipContent>
+      </Tooltip>
       <AlertDialogContent>
         <AlertDialogTitle className="flex items-center justify-between">
           Deletar componente?
@@ -433,18 +446,21 @@ export const PushEditorDownButton = ({
 }: {
   moveToNext: MouseEventHandler<HTMLButtonElement>;
 }) => (
-  <ToolTipWrapper tooltip="Mover para Baixo">
-    <button
-      type="button"
-      className={cn(
-        "cursor-pointer p-1 rounded-xs border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800",
-        focusVisibleWhiteRing
-      )}
-      onClick={moveToNext}
-    >
-      <ArrowDownIcon className="size-4 stroke-neutral-300" />
-    </button>
-  </ToolTipWrapper>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <button
+        type="button"
+        className={cn(
+          "cursor-pointer p-1 rounded-xs border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800",
+          focusVisibleWhiteRing
+        )}
+        onClick={moveToNext}
+      >
+        <ArrowDownIcon className="size-4 stroke-neutral-300" />
+      </button>
+    </TooltipTrigger>
+    <TooltipContent sideOffset={10}>Mover para Baixo</TooltipContent>
+  </Tooltip>
 );
 
 export const LinkButton = ({

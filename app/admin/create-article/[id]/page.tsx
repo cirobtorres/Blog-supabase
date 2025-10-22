@@ -3,11 +3,11 @@ import { StaticHeader } from "@/components/Header";
 import { createServerAppClient } from "@/supabase/server";
 import { notFound } from "next/navigation";
 
-interface Params {
-  id: string;
-}
-
-export default async function EditArticle({ params }: { params: Params }) {
+export default async function EditArticle({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   const supabase = await createServerAppClient();

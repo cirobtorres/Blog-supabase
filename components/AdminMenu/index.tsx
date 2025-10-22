@@ -6,7 +6,7 @@ import { cn } from "@/utils/classnames";
 import { usePathname } from "next/navigation";
 import { MENU_ITEMS } from "@/constants/adminMenu";
 
-export default function AdminMenu({}: {}) {
+export default function AdminMenu() {
   const pathname = usePathname();
 
   return (

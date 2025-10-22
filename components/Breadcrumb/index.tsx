@@ -10,6 +10,7 @@ import {
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
 import { cn } from "../../utils/classnames";
+import { focusVisibleWhiteRing } from "@/styles/classNames";
 
 export const ArticleBreadcrumb = ({ className }: { className?: string }) => {
   const pathname = usePathname();
@@ -21,7 +22,10 @@ export const ArticleBreadcrumb = ({ className }: { className?: string }) => {
         <BreadcrumbItem>
           <Link
             href="/"
-            className="transition-all hover:text-neutral-100 rounded outline-none focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+            className={cn(
+              "transition-all duration-300 hover:text-neutral-100 rounded outline-none",
+              focusVisibleWhiteRing
+            )}
           >
             Home
           </Link>
@@ -30,7 +34,10 @@ export const ArticleBreadcrumb = ({ className }: { className?: string }) => {
         <BreadcrumbItem>
           <Link
             href="/admin"
-            className="transition-all hover:text-neutral-100 rounded outline-none focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
+            className={cn(
+              "transition-all duration-300 hover:text-neutral-100 rounded outline-none",
+              focusVisibleWhiteRing
+            )}
           >
             {articles}
           </Link>

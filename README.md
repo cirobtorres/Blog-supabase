@@ -6,11 +6,12 @@
 
 <details>
   <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">SCHEMA</summary>
-  <small>(last updated 08-22-2025)</small>
+  <small>(last updated 10-20-2025)</small>
 
 ```sql
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
+  admin boolean default false,
   email text unique,
   username text,
   avatar_url text,
@@ -67,6 +68,16 @@ create table if not exists public.comment_likes (
   profile_id uuid not null references public.profiles(id) on delete cascade,
   comment_id uuid not null references public.comments(id) on delete cascade,
   created_at timestamptz with time zone default now()
+);
+
+create table if not exists public.media_metadata (
+  id uuid primary key default gen_random_uuid(),
+  storage_path text not null unique,  -- Supabase storage file path (ex: "public/videos/foo.mp4")
+  caption text null,                  -- Caption (opcional)
+  mime_type text null,                -- Ex: "image/png", "video/mp4"
+  metadata jsonb default '{}'::jsonb, -- Extras (ex: { "width": 1920, "height": 1080 })
+  updated_at timestamptz default now(),
+  created_at timestamptz default now()
 );
 ```
 

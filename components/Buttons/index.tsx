@@ -19,14 +19,14 @@ export const SubmitFormButton = ({
     disabled={isPending}
     formAction={formAction}
     className={cn(
-      "relative cursor-pointer w-full h-[38px] transition-shadow duration-300 py-2 outline-none text-sm text-neutral-100 rounded-xs border border-theme-color bg-theme-color-light disabled:cursor-auto not-disabled:transition-all not-disabled:duration-300",
+      "relative cursor-pointer w-full h-[38px] py-2 outline-none text-sm text-neutral-100 rounded-xs border border-theme-color bg-theme-color-light disabled:cursor-auto not-disabled:transition-all not-disabled:duration-300",
       focusVisibleWhiteRing,
       className
     )}
   >
     {isPending ? (
       <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
-        <LoadingSpinning loadingState={isPending} className="my-0" />
+        <LoadingSpinning loadingState={isPending} />
       </div>
     ) : (
       label
