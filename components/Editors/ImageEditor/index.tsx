@@ -1,7 +1,11 @@
 "use client";
 
 import { ActionDispatch } from "react";
-import { DeprecatingFloatingInput } from "..";
+import {
+  FloatingFieldset,
+  FloatingInput,
+  FloatingLabel,
+} from "../../Fieldsets";
 import { focusVisibleWhiteRing } from "../../../styles/classNames";
 import { cn } from "../../../utils/classnames";
 import { LinkIcon, DownloadIcon, TrashBinIcon, UploadIcon } from "../../Icons";
@@ -13,7 +17,6 @@ import {
   imageToDownload,
 } from "../../../utils/media";
 
-// ------------------------------==========IMAGE==========------------------------------
 export const ImageDataInfo = ({ imageData }: { imageData: ImageState }) => (
   <div
     className={
@@ -266,33 +269,44 @@ const ImageDataInput = ({
   setCaption,
   setAlt,
 }: ImageDataInputProps) => (
-  <div className="p-2 pt-0">
-    <DeprecatingFloatingInput
-      id="1" // TODO
-      label="Nome da imagem"
-      placeholder=""
-      value={filename}
-      setValue={(e) => setFilename(e.target.value)}
-    />
-    <DeprecatingFloatingInput
-      id="2" // TODO
-      label="Nome Alternativo"
-      placeholder=""
-      value={alt}
-      setValue={(e) => setAlt(e.target.value)}
-    />
+  <div className="flex flex-col gap-2 p-2">
+    <FloatingFieldset>
+      <FloatingInput
+        id={`input-filename-${filename}`}
+        value={filename}
+        onChange={(e) => setFilename(e.target.value)}
+      />
+      <FloatingLabel
+        htmlFor={`input-filename-${filename}`}
+        label="Nome da imagem"
+      />
+    </FloatingFieldset>
+    <FloatingFieldset>
+      <FloatingInput
+        id={`input-alt-${alt}`}
+        value={alt}
+        placeholder=""
+        onChange={(e) => setAlt(e.target.value)}
+      />
+      <FloatingLabel
+        htmlFor={`input-filename-${filename}`}
+        label="Nome Alternativo"
+      />
+    </FloatingFieldset>
     <small className="text-[11px]">
       <p className="text-neutral-500 px-1 mt-1">
         Texto exibido no lugar da imagem caso o recurso esteja indisponível.
       </p>
     </small>
-    <DeprecatingFloatingInput
-      id="3" // TODO
-      label="Rodapé"
-      placeholder=""
-      value={caption}
-      setValue={(e) => setCaption(e.target.value)}
-    />
+    <FloatingFieldset>
+      <FloatingInput
+        id={`input-caption-${caption}`}
+        value={caption}
+        placeholder=""
+        onChange={(e) => setCaption(e.target.value)}
+      />
+      <FloatingLabel htmlFor={`input-caption-${caption}`} label="Rodapé" />
+    </FloatingFieldset>
   </div>
 );
 

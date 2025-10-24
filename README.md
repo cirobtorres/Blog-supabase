@@ -122,32 +122,173 @@ execute function update_comment_like_count();
 
 </details>
 
+<details>
+  <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Bucket RLS</summary>
+  <small>(last updated 10-24-2025)</small>
+
+```sql
+-- Remove old policies
+drop policy if exists "Public can read article images" on storage.objects;
+drop policy if exists "Only admin users can insert article images" on storage.objects;
+drop policy if exists "Only admin users can update article images" on storage.objects;
+drop policy if exists "Only admin users can delete article images" on storage.objects;
+
+-- SELECT: any user (AUTH or ANON)
+create policy "Public can read article images"
+on storage.objects
+for select
+using (bucket_id = 'articles');
+
+-- INSERT: ADMIN only
+create policy "Only admin users can insert article images"
+on storage.objects
+for insert
+to authenticated
+with check (
+bucket_id = 'articles'
+and exists (
+  select 1
+  from public.profiles p
+  where p.id = auth.uid()
+  and p.admin = true
+)
+);
+
+-- UPDATE: ADMIN only
+create policy "Only admin users can update article images"
+on storage.objects
+for update
+to authenticated
+using (
+bucket_id = 'articles'
+and exists (
+  select 1
+  from public.profiles p
+  where p.id = auth.uid()
+  and p.admin = true
+)
+);
+
+-- DELETE: ADMIN only
+create policy "Only admin users can delete article images"
+on storage.objects
+for delete
+to authenticated
+using (
+bucket_id = 'articles'
+and exists (
+  select 1
+  from public.profiles p
+  where p.id = auth.uid()
+  and p.admin = true
+)
+);
+```
+
+</details>
+
+<details>
+  <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Comment Safe View</summary>
+  <small>(last updated 10-24-2025)</small>
+  
+  ```sql
+  drop view if exists public.comments_safe;
+  create view public.comments_safe as
+  select
+  c.id,
+  c.parent_id,
+  c.article_id,
+  c.like_count,
+  case
+  when c.is_deleted then '[excluído]'
+  when c.is_blocked then '[bloqueado]'
+  else c.body
+  end as body,
+  c.is_edited,
+  c.is_blocked,
+  c.is_deleted,
+  c.updated_at,
+  c.created_at,
+  -- nested user profile data
+  json_build_object(
+  'id', case when c.is_deleted then null else p.id end,
+  'username', case when c.is_deleted then '[excluído]' else p.username end,
+  'avatar_url', case when c.is_deleted then null else p.avatar_url end,
+  'email', case when c.is_deleted then null else p.email end,
+  'updated_at', p.updated_at,
+  'created_at', p.created_at
+  ) as profiles
+  from public.comments c
+  left join public.profiles p on p.id = c.profile_id;
+  ```
+
+</details>
+
+<details>
+<summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Profile Creation from User Authentication</summary>
+<small>(last updated 10-24-2025)</small>
+
+```sql
+-- inserts a row into public.profiles
+create or replace function public.create_profile_for_new_user()
+returns trigger
+language plpgsql
+security definer set search_path = ''
+as $$
+begin
+insert into public.profiles (id, email, username, avatar_url)
+values (new.id, new.email, new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'avatar_url');
+return new;
+end;
+$$;
+-- trigger the function every time a user is created
+create or replace trigger on_auth_user_created
+after insert on auth.users
+for each row execute procedure public.create_profile_for_new_user();
+```
+
+</details>
+
+<details>
+  <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Article Privacy Toggle</summary>
+  <small>(last updated 10-24-2025)</small>
+
+```sql
+-- Alternate article is_private from true to false and vice versa
+create or replace function toggle_article_privacy(article_id uuid)
+returns void as $$
+begin
+  update articles
+  set is_private = not is_private
+  where id = article_id;
+end;
+$$ language plpgsql;
+```
+
+</details>
+
 <h2 style="font-weight:500;font-size:30px;color:#9c2f70">TODO</h2>
 <small>Temporário</small>
 
 <ol style="font-weight:500;font-size:15px">
-  <li>ALTERAR: alterar essa forma estranha de capturar o "id" dos fieldsets;</li>
-  <li style="color:#b22222">CORRIGIR: ImageState e ImageProps (duplicidade). Integrar melhor o ImageDataInfo;</li>
-  <li>CORRIGIR: comentários deletados não atualizam CommentCount na mesma sessão;</li>
-  <li>CORRIGIR: z-index de AdminMenu em relação aos dialogs;</li>
-  <li>CORRIGIR: botão "return home" deve salvar o artigo antes de retornar;</li>
-  <li>CORRIGIR: redirecionar usuário recém logado de volta para página de origem;</li>
-  <li>CORRIGIR: a altura hardcoded dos editores, que devem ocupar o espaço máximo definido pelo seu wrapper;</li>
-  <li style="color:#b22222">CORRIGIR: mover o code editor para baixo na linha de blocos reseta o editor;</li>
+  <li>MELHORAR: redirecionar usuário recém logado de volta para página de origem;</li>
+  <li>MELHORAR: uniformizar os headers. Em /admin, ele deve ser fixed também;</li>
+  <li>MELHORAR: uniformizar os types;</li>
+  <li>MELHORAR: a altura hardcoded dos editores, que devem ocupar o espaço máximo definido pelo seu wrapper;</li>
+  <li style="color:#b22222">CORRIGIR (BUG): comentários deletados não atualizam CommentCount na mesma sessão;</li>
+  <li style="color:#b22222">CORRIGIR (BUG): códigos copiados do vscode diretamente para o codeblock não são formatados corretamente para o usuário em articles;</li>
+  <li style="color:#b22222">CORRIGIR (BUG): AdminPanel precisa criar o highlight de currentPage seguindo uma ordem de prioridade, da URL mais específica para a mais genérica;</li>
   <li>ADICIONAR: indicativo ao "CreateArticleForm" de que o artigo não está publicado, apenas salvo;</li>
   <li>ADICIONAR: criar "você precisa fazer log in" para botão responder;</li>
-  <li>ADICIONAR: criar menções (ao responder um comentário, o autor do comentário respondido tem seu nome no início do comentário resposta);</li>
-  <li>ADICIONAR: criar feature "Salvar Artigos" (manter artigos armazenados sem que sejam enviados para publicação);</li>
-  <li>ADICIONAR: criar "blocos" similares ao do Strapi na criação de conteúdo e adicionaras seguintes features:</li>
+  <li>ADICIONAR: menções nas sessões de comentários (ao responder um comentário, o autor do comentário respondido tem seu nome no início do comentário resposta);</li>
+  <li>ADICIONAR: "Save Article";</li>
+  <li>ADICIONAR: imagem do artigo;</li>
   <ul>
-    <li>ADICIONAR: criar blocos de imagens (apenas 1 imagem);</li>
-    <li>ADICIONAR: criar blocos de hover card;</li>
-    <li>ADICIONAR: criar blocos de múltiplas imagens (carrossel);</li>
-    <li>ADICIONAR: criar blocos de citação (quote);</li>
-    <li>ADICIONAR: criar blocos de quiz;</li>
-    <li>ADICIONAR: criar blocos de acordeão;</li>
-    <li>ADICIONAR: criar blocos de alert;</li>
-    <li>REFATORAR: BlockEditorWrapper, EditorHeader, BlockExpand e BlockUtils (controlar o dialog por meio de provider);</li>
+    <li style="color:#b22222">CRIAR: bloco de vídeos;</li>
+    <li style="color:#b22222">CRIAR: bloco de arquivos;</li>
+    <li>FINALIZAR: bloco de imagens;</li>
+    <li>FINALIZAR: bloco de múltiplas imagens (carrossel);</li>
+    <li>FINALIZAR: bloco de quiz;</li>
   </ul>
 </ol>
 
@@ -167,5 +308,5 @@ execute function update_comment_like_count();
 <p style="font-weight:500;font-size:15px">Esse comportamento foi removido por meio de CustomCodeBlockShiki. <a href="https://github.com/timomeh/tiptap-extension-code-block-shiki" style="color:#1e90ff;text-decoration:underline;">CodeBlockShiki</a> é uma third party extention do tiptap para integração com <a href="https://shiki.matsu.io/" style="color:#1e90ff;text-decoration:underline;">Shiki</a>. O tiptap por padrão trabalha com <a href="https://github.com/wooorm/lowlight" style="color:#1e90ff;text-decoration:underline;">Lowlight</a> por meio de sua extensão nativa CodeBlockLowlight.</p>
 
 <p style="font-weight:500;font-size:15px">O Shiki faz um wrapper &#40;envelopa&#41; do conteúdo por padrão &#40;em tags &lt;pre&gt;&lt;code&gt;&#41;. O TipTap também envelopa o conteúdo nessas tags. Foi optado pela remoção, então, das tags provenientes do TipTap. Ao editor de código TipTapCodeEditor é permitido apenas um pré formatador de code block.</p>
-
-<h2 style="font-weight:500;font-size:30px;color:#9c2f70">Mots Utiles</h2>
+```
+````

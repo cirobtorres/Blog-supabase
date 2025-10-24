@@ -1,109 +1,12 @@
-import { labelId, inputId } from "@/utils/strings";
+import { labelId, slugify } from "@/utils/strings";
 import { ChangeEventHandler, Dispatch, SetStateAction } from "react";
-import { cn } from "@/utils/classnames";
+import { cn } from "../../utils/classnames";
 import {
   focusVisibleWhiteRing,
   focusWithinWhiteRing,
   hoverWhiteRing,
-} from "@/styles/classNames";
+} from "../../styles/classNames";
 import { ClosedEyeIcon, EyeIcon } from "../Icons";
-
-export const DeprecatingFloatingInput = ({
-  id,
-  label,
-  placeholder = " ",
-  value,
-  setValue,
-}: {
-  id: string;
-  label: string;
-  placeholder?: string;
-  value: string;
-  setValue: ChangeEventHandler<HTMLInputElement>;
-}) => {
-  return (
-    <fieldset
-      id={`floating-fieldset-${id}`}
-      className={
-        "relative mt-2 rounded group " +
-        "transition-all duration-300 " +
-        "border border-neutral-700 " +
-        "bg-neutral-800 " +
-        "focus-within:border-transparent focus-within:ring-2 focus-within:ring-neutral-100 "
-      } // TODO: Remover esse mt-2 e ajustar todos os mt-0 nos <FloatingInput /> usados
-    >
-      <input
-        id={`floating-input-${id}`}
-        type="text"
-        autoComplete="off"
-        name={`floating-input-${id}`}
-        value={value}
-        onChange={setValue}
-        placeholder={placeholder}
-        className={
-          `h-full w-full text-sm font-medium text-neutral-400 ` +
-          `px-2 pb-0.5 pt-4 ` +
-          `appearance-none border-none placeholder:text-transparent placeholder:select-none bg-transparent ` +
-          `transition-all duration-300 rounded outline-none ` +
-          `focus:placeholder:text-neutral-500 ` +
-          `peer `
-        }
-      />
-      <label
-        id={`floating-label-${id}`}
-        data-testid={`floating-label-${id}`}
-        htmlFor={`floating-input-${id}`}
-        className={
-          `absolute top-1/2 z-10 origin-[0] start-1 px-1 font-medium select-none ` +
-          `-translate-y-5 scale-75 peer-focus:-translate-y-5 peer-focus:scale-75 text-neutral-100 peer-focus:text-neutral-100 ` + // text-theme-color peer-focus:text-theme-color
-          `peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white ` +
-          `text-sm pointer-events-none bg-transparent bg-opacity-50 ` +
-          `transform transition-top duration-100 `
-        }
-      >
-        {label}
-      </label>
-    </fieldset>
-  );
-};
-
-export const EmailFieldset = ({ placeholder }: { placeholder?: string }) => (
-  <fieldset className="flex flex-col">
-    <label
-      id={labelId("E-mail")}
-      htmlFor={getEmailFormDataValue}
-      className="py-1"
-    >
-      E-mail
-    </label>
-    <input
-      id={getEmailFormDataValue}
-      name={getEmailFormDataValue}
-      type="email"
-      placeholder={placeholder || ""}
-      className="p-1 transition-all rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
-    />
-  </fieldset>
-);
-
-export const PasswordFieldset = ({ placeholder }: { placeholder?: string }) => (
-  <fieldset className="flex flex-col">
-    <label
-      id={labelId("Password")}
-      htmlFor={getPasswordFormDataValue}
-      className="py-1"
-    >
-      Password
-    </label>
-    <input
-      id={getPasswordFormDataValue}
-      name={getPasswordFormDataValue}
-      type="password"
-      placeholder={placeholder || ""}
-      className="p-1 transition-all rounded border border-neutral-700 bg-neutral-800 focus-visible:ring-neutral-100 focus-visible:ring-[3px]"
-    />
-  </fieldset>
-);
 
 export const TitleFieldset = ({
   value,
@@ -120,8 +23,8 @@ export const TitleFieldset = ({
     )}
   >
     <textarea
-      id={getTitleFormDataValue}
-      name={getTitleFormDataValue}
+      id={`input-${slugify("title")}`}
+      name={`input-${slugify("title")}`}
       autoFocus
       value={value}
       rows={2}
@@ -136,7 +39,7 @@ export const TitleFieldset = ({
     />
     <label
       id={labelId("Title")}
-      htmlFor={getTitleFormDataValue}
+      htmlFor={`input-${slugify("title")}`}
       className={
         `absolute origin-left select-none pointer-events-none font-medium pl-3 text-neutral-400 ` + // text-theme-color
         `top-6 transform transition-top duration-100 ` +
@@ -166,8 +69,8 @@ export const SubtitleFieldset = ({
     )}
   >
     <textarea
-      id={getSubtitleFormDataValue}
-      name={getSubtitleFormDataValue}
+      id={`input-${slugify("subtitle")}`}
+      name={`input-${slugify("subtitle")}`}
       value={value}
       rows={2}
       maxLength={256}
@@ -181,7 +84,7 @@ export const SubtitleFieldset = ({
     />
     <label
       id={labelId("Subtitle")}
-      htmlFor={getSubtitleFormDataValue}
+      htmlFor={`input-${slugify("subtitle")}`}
       className={
         `absolute origin-left select-none pointer-events-none font-medium pl-3 text-neutral-400 ` + // text-theme-color
         `top-6 transform transition-top duration-100 ` +
@@ -195,12 +98,6 @@ export const SubtitleFieldset = ({
     </label>
   </fieldset>
 );
-
-export const getDisplayNameFormDataValue = inputId("Display Name");
-export const getEmailFormDataValue = inputId("E-mail");
-export const getPasswordFormDataValue = inputId("Password");
-export const getTitleFormDataValue = inputId("Title");
-export const getSubtitleFormDataValue = inputId("Subtitle");
 
 export const FloatingFieldset = ({
   children,
@@ -216,7 +113,7 @@ export const FloatingFieldset = ({
     <fieldset
       {...props}
       className={cn(
-        "relative w-full transition-all duration-300 rounded-xs has-disabled:cursor-not-allowed has-disabled:[&_label]:text-neutral-700 bg-neutral-900 has-disabled:border-neutral-800 has-disabled:bg-neutral-900 border border-neutral-700 group",
+        "relative w-full transition-all duration-300 rounded-xs has-disabled:cursor-not-allowed has-disabled:[&_label]:text-neutral-700 bg-neutral-900 has-disabled:border-neutral-800 has-disabled:bg-neutral-900 border border-neutral-700 group has-[textarea]:p-1",
         focusWithinWhiteRing,
         error && "border-red-500",
         className
@@ -245,7 +142,7 @@ export const FloatingInput = ({
     placeholder={placeholder}
     {...props}
     className={cn(
-      "h-full w-full px-2 pt-4 pb-0.5 text-sm font-medium rounded peer transition-all duration-300 appearance-none border-none outline-none placeholder:text-transparent placeholder:select-none text-neutral-400 bg-transparent focus:placeholder:text-neutral-500 disabled:cursor-not-allowed ",
+      "h-full w-full px-2 pt-[18px] pb-1 text-sm font-medium rounded peer transition-all duration-300 appearance-none border-none outline-none placeholder:text-transparent placeholder:select-none text-neutral-400 bg-transparent focus:placeholder:text-neutral-500 disabled:cursor-not-allowed ",
       className
     )}
   />
@@ -270,7 +167,7 @@ export const FloatingTextArea = ({
     placeholder={placeholder}
     {...props}
     className={cn(
-      "w-full h-full p-2 text-sm font-medium rounded peer transition-all duration-300 appearance-none border-none outline-none placeholder:select-none text-neutral-400 bg-transparent placeholder:text-neutral-500 disabled:cursor-not-allowed ",
+      "w-full h-full p-2 text-sm font-medium rounded peer transition-all duration-300 appearance-none border-none outline-none placeholder:select-none text-neutral-400 bg-transparent placeholder:text-neutral-500 disabled:cursor-not-allowed resize-none floating-textarea-scrollbar",
       className
     )}
   />
@@ -292,7 +189,7 @@ export const FloatingLabel = ({
     htmlFor={htmlFor}
     {...props}
     className={cn(
-      "absolute origin-[0] top-1/2 z-10 start-1 px-1 font-medium select-none text-sm pointer-events-none bg-transparent bg-opacity-50 transform transition-top duration-100 -translate-y-5 scale-75 peer-focus:-translate-y-5 peer-focus:scale-75 text-neutral-100 peer-focus:text-neutral-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white",
+      "absolute origin-[0] top-1/2 z-10 start-1 px-1 font-medium select-none text-sm pointer-events-none bg-transparent bg-opacity-50 transform transition-top duration-100 -translate-y-[18px] scale-75 peer-focus:-translate-y-[18px] peer-focus:scale-75 text-neutral-100 peer-focus:text-neutral-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white",
       className,
       error &&
         "text-red-500 peer-focus:text-red-500 peer-placeholder-shown:text-red-500"

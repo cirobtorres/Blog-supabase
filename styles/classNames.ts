@@ -1,14 +1,4 @@
-import { cn } from "@/utils/classnames";
 import { cva } from "class-variance-authority";
-
-const focusVisibleThemeRing =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 focus-visible:ring-theme-color focus-visible:opacity-100";
-
-const focusWithinThemeRing =
-  "focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-theme-color focus-within:ring-offset-neutral-950";
-
-const hoverThemeRing =
-  "hover:outline-none hover:ring-2 hover:ring-offset-2 hover:ring-offset-neutral-950 hover:ring-theme-color hover:opacity-100";
 
 const focusVisibleWhiteRing =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-100 focus-visible:ring-offset-neutral-950";
@@ -36,7 +26,6 @@ const buttonVariants = cva(
       },
       focus: {
         default: focusVisibleWhiteRing,
-        themed: focusWithinThemeRing,
       },
     },
     defaultVariants: {
@@ -46,23 +35,26 @@ const buttonVariants = cva(
   }
 );
 
-const getUniformTipTapClassName = (func: boolean) =>
-  cn(
-    `flex justify-center items-center outline-none transition-all cursor-pointer rounded border ${
-      func
-        ? "text-theme-color border-neutral-600 bg-neutral-700 hover:bg-neutral-600"
-        : "border-neutral-700 hover:bg-neutral-700 hover:border-neutral-600 bg-neutral-800"
-    }`,
-    focusVisibleWhiteRing
-  );
+const alertVariants = cva("p-2 rounded-lg border mb-8", {
+  variants: {
+    variant: {
+      default: "border-neutral-700 bg-neutral-900",
+      alert: "border-red-900 bg-red-950/50",
+    },
+    focus: {
+      default: focusVisibleWhiteRing,
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+    focus: "default",
+  },
+});
 
 export {
-  focusVisibleThemeRing,
-  focusWithinThemeRing,
-  hoverThemeRing,
   focusVisibleWhiteRing,
   focusWithinWhiteRing,
   hoverWhiteRing,
   buttonVariants,
-  getUniformTipTapClassName,
+  alertVariants,
 };

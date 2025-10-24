@@ -19,7 +19,7 @@ export default function AdminMenu() {
                 href={item.href}
                 className={cn(
                   "flex items-center rounded-xs whitespace-nowrap overflow-hidden border border-transparent outline-none transition-all duration-300 focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-theme-color",
-                  pathname && pathname === item.href
+                  pathname && pathname.includes(item.href)
                     ? "[&_svg]:stroke-neutral-100 [&_span]:text-neutral-100 border-theme-color bg-theme-color-backdrop"
                     : "hover:bg-neutral-800 hover:border-neutral-700"
                 )}

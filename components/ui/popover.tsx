@@ -39,7 +39,7 @@ function PopoverContent({
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-40 p-1 outline-hidden data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-(--radix-popover-content-transform-origin) backdrop-blur-md bg-[hsla(0,0%,7%,0.25)] text-neutral-200 text-sm rounded-xs border border-neutral-800",
+          "z-50 min-w-40 p-1 rounded-xs outline-hidden border border-neutral-700 bg-neutral-900 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-(--radix-popover-content-transform-origin)",
           className
         )}
         {...props}
@@ -61,7 +61,7 @@ function PopoverContentClipPath({
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-40 p-1 shadow-md outline-hidden data-[state=open]:animate-circular-open data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-(--radix-popover-content-transform-origin) backdrop-blur-md bg-[hsla(0,0%,7%,0.25)] text-neutral-200 text-sm rounded-lg border border-neutral-800",
+          "z-50 min-w-40 p-1 rounded-2xl outline-hidden border border-neutral-700 bg-neutral-900 data-[state=open]:animate-circular-open data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-(--radix-popover-content-transform-origin)",
           className
         )}
         {...props}

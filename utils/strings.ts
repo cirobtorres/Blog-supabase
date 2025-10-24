@@ -12,16 +12,16 @@ export const slugify = (str: string) => {
     .replace(/^-+|-+$/g, ""); // Removes - at the beginning and end
 };
 
-export const inputId = (str: string) => `input-${slugify(str)}`;
-
 export const labelId = (str: string) => `label-${slugify(str)}`;
 
-export const escapeCharacters = (str: string) => he.decode(str); // Decode escaped characters
+export const escapeCharacters = (str: string) => he.decode(str);
 
-export const removePreCodeTags = (htmlDecoded: string) =>
-  htmlDecoded
-    .replace(/^<pre[^>]*><code[^>]*>/, "")
-    .replace(/<\/code><\/pre>$/, "");
+export const cleanPreCodeBlocks = (htmlDecoded: string) => {
+  return htmlDecoded
+    .replace(/[\u00A0\u200B\uFEFF]/g, " ")
+    .replace(/(<pre[^>]*>\n*<code[^>]*>\n*)+/g, "")
+    .replace(/(\n*<\/code>\n*<\/pre>\n*)+/g, "");
+};
 
 export const formatCodeBlockLanguage = (
   lang: BundledLanguage | null | undefined

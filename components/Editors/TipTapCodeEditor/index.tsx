@@ -3,7 +3,6 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
 import Text from "@tiptap/extension-text";
 import History from "@tiptap/extension-history";
-import { focusWithinWhiteRing } from "../../../styles/classNames";
 import { cn } from "../../../utils/classnames";
 import { LoadingSpinning } from "../../LoadingSpinning";
 import LanguageSelect from "./LanguageSelect";
@@ -79,9 +78,7 @@ export default function TipTapCodeEditor({
         spellCheck={false}
         onFocus={() => editor.chain().selectTextblockEnd().focus()}
         className={cn(
-          "p-1 flex flex-col transition-all duration-300 rounded-xs border border-neutral-700 [&_.tiptap.ProseMirror]:max-h-[calc(20px_*_20_+_16px_+_8px)] [&_.tiptap.ProseMirror]:min-h-[calc(18px_+_16px_+_8px)] [&_.tiptap.ProseMirror]:h-full [&_.tiptap.ProseMirror]:overflow-y-auto [&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6 [&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all [&_.tiptap.ProseMirror]:[background-color:rgb(30,30,30)] [background-color:rgb(30,30,30)!important]",
-          focusWithinWhiteRing,
-          "transition-all"
+          "p-1 flex flex-col transition-all duration-300 rounded-xs border border-neutral-700 [&_.tiptap.ProseMirror]:max-h-[calc(20px_*_20_+_16px_+_8px)] [&_.tiptap.ProseMirror]:min-h-[44px] [&_.tiptap.ProseMirror]:h-full [&_.tiptap.ProseMirror]:overflow-y-auto [&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6 [&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all [&_.tiptap.ProseMirror]:[background-color:rgb(30,30,30)] [background-color:rgb(30,30,30)!important]"
         )}
       />
     </div>

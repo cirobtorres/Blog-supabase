@@ -33,7 +33,7 @@ import {
   ImageEditorButton,
   ImageEditorButtonLi,
   ImageEditorButtonList,
-} from "../../Fieldsets/ArticleEditor";
+} from "../../Editors/ImageEditor";
 import { formatType } from "@/utils/strings";
 import {
   buttonVariants,
@@ -77,13 +77,15 @@ export default function MediaList({
       try {
         const formData = new FormData();
 
-        const success = () => {
-          // const now = convertToLargeDate(new Date()); // TODO
-          return "Arquivo excluído!";
+        // TODO (SUGESTÃO???): ??? criar um botão de desfazer a exclusão do arquivo ???
+        const success = (serverResponse: ArticleActionStateProps) => {
+          // console.log(serverResponse); // DEBUG
+          return <p>Arquivo excluído!</p>;
         };
 
-        const error = () => {
-          return "Arquivo não excluído!";
+        const error = (serverResponse: ArticleActionStateProps) => {
+          // console.log(serverResponse); // DEBUG
+          return <p>Arquivo não excluído</p>;
         };
 
         formData.set("checkBoxList", JSON.stringify(checkedCards));
@@ -224,7 +226,6 @@ export const ImagePreviewCard = React.memo(
     );
   }
 );
-
 ImagePreviewCard.displayName = "ImagePreviewCard";
 
 const ImagePreview = ({ image }: { image: SupabaseBucketImage }) => {
@@ -276,13 +277,15 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketImage }) => {
         const url = image.url;
         formData.set("fileURL", url);
 
-        const success = () => {
-          // const now = convertToLargeDate(new Date()); // TODO
-          return "Arquivo excluído!";
+        // TODO (SUGESTÃO???): ??? criar um botão de desfazer a exclusão do arquivo ???
+        const success = (serverResponse: ArticleActionStateProps) => {
+          // console.log(serverResponse); // DEBUG
+          return <p>Arquivo excluído!</p>;
         };
 
-        const error = () => {
-          return "Arquivo não excluído!";
+        const error = (serverResponse: ArticleActionStateProps) => {
+          // console.log(serverResponse); // DEBUG
+          return <p>Arquivo não excluído</p>;
         };
 
         const result = deleteFile(state, formData);

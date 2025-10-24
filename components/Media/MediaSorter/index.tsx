@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { focusVisibleThemeRing } from "@/styles/classNames";
+import { focusVisibleWhiteRing } from "@/styles/classNames";
 import { cn } from "@/utils/classnames";
 import { Dispatch, SetStateAction } from "react";
 
@@ -132,7 +132,7 @@ export default function MediaSorter({
             <button
               className={cn(
                 "cursor-pointer py-2 px-3 text-sm rounded-xs text-theme-color font-medium w-full border border-neutral-700 bg-neutral-900 transition-shadow duration-300 focus-visible:text-theme-color",
-                focusVisibleThemeRing
+                focusVisibleWhiteRing
               )}
             >
               Aplicar filtros

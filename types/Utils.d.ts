@@ -33,7 +33,7 @@ type UpdateBlockProps = Partial<Record<string, unknown>>; // unknown = string | 
 
 // BLOCKS
 type BlockIcons = {
-  svg: React.ReactNode;
+  svg: ({ className }: { className?: string }) => JSX.Element;
   tooltip: string;
 };
 

@@ -26,7 +26,7 @@ import {
 } from "../../ui/alert-dialog";
 import {
   buttonVariants,
-  getUniformTipTapClassName,
+  focusVisibleWhiteRing,
 } from "../../../styles/classNames";
 import { cn } from "../../../utils/classnames";
 import {
@@ -241,15 +241,22 @@ export default function TipTapTextEditor({
       <div
         className="w-full flex gap-4 items-center pb-1" // border-y border-neutral-800
       >
-        <div className="flex gap-1 items-center">
+        <div
+          className={cn(
+            "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-[1px] [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
+          )}
+        >
           <Tooltip>
             <TooltipTrigger
               type="button"
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 2 }).run()
               }
-              className={getUniformTipTapClassName(
+              className={cn(
                 editor.isActive("heading", { level: 2 })
+                  ? "text-theme-color bg-[#242424]"
+                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                focusVisibleWhiteRing
               )}
             >
               <HeaderH2Icon className="size-7 p-1" />
@@ -268,8 +275,11 @@ export default function TipTapTextEditor({
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 3 }).run()
               }
-              className={getUniformTipTapClassName(
+              className={cn(
                 editor.isActive("heading", { level: 3 })
+                  ? "text-theme-color bg-[#242424]"
+                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                focusVisibleWhiteRing
               )}
             >
               <HeaderH3Icon className="size-7 p-1" />
@@ -288,8 +298,11 @@ export default function TipTapTextEditor({
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 4 }).run()
               }
-              className={getUniformTipTapClassName(
+              className={cn(
                 editor.isActive("heading", { level: 4 })
+                  ? "text-theme-color bg-[#242424]"
+                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                focusVisibleWhiteRing
               )}
             >
               <HeaderH4Icon className="size-7 p-1" />
@@ -303,12 +316,21 @@ export default function TipTapTextEditor({
             </TooltipContent>
           </Tooltip>
         </div>
-        <div className="flex gap-1 items-center">
+        <div
+          className={cn(
+            "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-[1px] [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
+          )}
+        >
           <Tooltip>
             <TooltipTrigger
               type="button"
               onClick={() => editor.chain().focus().toggleBold().run()}
-              className={getUniformTipTapClassName(editor.isActive("bold"))}
+              className={cn(
+                editor.isActive("bold")
+                  ? "text-theme-color bg-[#242424]"
+                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                focusVisibleWhiteRing
+              )}
             >
               <BoldIcon className="size-7 p-1" />
             </TooltipTrigger>
@@ -324,8 +346,11 @@ export default function TipTapTextEditor({
             <TooltipTrigger
               type="button"
               onClick={() => editor.chain().focus().toggleHighlight().run()}
-              className={getUniformTipTapClassName(
+              className={cn(
                 editor.isActive("highlight")
+                  ? "text-theme-color bg-[#242424]"
+                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                focusVisibleWhiteRing
               )}
             >
               <HighlightIcon className="size-7 p-1" />
@@ -345,7 +370,12 @@ export default function TipTapTextEditor({
                   type="button"
                   tabIndex={0}
                   onClick={handleLinkClick}
-                  className={getUniformTipTapClassName(editor.isActive("link"))}
+                  className={cn(
+                    editor.isActive("link")
+                      ? "text-theme-color bg-[#242424]"
+                      : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
                 >
                   <LinkIcon className="size-7 p-1" />
                 </TooltipTrigger>
@@ -360,7 +390,7 @@ export default function TipTapTextEditor({
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle className="flex justify-between items-center">
+                <AlertDialogTitle className="flex justify-between items-center bg-neutral-950">
                   Hyperlink{" "}
                   <AlertDialogCancel
                     className="has-[>svg]:px-1 h-fit py-1"
@@ -372,11 +402,13 @@ export default function TipTapTextEditor({
                     <CancelIcon />
                   </AlertDialogCancel>
                 </AlertDialogTitle>
-                <AlertDialogDescription className="border-y border-neutral-800 bg-neutral-950">
+              </AlertDialogHeader>
+              <div className="border-y border-neutral-700">
+                <AlertDialogDescription className="pb-0">
                   Crie um texto para o hiperlink. Se você deixar o texto vazio,
                   o texto será o próprio link.
                 </AlertDialogDescription>
-                <div className="flex flex-col gap-2 p-3 pb-1">
+                <div className="flex flex-col gap-2 p-3">
                   <FloatingFieldset>
                     <FloatingInput
                       id="text-link"
@@ -400,8 +432,8 @@ export default function TipTapTextEditor({
                     <FloatingLabel htmlFor="text-url" label="URL" />
                   </FloatingFieldset>
                 </div>
-              </AlertDialogHeader>
-              <AlertDialogFooter className="flex justify-between py-2">
+              </div>
+              <AlertDialogFooter className="flex justify-between py-2 bg-neutral-950">
                 <div className="flex-1">
                   <AlertDialogCancel
                     onClick={() => {
@@ -449,13 +481,20 @@ export default function TipTapTextEditor({
             </AlertDialogContent>
           </AlertDialog>
         </div>
-        <div className="flex gap-1 items-center">
+        <div
+          className={cn(
+            "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-[1px] [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
+          )}
+        >
           <Tooltip>
             <TooltipTrigger
               type="button"
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              className={getUniformTipTapClassName(
+              className={cn(
                 editor.isActive("orderedList")
+                  ? "text-theme-color bg-[#242424]"
+                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                focusVisibleWhiteRing
               )}
             >
               <OrderedListIcon className="size-7 p-1" />
@@ -472,8 +511,11 @@ export default function TipTapTextEditor({
             <TooltipTrigger
               type="button"
               onClick={() => editor.chain().focus().toggleBulletList().run()}
-              className={getUniformTipTapClassName(
+              className={cn(
                 editor.isActive("bulletList")
+                  ? "text-theme-color bg-[#242424]"
+                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                focusVisibleWhiteRing
               )}
             >
               <BulletListIcon className="size-7 p-1" />

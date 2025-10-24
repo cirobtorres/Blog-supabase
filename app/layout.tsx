@@ -10,8 +10,8 @@ const serifText = DM_Serif_Text({
 });
 
 export const metadata: Metadata = {
-  title: "----------", // TODO
-  description: "----------", // TODO
+  title: "Home", // TODO
+  description: "Página inicial", // TODO
 };
 
 export default function RootLayout({

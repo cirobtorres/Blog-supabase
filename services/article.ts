@@ -5,17 +5,10 @@ import { createServerAppClient } from "@/supabase/server";
 import { slugify } from "@/utils/strings";
 import { SupabaseClient } from "@supabase/supabase-js";
 
-interface UseActionStateProps {
-  ok: boolean;
-  success: string | null;
-  error: string | null;
-  data: Article | null;
-}
-
 export const postArticlePublic = async (
-  prevState: UseActionStateProps,
+  prevState: ArticleActionStateProps,
   formData: FormData
-): Promise<UseActionStateProps> => {
+): Promise<ArticleActionStateProps> => {
   const profile_id = formData.get("profile_id");
   const title = formData.get("article_title");
   const subtitle = formData.get("article_subtitle");
@@ -81,9 +74,9 @@ export const postArticlePublic = async (
 };
 
 export const postArticleSave = async (
-  prevState: UseActionStateProps,
+  prevState: ArticleActionStateProps,
   formData: FormData
-): Promise<UseActionStateProps> => {
+): Promise<ArticleActionStateProps> => {
   const profile_id = formData.get("profile_id");
   const title = formData.get("article_title");
   const subtitle = formData.get("article_subtitle");
@@ -104,9 +97,9 @@ export const postArticleSave = async (
 // ---
 export const putArticlePublic = async (
   id: string,
-  prevState: UseActionStateProps,
+  prevState: ArticleActionStateProps,
   formData: FormData
-): Promise<UseActionStateProps> => {
+): Promise<ArticleActionStateProps> => {
   const profile_id = formData.get("profile_id");
   const title = formData.get("article_title");
   const subtitle = formData.get("article_subtitle");
@@ -183,9 +176,9 @@ export const putArticlePublic = async (
 
 export const putArticleSave = async (
   id: string,
-  prevState: UseActionStateProps,
+  prevState: ArticleActionStateProps,
   formData: FormData
-): Promise<UseActionStateProps> => {
+): Promise<ArticleActionStateProps> => {
   // TODO
 
   const supabase = await createServerAppClient();

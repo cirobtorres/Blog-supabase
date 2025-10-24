@@ -30,55 +30,82 @@ import {
 } from ".";
 import { cn } from "@/utils/classnames";
 import { focusWithinWhiteRing } from "@/styles/classNames";
+import { initialAccordionState } from "@/reducers";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  MouseSensor,
+  TouchSensor,
+  DragStartEvent,
+  UniqueIdentifier,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
+  restrictToVerticalAxis,
+  restrictToWindowEdges,
+} from "@dnd-kit/modifiers";
 
 const newBlockArray: BlockButton[] = [
   {
     id: "1",
     type: "text",
     tooltip: "Editor",
-    svg: <TextEditorIcon className="size-5" />,
+    svg: TextEditorIcon,
   },
   {
     id: "2",
     type: "code",
     tooltip: "Código",
-    svg: <CodeEditorIcon className="size-5" />,
+    svg: CodeEditorIcon,
   },
   {
     id: "3",
     type: "quote",
     tooltip: "Citação",
-    svg: <QuoteEditorIcon className="size-5" />,
+    svg: QuoteEditorIcon,
   },
   {
     id: "4",
     type: "accordion",
     tooltip: "Acordeão",
-    svg: <AccordionEditorIcon className="size-5" />,
+    svg: AccordionEditorIcon,
   },
   {
     id: "5",
     type: "alert",
     tooltip: "Alerta",
-    svg: <AlertEditorIcon className="size-5" />,
+    svg: AlertEditorIcon,
   },
   {
     id: "6",
     type: "image",
     tooltip: "Imagem",
-    svg: <ImageEditorIcon className="size-5" />,
+    svg: ImageEditorIcon,
   },
   {
     id: "7",
     type: "imageCarousel",
     tooltip: "Imagens",
-    svg: <ImageCarouselEditorIcon className="size-5" />,
+    svg: ImageCarouselEditorIcon,
   },
   {
     id: "8",
     type: "quiz",
     tooltip: "Quiz",
-    svg: <QuizEditorIcon className="size-5" />,
+    svg: QuizEditorIcon,
   },
 ];
 
@@ -100,7 +127,7 @@ const BlockItem = memo(function BlockItem({
           key={block.id}
           id={block.id}
           wrapperLabel="Editor de Texto"
-          value={(block.data as { body: string })?.body ?? ""}
+          value={(block.data as BlogText)?.body ?? ""}
           setVal={(val) => updateBlock(block.id, { body: val })}
           onRemove={removeBlock}
           moveToNext={moveToNext}
@@ -114,7 +141,7 @@ const BlockItem = memo(function BlockItem({
           wrapperLabel="Editor de Código"
           filename={(block.data as BlogCode)?.filename ?? ""}
           code={(block.data as BlogCode)?.code ?? ""}
-          language={(block.data as BlogCode)?.language ?? ""}
+          language={(block.data as BlogCode)?.language ?? "typescript"}
           setFilename={(val) => updateBlock(block.id, { filename: val })}
           setCode={(val) => updateBlock(block.id, { code: val })}
           setLanguage={(val) => updateBlock(block.id, { language: val })}
@@ -141,10 +168,7 @@ const BlockItem = memo(function BlockItem({
         <AccordionEditor
           key={block.id}
           id={block.id}
-          type={(block.data as BlogAccordion)?.type ?? false}
-          collapsible={(block.data as BlogAccordion)?.collapsible ?? false}
-          setType={(val) => updateBlock(block.id, { type: val })}
-          setCollapsible={(val) => updateBlock(block.id, { collapsible: val })}
+          accordions={(block.data as BlogAccordion)?.accordions ?? null}
           setAccordions={(val) => updateBlock(block.id, { accordions: val })}
           wrapperLabel="Acordeão"
           onRemove={removeBlock}
@@ -153,17 +177,18 @@ const BlockItem = memo(function BlockItem({
       );
     case "image":
       return (
+        // TODO
         <ImageEditor
           key={block.id}
           id={block.id}
           wrapperLabel="Imagem"
           src={(block.data as BlogImage)?.src ?? ""}
           alt={(block.data as BlogImage)?.alt ?? ""}
-          setFile={(val) => updateBlock(block.id, { file: val })}
           filename={(block.data as BlogImage)?.filename ?? ""}
           caption={(block.data as BlogImage)?.caption ?? ""}
           setSrc={(val) => updateBlock(block.id, { src: val })}
           setAlt={(val) => updateBlock(block.id, { alt: val })}
+          setFile={(val) => updateBlock(block.id, { file: val })}
           setFilename={(val) => updateBlock(block.id, { filename: val })}
           setCaption={(val) => updateBlock(block.id, { caption: val })}
           onRemove={removeBlock}
@@ -172,6 +197,7 @@ const BlockItem = memo(function BlockItem({
       );
     case "imageCarousel":
       return (
+        // TODO
         <ImageCarouselEditor
           key={block.id}
           id={block.id}
@@ -186,14 +212,17 @@ const BlockItem = memo(function BlockItem({
           key={block.id}
           id={block.id}
           wrapperLabel="Alerta"
-          value={(block.data as { body: string })?.body ?? ""}
-          setVal={(val) => updateBlock(block.id, { body: val })}
+          type={(block.data as BlogAlert)?.type ?? "default"}
+          body={(block.data as BlogAlert)?.body ?? ""}
+          setType={(val) => updateBlock(block.id, { type: val })}
+          setBody={(val) => updateBlock(block.id, { body: val })}
           onRemove={removeBlock}
           moveToNext={moveToNext}
         />
       );
     case "quiz":
       return (
+        // TODO
         <QuizEditor
           key={block.id}
           id={block.id}
@@ -207,6 +236,35 @@ const BlockItem = memo(function BlockItem({
   }
 });
 
+const SortableItem = ({
+  children,
+  id,
+}: {
+  children: React.ReactNode;
+  id: string;
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="w-full"
+      tabIndex={-1}
+    >
+      {children}
+    </div>
+  );
+};
+
 const BlockList = ({
   blocks,
   setBlocks,
@@ -214,6 +272,25 @@ const BlockList = ({
   blocks: Block[];
   setBlocks: Dispatch<SetStateAction<Block[]>>;
 }) => {
+  const [isDragActive, setIsDragActive] = useState<UniqueIdentifier | null>(
+    null
+  );
+
+  const sensors = useSensors(
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250, // Press delay of 250ms
+        tolerance: 25, // Tolerance of 25px of movement
+      },
+    }),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        delay: 250, // Press delay of 250ms
+        tolerance: 25, // Tolerance of 25px of movement
+      },
+    })
+  );
+
   const moveToNext = useCallback(
     (id: string) => {
       setBlocks((prev) => {
@@ -234,17 +311,6 @@ const BlockList = ({
     },
     [setBlocks]
   );
-
-  // const updateBlock = useCallback(
-  //   (id: string, data: any) => {
-  //     setBlocks((prev) =>
-  //       prev.map((b) =>
-  //         b.id === id ? { ...b, data: { ...b.data, ...data } } : b
-  //       )
-  //     );
-  //   },
-  //   [setBlocks]
-  // );
 
   const updateBlock = useCallback(
     (id: string, data: UpdateBlockProps) => {
@@ -272,22 +338,63 @@ const BlockList = ({
     [setBlocks]
   );
 
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over) return;
+
+    if (active.id !== over.id) {
+      setBlocks((blocks) => {
+        const oldIndex = blocks.findIndex((b) => b.id === active.id);
+        const newIndex = blocks.findIndex((b) => b.id === over.id);
+        return arrayMove(blocks, oldIndex, newIndex);
+      });
+    }
+
+    setIsDragActive(null);
+  }
+
+  function handleDragStart(event: DragStartEvent) {
+    console.log("start");
+    setIsDragActive(event.active.id);
+  }
+
+  function handleDragCancel() {
+    console.log("cancel");
+    setIsDragActive(null);
+  }
+
   const renderedBlocks = useMemo(() => {
-    return blocks.map((block) => (
-      <BlockItem
-        key={block.id}
-        block={block}
-        updateBlock={updateBlock}
-        removeBlock={removeBlock}
-        moveToNext={moveToNext}
-      />
-    ));
+    return (
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        onDragCancel={handleDragCancel}
+      >
+        <SortableContext items={blocks} strategy={verticalListSortingStrategy}>
+          {blocks.map((block) => (
+            <SortableItem key={block.id} id={block.id}>
+              <BlockItem
+                key={block.id}
+                block={block}
+                updateBlock={updateBlock}
+                removeBlock={removeBlock}
+                moveToNext={moveToNext}
+              />
+            </SortableItem>
+          ))}
+        </SortableContext>
+      </DndContext>
+    );
   }, [blocks, updateBlock, removeBlock, moveToNext]);
 
   return <>{renderedBlocks}</>;
 };
 
 // TODO: quiz
+// TODO: image
 // TODO: imageCarousel
 const createNewBlock = (id: string, type: Block["type"]): Block => {
   switch (type) {
@@ -296,9 +403,19 @@ const createNewBlock = (id: string, type: Block["type"]): Block => {
     case "quote":
       return { id, type, data: { author: "", quote: "" } };
     case "accordion":
-      return { id, type, data: { type: true, collapsible: true } };
+      return {
+        id,
+        type,
+        data: {
+          accordions: initialAccordionState,
+        },
+      };
     case "alert":
-      return { id, type, data: { body: "" } };
+      return {
+        id,
+        type,
+        data: { accordion: { title: "", body: "" }, type: "default" },
+      };
 
     case "code":
       return {
@@ -363,47 +480,35 @@ const NewBlockButtons = ({
           }`}
         />
       </PopoverTrigger>
-      <PopoverContentClipPath className="data-[state=open]:animate-circular-open rounded-2xl bg-neutral-900">
-        <ul
-          className={
-            `grid grid-cols-3 gap-2 mx-auto rounded overflow-hidden outline-none p-3 ` +
-            `[&_li_button]:flex [&_li_button]:justify-center [&_li_button]:items-center ` +
-            `[&_li_button]:size-12 [&_li_button]:cursor-pointer [&_li_button]:rounded-xs ` +
-            `[&_li_button]:outline-none [&_li_button]:border [&_li_button]:border-neutral-700 [&_li_button]:bg-neutral-800 ` +
-            `[&_li_button]:transition-all [&_li_button]:duration-300 ` +
-            `[&_li_button]:text-neutral-300 [&_li_button]:fill-neutral-700 ` +
-            `[&_li_button]:hover:bg-neutral-700 [&_li_button]:active:bg-neutral-700 ` +
-            `[&_li_button]:focus-within:ring-2 [&_li_button]:focus-within:ring-neutral-100 ` +
-            `[&_li_button]:focus-within:ring-offset-2 [&_li_button]:focus-within:ring-offset-neutral-950 ` +
-            `[&_li_button]:focus-within:bg-neutral-700 `
-          }
-        >
+      <PopoverContentClipPath side="top">
+        <ul className="grid grid-cols-3 gap-2 mx-auto rounded overflow-hidden outline-none p-3">
           {newBlockArray.map((prop, index) => (
-            <li key={prop.id}>
-              <div className="flex flex-col gap-1 items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => addBlock(prop.type)}
-                  className={`${isMenuOpen ? "animate-balloon" : "opacity-0"}`}
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                  }}
-                >
-                  {prop.svg}
-                </button>
-                <small>
-                  <p
-                    className={`w-fit text-center text-neutral-600 ${
-                      isMenuOpen ? "animate-fade-in-up" : "opacity-0"
-                    }`}
-                    style={{
-                      animationDelay: `${index * 50}ms`,
-                    }}
-                  >
-                    {prop.tooltip}
-                  </p>
-                </small>
-              </div>
+            <li
+              key={prop.id}
+              className="flex flex-col gap-2 items-center justify-between group"
+            >
+              <button
+                type="button"
+                onClick={() => addBlock(prop.type)}
+                className={`${
+                  isMenuOpen ? "animate-balloon" : "opacity-0"
+                } flex justify-center items-center size-11 cursor-pointer rounded-full outline-none border border-neutral-700 bg-neutral-900 transition-all duration-300 text-neutral-300 fill-neutral-700 hover:border-neutral-600 hover:bg-neutral-800 active:bg-neutral-700 group-focus-within:ring-2 group-focus-within:ring-neutral-100 group-focus-within:ring-offset-2 group-focus-within:ring-offset-neutral-950 group-focus-within:bg-[#1a1a1a] peer`}
+                style={{
+                  animationDelay: `${index * 50}ms`,
+                }}
+              >
+                {prop.svg({ className: "size-[18px]" })}
+              </button>
+              <p
+                className={`w-fit text-xs text-center text-neutral-600 transition-all duration-300 peer-hover:text-neutral-100 group-focus-within:text-neutral-100 ${
+                  isMenuOpen ? "animate-fade-in-up" : "opacity-0"
+                }`}
+                style={{
+                  animationDelay: `${index * 50}ms`,
+                }}
+              >
+                {prop.tooltip}
+              </p>
             </li>
           ))}
         </ul>

@@ -1,10 +1,3 @@
-type MediaStateProps = {
-  ok: boolean;
-  success: string | null;
-  error: string | null;
-  data: File | null;
-};
-
 type SupabaseBucketImage = {
   url: string;
   name: string;

@@ -17,7 +17,7 @@ import {
   ImageEditorButton,
   ImageEditorButtonLi,
   ImageEditorButtonList,
-} from "@/components/Fieldsets/ArticleEditor";
+} from "@/components/Editors/ImageEditor";
 import {
   CancelIcon,
   DownloadIcon,
@@ -32,8 +32,25 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { focusVisibleWhiteRing } from "@/styles/classNames";
+import { buttonVariants, focusVisibleWhiteRing } from "@/styles/classNames";
 import { cn } from "@/utils/classnames";
+import { convertToLargeDate } from "@/utils/dates";
+import { useRouter } from "next/navigation";
+
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 const initialPostState = {
   ok: false,
@@ -50,10 +67,11 @@ const initialSaveState = {
 };
 
 export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
+  const [blocks, setBlocks] = useState<Block[]>([]);
   const [htmlTitle, setHtmlTitle] = useState("");
   const [htmlSubtitle, setHtmlSubtitle] = useState("");
-  const [blocks, setBlocks] = useState<Block[]>([]);
   const [isOpenState, setIsOpenState] = useState(false);
+  const router = useRouter();
 
   const [postState, postAction, isPendingPost] = useActionState(async () => {
     try {
@@ -65,14 +83,40 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
       formData.set("article_subtitle", htmlSubtitle);
       formData.set("article_body", JSON.stringify(blocks));
 
-      const success = () => {
-        // const now = convertToLargeDate(new Date());
-        return "Artigo publicado!";
+      // TODO (SUGESTÃO???): ??? criar um botão de desfazer publicação ???
+      const success = (serverResponse: ArticleActionStateProps) => {
+        // console.log(serverResponse); // DEBUG
+        const now = convertToLargeDate(
+          new Date(serverResponse.data?.updated_at ?? new Date())
+        );
+        return (
+          <>
+            <div className="flex flex-col">
+              <p>{serverResponse.success}</p>
+              <p className="text-xs text-neutral-500">{now}</p>
+            </div>
+            {serverResponse.data && (
+              <button
+                type="button"
+                onClick={() =>
+                  router.push(`/articles/${serverResponse.data?.id}`)
+                }
+                className={cn(
+                  "cursor-pointer size-fit text-theme-color/85 hover:text-theme-color transition-all duration-300 text-xs font-[600] px-2 py-1 rounded border border-neutral-700 bg-neutral-800 hover:border-neutral-600 hover:bg-[#202020]",
+                  focusVisibleWhiteRing
+                )}
+              >
+                Artigo
+              </button>
+            )}
+          </>
+        );
       };
 
-      const error = () => {
+      const error = (serverResponse: ArticleActionStateProps) => {
+        // console.log(serverResponse); // DEBUG
         setIsOpenState(true);
-        return "Artigo não publicado!";
+        return <p>Artigo não publicado</p>;
       };
 
       const result = postArticlePublic(
@@ -118,14 +162,13 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
       formData.set("article_subtitle", htmlSubtitle);
       formData.set("article_body", JSON.stringify(blocks));
 
-      const success = () => {
-        // const now = convertToLargeDate(new Date());
-        return "Artigo salvo!";
+      const success = (data: ArticleActionStateProps) => {
+        return <p>{data.success}</p>; // TODO
       };
 
-      const error = () => {
+      const error = (data: ArticleActionStateProps) => {
         setIsOpenState(true);
-        return "Artigo não salvo!";
+        return <p>{data.error}</p>; // TODO
       };
 
       const result = postArticleSave(
@@ -251,13 +294,31 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
                 isPending={isPendingPost}
               />
               <Popover>
-                <PopoverTrigger className="relative w-12 h-[38px] [&_svg]:absolute [&_svg]:top-1/2 [&_svg]:left-1/2 [&_svg]:-translate-y-1/2 [&_svg]:-translate-x-1/2 rounded-xs border border-neutral-700 bg-neutral-800 outline-none focus-within:ring-2 focus-within:ring-neutral-100 focus-within:border-transparent">
-                  <EllipsisIcon />
+                <PopoverTrigger asChild>
+                  <button type="button" className={buttonVariants()}>
+                    <EllipsisIcon />
+                  </button>
                 </PopoverTrigger>
                 <PopoverContent>
                   <ul>
-                    <li>Despublicar</li>
-                    <li>Preview</li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => console.log("Despublicar")}
+                        className="w-full text-left cursor-pointer p-1 rounded-xs hover:bg-neutral-600"
+                      >
+                        Despublicar
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => console.log("Preview")}
+                        className="w-full text-left cursor-pointer p-1 rounded-xs hover:bg-neutral-600"
+                      >
+                        Preview
+                      </button>
+                    </li>
                   </ul>
                 </PopoverContent>
               </Popover>
@@ -272,9 +333,9 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
               )}
             />
           </div>
-          <div className="min-h-48 p-3 rounded-lg border border-neutral-700">
+          {/* <div className="min-h-48 p-3 rounded-lg border border-neutral-700">
             <p>Sumário???</p>
-          </div>
+          </div> */}
         </div>
       </form>
     </div>

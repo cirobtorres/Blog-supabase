@@ -18,7 +18,6 @@ import { HazardBorder } from "../../HazardBorder";
 import { formatType } from "@/utils/strings";
 import {
   buttonVariants,
-  focusVisibleThemeRing,
   focusVisibleWhiteRing,
 } from "../../../styles/classNames";
 import Image from "next/image";
@@ -137,16 +136,20 @@ const AddFile = () => {
         );
       });
 
-      // console.log([...formData.entries()]); // DEBUG
+      // TODO (SUGESTÃO???): ??? criar um botão de desfazer o upload dos arquivos ???
+      const success = (serverResponse: ArticleActionStateProps) => {
+        // console.log(serverResponse); // DEBUG
+        return <p>Arquivos enviados!</p>;
+      };
+
+      const error = (serverResponse: ArticleActionStateProps) => {
+        // console.log(serverResponse); // DEBUG
+        return <p>Falha ao enviar arquivos</p>;
+      };
 
       const promise = postFiles(formData);
 
-      sonnerToastPromise(
-        promise,
-        () => "Arquivos enviados!",
-        () => "Falha ao enviar arquivos",
-        "Enviando arquivos..."
-      );
+      sonnerToastPromise(promise, success, error, "Enviando arquivos...");
 
       await promise;
       setOpenStep(null);
@@ -178,14 +181,14 @@ const AddFile = () => {
 
       {openStep === "upload" && (
         <AlertDialogContent className="sm:max-w-3xl overflow-hidden">
-          <AlertDialogTitle className="relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-800 flex justify-between items-center bg-neutral-950">
+          <AlertDialogTitle className="relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-700 flex justify-between items-center bg-neutral-950">
             <AlertDialogDescription>
               Adicionar novo&#40;s&#41; arquivo&#40;s&#41;
             </AlertDialogDescription>
             <AlertDialogCancelIcon />
           </AlertDialogTitle>
           <DragAndDropZone onFilesSelected={handleFilesSelected} />
-          <AlertDialogFooter className="w-full flex justify-between sm:justify-between items-center relative after:absolute after:top-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-800 bg-neutral-950">
+          <AlertDialogFooter className="w-full flex justify-between sm:justify-between items-center relative after:absolute after:top-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-700 bg-neutral-950">
             <AlertDialogCancel className="mr-auto">Cancelar</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -193,7 +196,7 @@ const AddFile = () => {
 
       {openStep === "preview" && (
         <AlertDialogContent className="sm:max-w-3xl overflow-hidden">
-          <AlertDialogTitle className="relative flex justify-between items-center after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-800 bg-neutral-950">
+          <AlertDialogTitle className="relative flex justify-between items-center after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-700 bg-neutral-950">
             <AlertDialogDescription>
               Adicione novos assets
             </AlertDialogDescription>
@@ -219,7 +222,7 @@ const AddFile = () => {
               ))}
             </div>
           </div>
-          <AlertDialogFooter className="w-full flex justify-between sm:justify-between items-center relative after:absolute after:top-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-800 bg-neutral-950">
+          <AlertDialogFooter className="w-full flex justify-between sm:justify-between items-center relative after:absolute after:top-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-700 bg-neutral-950">
             <ConfirmExitButton onConfirm={() => setOpenStep(null)}>
               <button
                 type="button"
@@ -349,7 +352,7 @@ const FilePreviewCard = React.memo(
                     onClick={() => console.log("Editar")}
                     className={cn(
                       "cursor-pointer shrink-0 transition-all duration-300 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100",
-                      focusVisibleThemeRing
+                      focusVisibleWhiteRing
                     )}
                   >
                     <PencilIcon className="size-7 p-1.5 stroke-neutral-500" />
@@ -364,7 +367,7 @@ const FilePreviewCard = React.memo(
                     onClick={() => removeFiles(file)}
                     className={cn(
                       "cursor-pointer shrink-0 transition-all duration-300 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100",
-                      focusVisibleThemeRing
+                      focusVisibleWhiteRing
                     )}
                   >
                     <TrashBinIcon className="size-7 p-1.5 stroke-neutral-500" />

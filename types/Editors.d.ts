@@ -15,17 +15,14 @@ type AccordionBlockEditorWrapperProps = {
 };
 
 // ---------------===== EDITORS =====---------------
-type AccordionEditorProps = {
-  type: boolean;
-  collapsible: boolean;
-  setType: (type: boolean) => void;
-  setCollapsible: (collapsible: boolean) => void;
+type AccordionEditorProps = BlogAccordion & {
   setAccordions: (accordions: AccordionItem[]) => void;
 };
 
-type AlertEditorProps = {
-  value: string;
-  setVal: (data: string) => void;
+type AlertEditorProps = BlogText & {
+  type: AlertValuesProps;
+  setBody: (data: string) => void;
+  setType: (data: string) => void;
 };
 
 type CodeEditorProps = {

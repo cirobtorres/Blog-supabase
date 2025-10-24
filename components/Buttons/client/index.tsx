@@ -11,9 +11,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { deleteArticle, putPrivateArticle } from "@/services/article";
-import { SignInOAuth, signOut } from "@/services/authentication";
+} from "../../../components/ui/alert-dialog";
+import { deleteArticle, putPrivateArticle } from "../../../services/article";
+import { SignInOAuth, signOut } from "../../../services/authentication";
 import { Provider } from "@supabase/supabase-js";
 import {
   useActionState,
@@ -24,21 +24,25 @@ import {
   useCallback,
 } from "react";
 import { toast } from "sonner";
-import { LoadingSpinning } from "@/components/LoadingSpinning";
+import { LoadingSpinning } from "../../../components/LoadingSpinning";
 import {
   AlertIcon,
   ArrowDownIcon,
   CancelIcon,
   TrashBinIcon,
-} from "@/components/Icons";
-import ToolTipWrapper, {
+} from "../../../components/Icons";
+import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { buttonVariants, focusVisibleWhiteRing } from "@/styles/classNames";
-import { cn } from "@/utils/classnames";
+} from "../../../components/ui/tooltip";
+import {
+  buttonVariants,
+  focusVisibleWhiteRing,
+} from "../../../styles/classNames";
+import { cn } from "../../../utils/classnames";
 import { usePathname } from "next/navigation";
+import { Lock as LucideLockIcon } from "lucide-react";
 
 export const LogoutButton = ({ label }: { label: string }) => {
   const pathname = usePathname();
@@ -112,6 +116,7 @@ export const EditOrDeleteArticleButtons = ({
   const expectedString = "Deletar artigo";
   const [inputString, setInputString] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const [state, action, isPending] = useActionState(async () => {
     const formData = new FormData();
     formData.set("articleId", article.id);
@@ -158,7 +163,7 @@ export const EditOrDeleteArticleButtons = ({
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center justify-between">
+            <AlertDialogTitle className="flex items-center justify-between bg-neutral-950">
               Deletar artigo?
               <AlertDialogCancel
                 className="has-[>svg]:px-1 h-fit py-1"
@@ -167,7 +172,9 @@ export const EditOrDeleteArticleButtons = ({
                 <CancelIcon />
               </AlertDialogCancel>
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-warning flex items-center gap-2 border-y border-neutral-800 bg-neutral-950">
+          </AlertDialogHeader>
+          <div className="border-y border-neutral-700">
+            <AlertDialogDescription className="w-full text-warning flex items-center gap-2">
               <AlertIcon />
               Essa ação não poderá ser desfeita!
             </AlertDialogDescription>
@@ -193,8 +200,8 @@ export const EditOrDeleteArticleButtons = ({
               />
               {state && <p className="text-xs text-warning">{state.error}</p>}
             </fieldset>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex items-center gap-2">
+          </div>
+          <AlertDialogFooter className="flex items-center gap-2 bg-neutral-950">
             <AlertDialogCancel onClick={handleCloseDialog}>
               Cancelar
             </AlertDialogCancel>
@@ -374,6 +381,26 @@ export const BackToTopButton = ({ articleId }: { articleId?: string }) => {
   );
 };
 
+// TODO: terminar o componente
+export const LockEditorButton = () => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            "cursor-pointer p-1 rounded-xs border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800",
+            focusVisibleWhiteRing
+          )}
+        >
+          <LucideLockIcon className="size-4" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent sideOffset={10}>Trancar</TooltipContent>
+    </Tooltip>
+  );
+};
+
 export const DeleteEditorButton = ({
   onRemove,
 }: {
@@ -410,7 +437,7 @@ export const DeleteEditorButton = ({
         <TooltipContent sideOffset={10}>Excluir</TooltipContent>
       </Tooltip>
       <AlertDialogContent>
-        <AlertDialogTitle className="flex items-center justify-between">
+        <AlertDialogTitle className="flex items-center justify-between bg-neutral-950">
           Deletar componente?
           <AlertDialogCancel
             className="has-[>svg]:px-1 h-fit py-1"
@@ -419,12 +446,12 @@ export const DeleteEditorButton = ({
             <CancelIcon />
           </AlertDialogCancel>
         </AlertDialogTitle>
-        <AlertDialogDescription className="text-warning flex items-center gap-2 border-y border-neutral-800 bg-neutral-950">
+        <AlertDialogDescription className="text-warning flex items-center gap-2 border-y border-neutral-700">
           <AlertIcon />
           Essa ação não poderá ser desfeita!
         </AlertDialogDescription>
 
-        <AlertDialogFooter className="flex items-center gap-2">
+        <AlertDialogFooter className="flex items-center gap-2 bg-neutral-950">
           <AlertDialogCancel onClick={handleCloseDialog}>
             Cancelar
           </AlertDialogCancel>
@@ -459,7 +486,7 @@ export const PushEditorDownButton = ({
         <ArrowDownIcon className="size-4 stroke-neutral-300" />
       </button>
     </TooltipTrigger>
-    <TooltipContent sideOffset={10}>Mover para Baixo</TooltipContent>
+    <TooltipContent sideOffset={10}>Descer</TooltipContent>
   </Tooltip>
 );
 
@@ -484,11 +511,11 @@ export const LinkButton = ({
 const Or = () => {
   return (
     <div className="relative flex items-center py-6">
-      <div className="absolute h-[1px] right-0 left-[calc(50%_+_30px)] bg-neutral-800" />
+      <div className="absolute h-px right-0 left-[calc(50%+30px)] bg-neutral-800" />
       <span className="text-neutral-600 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 pointer-events-none">
         ou
       </span>
-      <div className="absolute h-[1px] left-0 right-[calc(50%_+_30px)] bg-neutral-800" />
+      <div className="absolute h-px left-0 right-[calc(50%+30px)] bg-neutral-800" />
     </div>
   );
 };

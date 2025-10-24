@@ -44,8 +44,8 @@ export default function LanguageSelect({
     >
       <SelectTrigger
         className={cn(
-          "w-32 z-10 absolute top-2 right-4 py-1 px-3 rounded-[3px] bg-neutral-800 transition-all duration-300",
-          "data-[state=open]:text-neutral-100 data-[state=open]:bg-[#2b2b2b] focus-within:text-neutral-100",
+          "w-32 z-10 absolute top-2 right-4 bg-neutral-800 hover:bg-[#2c2c2c]",
+          "data-[state=open]:text-neutral-100 data-[state=open]:bg-[#2b2b2b]",
           focusVisibleWhiteRing
         )}
       >

@@ -11,11 +11,22 @@ type BlockType<T extends object> = T & {
     | "quiz";
 };
 
-type BlogAccordion = { type: boolean; collapsible: boolean };
+type AlertValuesProps = "default" | "alert" | "warning" | "info" | "success";
+
+type Accordion = {
+  id: string;
+  checked: boolean;
+  title: string;
+  message: string;
+};
+
+type BlogAccordion = {
+  accordions: Accordion[];
+};
 type BlogText = { body: string };
 type BlogCode = { filename: string; code: string; language: BundledLanguage };
 type BlogQuote = { author: string; quote: string };
-type BlogAlert = {}; // TODO
+type BlogAlert = { body: string; type: AlertValuesProps }; // TODO
 type BlogImage = {
   file?: File;
   src: string;

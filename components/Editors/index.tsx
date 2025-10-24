@@ -1,191 +1,33 @@
-import {
-  FloatingFieldset,
-  FloatingInput,
-  FloatingLabel,
-  FloatingTextArea,
-} from "../Fieldsets";
-import {
-  DragAndDropZone,
-  InfoZone,
-  isNotImageFile,
-} from "../Fieldsets/ArticleEditor";
+import { FloatingFieldset, FloatingInput, FloatingLabel } from "../Fieldsets";
+import { DragAndDropZone, InfoZone, isNotImageFile } from "./ImageEditor";
 import { useEffect, useReducer, useRef } from "react";
 import { comercialDate } from "../../utils/dates";
-import {
-  accordionReducer,
-  imageInitialState,
-  imageReducer,
-  initialAccordionState,
-} from "@/reducers";
-import { MinusIcon, PlusIcon } from "../Icons";
-import { Checkbox } from "../ui/checkbox";
+import { imageInitialState, imageReducer } from "@/reducers";
 import { getImageDimensionsByFile } from "../../utils/media";
-import { cn } from "../../utils/classnames";
-import { focusVisibleWhiteRing } from "../../styles/classNames";
 import TipTapTextEditor from "./TipTapTextEditor";
 import BlockEditorWrapper from "./accordion";
 import TipTapQuoteEditor from "./TipTapQuoteEditor";
 import TipTapCodeEditor from "./TipTapCodeEditor";
 import TipTapAlertEditor from "./TipTapAlertEditor";
+import AccordionEditorContent from "./AccordionEditor";
 
 const AccordionEditor = ({
   ...blockProps
 }: AccordionEditorProps & AccordionBlockEditorWrapperProps) => {
-  const [accordions, accordDispatch] = useReducer(
-    accordionReducer,
-    initialAccordionState
-  );
-
-  const AddButton = () => (
-    <button
-      type="button"
-      onClick={() => accordDispatch({ type: "ADD" })}
-      className={
-        "mx-auto w-fit flex justify-center items-center cursor-pointer p-1 rounded-sm outline-none transition-all duration-300 " +
-        "border border-neutral-700 " +
-        "bg-neutral-900 " +
-        "hover:border-neutral-600 hover:bg-neutral-800 " +
-        "focus-visible:ring-2 focus-visible:border-transparent focus-visible:ring-neutral-100 "
-      }
-    >
-      <PlusIcon />
-    </button>
-  );
-
-  const RemoveButton = ({ accordionId: id }: { accordionId: string }) => (
-    <button
-      type="button"
-      onClick={() => accordDispatch({ type: "REMOVE", id })}
-      className={cn(
-        "flex justify-center items-center cursor-pointer p-1 rounded-sm transition-all duration-300 outline-none border border-neutral-700 bg-neutral-900 hover:border-neutral-600 hover:bg-neutral-800",
-        focusVisibleWhiteRing
-      )}
-    >
-      <MinusIcon />
-    </button>
-  );
-
-  const CheckBoxes = () => {
-    return (
-      <div className="flex flex-col justify-center items-start gap-1">
-        <div className="w-full p-1 rounded-sm border border-neutral-800 bg-neutral-900">
-          <fieldset>
-            <label
-              htmlFor="checkbox-accordion-type"
-              className="grid grid-cols-[24px_80px_1fr] items-center gap-2 pr-2"
-            >
-              <Checkbox
-                id="checkbox-accordion-type"
-                checked={blockProps.type}
-                onCheckedChange={() => blockProps.setType(!blockProps.type)}
-                className="cursor-pointer"
-              />
-              <p className="text-neutral-100 text-xs">Único</p>
-              <p className="text-neutral-500 text-xs">
-                Apenas um item é expandido por vez.
-              </p>
-            </label>
-          </fieldset>
-        </div>
-        <div className="p-1 pr-4 rounded-sm border border-neutral-800 bg-neutral-900">
-          <fieldset className="w-full">
-            <label
-              htmlFor="checkbox-accordion-collapsible"
-              className="grid grid-cols-[24px_80px_1fr] items-center gap-2 pr-2"
-            >
-              <Checkbox
-                id="checkbox-accordion-collapsible"
-                checked={blockProps.collapsible}
-                onCheckedChange={() =>
-                  blockProps.setCollapsible(!blockProps.collapsible)
-                }
-                className="cursor-pointer"
-              />
-              <p className="text-neutral-100 text-xs">Colapsável</p>
-              <ul>
-                <li>
-                  <p className="text-neutral-500 text-xs">
-                    Permite expandir ou colapsar o acordeão.
-                  </p>
-                </li>
-              </ul>
-            </label>
-          </fieldset>
-        </div>
-      </div>
-    );
-  };
-
   console.log("AccordionEditor REMOUNT"); // TODO (DEBUG): remove me
 
   return (
     <BlockEditorWrapper {...blockProps}>
-      <div className="max-w-full mx-auto p-2 flex flex-col items-start gap-2">
-        <CheckBoxes />
-        <div className="w-full flex flex-1 flex-col justify-center gap-2">
-          {accordions.map((accordion, index) => (
-            <div
-              key={accordion.id}
-              className="w-full grid grid-cols-[24px_minmax(0,1fr)_36px] items-start rounded p-2 gap-2 border border-neutral-800 has-[input:checked]:bg-neutral-800 has-[input:checked]:ring-2 has-[input:checked]:ring-theme-color"
-            >
-              <Checkbox
-                id="checkbox-accordion-type"
-                className="cursor-pointer my-[5px]"
-                checked={accordion.checked}
-                onCheckedChange={() => {
-                  accordDispatch({
-                    type: "UPDATE_CHECK",
-                    id: accordion.id,
-                    value: !accordion.checked,
-                  });
-                }}
-              />
-              <div className="flex flex-col gap-2">
-                <FloatingFieldset>
-                  <FloatingInput
-                    id={`title-${accordion.id}`}
-                    value={accordion.title}
-                    onChange={(e) =>
-                      accordDispatch({
-                        type: "UPDATE_TITLE",
-                        id: accordion.id,
-                        value: e.target.value,
-                      })
-                    }
-                  />
-                  <FloatingLabel
-                    htmlFor={`title-${accordion.id}`}
-                    label="Título"
-                  />
-                </FloatingFieldset>
-                <FloatingFieldset>
-                  <FloatingTextArea
-                    id={`message-${accordion.id}`}
-                    value={accordion.message}
-                    onChange={(e) =>
-                      accordDispatch({
-                        type: "UPDATE_MESSAGE",
-                        id: accordion.id,
-                        value: e.target.value,
-                      })
-                    }
-                    placeholder="Mensagem"
-                  />
-                </FloatingFieldset>
-              </div>
-              {index > 0 && <RemoveButton accordionId={accordion.id} />}
-            </div>
-          ))}
-          <AddButton />
-        </div>
-      </div>
+      <AccordionEditorContent {...blockProps} />
     </BlockEditorWrapper>
   );
-}; // TODO
+};
 
 const AlertEditor = ({
-  value,
-  setVal,
+  type,
+  setType,
+  body,
+  setBody,
   ...blockProps // Block attributes
 }: AlertEditorProps & AccordionBlockEditorWrapperProps) => {
   const alertEditorId = "input-alert-" + blockProps.id; // input-alert-text-1, 2, 3, 4, ..., n
@@ -197,8 +39,10 @@ const AlertEditor = ({
       <fieldset className="h-full flex flex-col p-1">
         <TipTapAlertEditor
           id={alertEditorId}
-          setVal={setVal}
-          defaultValue={value}
+          setVal={setBody}
+          defaultBody={body}
+          defaultType={type}
+          setDefaultType={setType}
         />
       </fieldset>
     </BlockEditorWrapper>
@@ -322,7 +166,7 @@ const ImageEditor = ({
       </div>
     </BlockEditorWrapper>
   );
-};
+}; // TODO
 
 const QuizEditor = ({
   ...blockProps // Block attributes

@@ -30,19 +30,9 @@ export const SignInOAuth = async (provider: Provider, redirectTo?: string) => {
 };
 
 export const signIn = async (
-  prevState: {
-    ok: boolean;
-    success: string | null;
-    error: Record<string, string[]>;
-    data: any;
-  },
+  prevState: AuthenticateActionStateProps,
   formData: FormData
-): Promise<{
-  ok: boolean;
-  success: string | null;
-  error: Record<string, string[]>;
-  data: any;
-}> => {
+): Promise<AuthenticateActionStateProps> => {
   const email = formData.get("floating-email-signIn");
   const password = formData.get("floating-password-signIn");
 
@@ -96,19 +86,9 @@ export const signIn = async (
 };
 
 export const signUp = async (
-  prevState: {
-    ok: boolean;
-    success: string | null;
-    error: Record<string, string[]>;
-    data: any;
-  },
+  prevState: AuthenticateActionStateProps,
   formData: FormData
-): Promise<{
-  ok: boolean;
-  success: string | null;
-  error: Record<string, string[]>;
-  data: any;
-}> => {
+): Promise<AuthenticateActionStateProps> => {
   const full_name =
     formData.get("floating-displayName-signUp")?.toString().trim() || "";
   const email = formData.get("floating-email-signUp")?.toString().trim() || "";

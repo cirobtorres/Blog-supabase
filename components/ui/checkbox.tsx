@@ -4,7 +4,7 @@ import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/utils/classnames";
-import { focusVisibleThemeRing } from "@/styles/classNames";
+import { focusVisibleWhiteRing } from "@/styles/classNames";
 
 function Checkbox({
   className,
@@ -19,7 +19,7 @@ function Checkbox({
           "aria-invalid:ring-red-500/65 aria-invalid:border-red-500 " +
           "data-[state=checked]:text-neutral-100 data-[state=checked]:border-theme-color data-[state=checked]:bg-theme-color-light " +
           "disabled:cursor-not-allowed disabled:opacity-50 ",
-        focusVisibleThemeRing,
+        focusVisibleWhiteRing,
         className
       )}
       {...props}

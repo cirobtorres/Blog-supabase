@@ -5,11 +5,17 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { ExternalLinkIcon, LinkIcon } from "../Icons";
-import { slugify } from "@/utils/strings";
+import { slugify } from "../../utils/strings";
 import { ArticleCodeBlock } from "../ArticleCodeBlock";
 import { ArticleQuoteBlock } from "../ArticleQuoteBlock";
-import { cn } from "@/utils/classnames";
-import { focusVisibleWhiteRing } from "@/styles/classNames";
+import { cn } from "../../utils/classnames";
+import { alertVariants, focusVisibleWhiteRing } from "../../styles/classNames";
+import {
+  ArticleAccordion,
+  ArticleAccordionContent,
+  ArticleAccordionItem,
+  ArticleAccordionTrigger,
+} from "../ui/accordion";
 
 export const ArticleBody = ({
   articleId,
@@ -28,6 +34,7 @@ export const ArticleBody = ({
     const boddies = block.map((block) => {
       switch (block.type) {
         case "text":
+          // console.log(block); // DEBUG
           const body = (block.data as { body: string }).body;
           return parse(body, {
             replace: (domNode) => {
@@ -56,7 +63,10 @@ export const ArticleBody = ({
                   },
                   <Link
                     href={`#${id}`}
-                    className={cn("rounded text-neutral-100")}
+                    className={cn(
+                      "rounded text-neutral-100",
+                      focusVisibleWhiteRing
+                    )}
                   >
                     {children}
                     <LinkIcon className="ml-2 mb-1 p-1 inline-block opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" />
@@ -102,15 +112,51 @@ export const ArticleBody = ({
           });
 
         case "code": {
+          // console.log(block); // DEBUG
           return (
             <ArticleCodeBlock key={block.id} data={block.data as BlogCode} />
           );
         }
 
         case "quote":
+          // console.log(block); // DEBUG
           return (
             <ArticleQuoteBlock key={block.id} data={block.data as BlogQuote} />
           );
+
+        case "accordion":
+          // console.log(block); // DEBUG
+          return (
+            <ArticleAccordion key={block.id} type="multiple">
+              {(block.data as BlogAccordion).accordions.map((acc) => (
+                <ArticleAccordionItem
+                  key={acc.id}
+                  value={acc.id}
+                  className="border-neutral-700"
+                >
+                  <ArticleAccordionTrigger className="cursor-pointer hover:text-neutral-100 text-neutral-500 [&[data-state=open]]:text-neutral-100">
+                    {acc.title}
+                  </ArticleAccordionTrigger>
+                  <ArticleAccordionContent>
+                    <p className="text-neutral-500 font-[600]">{acc.message}</p>
+                  </ArticleAccordionContent>
+                </ArticleAccordionItem>
+              ))}
+            </ArticleAccordion>
+          );
+
+        case "alert":
+          // console.log(block); // DEBUG
+          return (
+            <div
+              key={block.id}
+              dangerouslySetInnerHTML={{
+                __html: (block.data as BlogAlert)?.body || "<p>AA</p>",
+              }}
+              className={alertVariants({ variant: block.type })}
+            />
+          );
+
         default:
           return;
       }

@@ -1,4 +1,4 @@
-import { escapeCharacters, removePreCodeTags } from "./strings";
+import { escapeCharacters, cleanPreCodeBlocks } from "./strings";
 import { createHighlighter } from "shiki";
 import {
   transformerNotationDiff,
@@ -24,7 +24,7 @@ export const highlightCodeWithShiki = async ({
   const htmlDecoded = escapeCharacters(code);
 
   // Remove <pre><code> tags from tiptap so they do not get rendered duplicated with shiki
-  const cleaned = removePreCodeTags(htmlDecoded);
+  const cleaned = cleanPreCodeBlocks(htmlDecoded);
 
   const html = highlighter.codeToHtml(cleaned, {
     lang: language || "ts",

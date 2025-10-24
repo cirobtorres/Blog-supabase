@@ -2,7 +2,11 @@ import { focusWithinWhiteRing, hoverWhiteRing } from "@/styles/classNames";
 import { cn } from "@/utils/classnames";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "lucide-react";
-import { DeleteEditorButton, PushEditorDownButton } from "../Buttons/client";
+import {
+  DeleteEditorButton,
+  LockEditorButton,
+  PushEditorDownButton,
+} from "../Buttons/client";
 import { MovableIcon } from "../Icons";
 
 function BlkEdWrapperAccordion({
@@ -59,6 +63,7 @@ function BlkEdWrapperAccordionTrigger({
       </AccordionPrimitive.Trigger>
       <div className="w-full flex flex-0 p-3 items-center justify-center gap-4">
         <PushEditorDownButton moveToNext={moveToNext} />
+        <LockEditorButton />
         <DeleteEditorButton onRemove={onRemove} />
         <MovableIcon className="size-4 stroke-neutral-300" />
       </div>

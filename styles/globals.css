@@ -192,6 +192,35 @@ body {
     background: transparent;
   }
 
+  /*------------------------------=====scrollbar=====------------------------------*/
+  .floating-textarea-scrollbar {
+    overflow: auto;
+  }
+
+  .floating-textarea-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .floating-textarea-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .floating-textarea-scrollbar::-webkit-scrollbar-thumb {
+    cursor: default;
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-color: #262626;
+  }
+
+  .floating-textarea-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+  }
+
+  .floating-textarea-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
   /*------------------------------=====Article=====------------------------------*/
   /*SCROLLBAR*/
   .article-fieldset-scrollbar > textarea::-webkit-scrollbar {

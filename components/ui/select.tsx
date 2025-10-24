@@ -3,8 +3,8 @@
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { cn } from "@/utils/classnames";
-import { focusVisibleWhiteRing } from "@/styles/classNames";
+import { cn } from "../../utils/classnames";
+import { focusVisibleWhiteRing } from "../../styles/classNames";
 
 function Select({
   ...props
@@ -37,7 +37,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "cursor-pointer w-fit flex items-center justify-between gap-2 py-2 px-3 text-sm whitespace-nowrap transition-all duration-300 text-neutral-500 rounded-xs border border-neutral-700 bg-neutral-900 data-[placeholder]:text-neutral-500 data-[size=default]:h-9 data-[size=sm]:h-8 [&_svg:not([class*='text-'])]:text-neutral-100 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 disabled:cursor-not-allowed disabled:opacity-50 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2",
+        "cursor-pointer w-fit flex items-center justify-between gap-2 py-2 px-3 text-sm rounded-[3px] whitespace-nowrap transition-all duration-300 text-neutral-500 hover:text-neutral-100 focus-visible:text-neutral-100 data-[placeholder]:text-neutral-500 border border-neutral-700 hover:border-neutral-600 focus-visible:border-neutral-600 bg-neutral-900 hover:bg-[#202020] focus-visible:bg-[#202020] disabled:cursor-not-allowed disabled:opacity-50 [&_svg:not([class*='text-'])]:text-neutral-100 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         focusVisibleWhiteRing,
         className
       )}
