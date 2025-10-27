@@ -221,8 +221,8 @@ const DeleteComment = ({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center justify-between">
-            Deletar artigo?
+          <AlertDialogTitle className="flex items-center justify-between bg-neutral-950">
+            Deletar comentário?
             <AlertDialogCancel
               className="has-[>svg]:px-1 h-fit py-1"
               onClick={() => setIsDialogOpen(false)}
@@ -230,12 +230,12 @@ const DeleteComment = ({
               <CancelIcon />
             </AlertDialogCancel>
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-warning flex items-center gap-2 border-y border-neutral-800 bg-neutral-950">
+          <AlertDialogDescription className="min-h-20 text-warning flex items-center gap-2 border-y border-neutral-700">
             <AlertIcon className="size-5" />
             Essa ação não poderá ser desfeita!
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex items-center gap-2">
+        <AlertDialogFooter className="flex items-center gap-2 bg-neutral-950">
           <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>
             Cancelar
           </AlertDialogCancel>

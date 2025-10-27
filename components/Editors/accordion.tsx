@@ -4,15 +4,32 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "lucide-react";
 import {
   DeleteEditorButton,
+  DragEditorButton,
   LockEditorButton,
   PushEditorDownButton,
 } from "../Buttons/client";
-import { MovableIcon } from "../Icons";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 function BlkEdWrapperAccordion({
+  id,
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Root>) {
-  return <AccordionPrimitive.Root data-slot="accordion" {...props} />;
+}: React.ComponentProps<typeof AccordionPrimitive.Root> & { id: string }) {
+  const { setNodeRef, transform, transition } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <AccordionPrimitive.Root
+      ref={setNodeRef}
+      style={style}
+      data-slot="accordion"
+      {...props}
+    />
+  );
 }
 
 function BlkEdWrapperAccordionItem({
@@ -34,16 +51,20 @@ function BlkEdWrapperAccordionItem({
 }
 
 function BlkEdWrapperAccordionTrigger({
+  id,
   label,
   className,
   onRemove,
   moveToNext,
   ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Trigger> & {
+  id: string;
   label: string;
   onRemove: React.MouseEventHandler<HTMLButtonElement>;
   moveToNext: React.MouseEventHandler<HTMLButtonElement>;
 }) {
+  const { attributes, listeners, isDragging } = useSortable({ id });
+
   return (
     <AccordionPrimitive.Header className="w-full flex items-center gap-4 bg-neutral-900">
       <AccordionPrimitive.Trigger
@@ -61,11 +82,15 @@ function BlkEdWrapperAccordionTrigger({
           {label}
         </p>
       </AccordionPrimitive.Trigger>
-      <div className="w-full flex flex-0 p-3 items-center justify-center gap-4">
+      <div className="w-full flex flex-0 p-1 items-center justify-center gap-1">
         <PushEditorDownButton moveToNext={moveToNext} />
         <LockEditorButton />
         <DeleteEditorButton onRemove={onRemove} />
-        <MovableIcon className="size-4 stroke-neutral-300" />
+        <DragEditorButton
+          attributes={attributes}
+          listeners={listeners}
+          isDragging={isDragging}
+        />
       </div>
     </AccordionPrimitive.Header>
   );
@@ -99,9 +124,10 @@ export default function BlockEditorWrapper({
   moveToNext,
 }: BlockEditorWrapperProps) {
   return (
-    <BlkEdWrapperAccordion type="single" collapsible className="w-full">
+    <BlkEdWrapperAccordion id={id} type="single" collapsible className="w-full">
       <BlkEdWrapperAccordionItem value="item-1">
         <BlkEdWrapperAccordionTrigger
+          id={id}
           label={wrapperLabel}
           moveToNext={(e) => {
             e.stopPropagation();

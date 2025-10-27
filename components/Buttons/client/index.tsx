@@ -29,6 +29,7 @@ import {
   AlertIcon,
   ArrowDownIcon,
   CancelIcon,
+  MovableIcon,
   TrashBinIcon,
 } from "../../../components/Icons";
 import {
@@ -43,6 +44,8 @@ import {
 import { cn } from "../../../utils/classnames";
 import { usePathname } from "next/navigation";
 import { Lock as LucideLockIcon } from "lucide-react";
+import { DraggableAttributes } from "@dnd-kit/core";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 
 export const LogoutButton = ({ label }: { label: string }) => {
   const pathname = usePathname();
@@ -113,13 +116,37 @@ export const EditOrDeleteArticleButtons = ({
 }: {
   article: Article;
 }) => {
-  const expectedString = "Deletar artigo";
-  const [inputString, setInputString] = useState("");
+  return (
+    <div className="h-5 w-fit flex items-center gap-px">
+      <EditArticleButton {...article} />
+      <DeleteArticleButton {...article} />
+    </div>
+  );
+};
+
+export const EditArticleButton = ({ id }: { id: string }) => {
+  return (
+    <Link
+      href={`/admin/create-article/${id}`}
+      className={cn(
+        "w-14 px-2 inline-block text-xs leading-5 cursor-pointer text-center rounded-l border text-neutral-100 border-neutral-800 bg-neutral-900 hover:bg-neutral-800 hover:border-neutral-700 focus-visible:z-10",
+        focusVisibleWhiteRing
+      )}
+    >
+      Editar
+    </Link>
+  );
+};
+
+export const DeleteArticleButton = ({ id }: { id: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [inputString, setInputString] = useState("");
+
+  const expectedString = "Deletar artigo";
 
   const [state, action, isPending] = useActionState(async () => {
     const formData = new FormData();
-    formData.set("articleId", article.id);
+    formData.set("articleId", id);
     formData.set("inputString", inputString);
     formData.set("expectedString", expectedString);
 
@@ -150,85 +177,72 @@ export const EditOrDeleteArticleButtons = ({
   }, [isPending, state, handleCloseDialog]);
 
   return (
-    <div
-      className="h-5 w-fit flex items-center rounded border overflow-hidden border-neutral-800" // TODO: remover overflow-hidden e corrigir ring
-    >
-      <EditArticleButton {...article} />
-      <AlertDialog open={isDialogOpen}>
-        <AlertDialogTrigger
-          onClick={() => setIsDialogOpen(true)}
-          className="w-14 px-2 text-xs leading-5 cursor-pointer transition-colors duration-300 text-white bg-neutral-900 hover:bg-neutral-800"
-        >
-          Delete
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center justify-between bg-neutral-950">
-              Deletar artigo?
-              <AlertDialogCancel
-                className="has-[>svg]:px-1 h-fit py-1"
-                onClick={handleCloseDialog}
-              >
-                <CancelIcon />
-              </AlertDialogCancel>
-            </AlertDialogTitle>
-          </AlertDialogHeader>
-          <div className="border-y border-neutral-700">
-            <AlertDialogDescription className="w-full text-warning flex items-center gap-2">
-              <AlertIcon />
-              Essa ação não poderá ser desfeita!
-            </AlertDialogDescription>
-            <fieldset className="p-3 flex flex-col gap-2">
-              <label
-                htmlFor="delete-article-input"
-                className="text-sm text-neutral-400"
-              >
-                Escreva{" "}
-                <span className="text-neutral-100 font-bold">
-                  {expectedString}
-                </span>{" "}
-                para confirmar.
-              </label>
-              <input
-                id="delete-article-input"
-                type="text"
-                placeholder={expectedString}
-                autoComplete="off"
-                value={inputString}
-                onChange={(e) => setInputString(e.target.value)}
-                className="px-2 py-1 text-sm rounded outline-none transition-all focus-visible:border-neutral-500/75 focus-visible:ring-neutral-100/10 focus-visible:ring-[3px] border border-neutral-700 placeholder:text-neutral-600 bg-neutral-800"
-              />
-              {state && <p className="text-xs text-warning">{state.error}</p>}
-            </fieldset>
-          </div>
-          <AlertDialogFooter className="flex items-center gap-2 bg-neutral-950">
-            <AlertDialogCancel onClick={handleCloseDialog}>
-              Cancelar
+    <AlertDialog open={isDialogOpen}>
+      <AlertDialogTrigger
+        onClick={() => setIsDialogOpen(true)}
+        className={cn(
+          "w-14 px-2 inline-block text-xs leading-5 cursor-pointer text-center rounded-r border text-neutral-100 border-neutral-800 bg-neutral-900 hover:bg-neutral-800 hover:border-neutral-700 focus-visible:z-10",
+          focusVisibleWhiteRing
+        )}
+      >
+        Deletar
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center justify-between bg-neutral-950">
+            Deletar artigo?
+            <AlertDialogCancel
+              className="has-[>svg]:px-1 h-fit py-1"
+              onClick={handleCloseDialog}
+            >
+              <CancelIcon />
             </AlertDialogCancel>
-            <form action={action}>
-              <AlertDialogAction
-                type="submit"
-                disabled={disabledButton}
-                className={buttonVariants({ variant: "destructive" })}
-              >
-                Confirmar <LoadingSpinning loadingState={isPending} />
-              </AlertDialogAction>
-            </form>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
-};
-
-export const EditArticleButton = ({ id }: { id: string }) => {
-  return (
-    <Link
-      href={`/admin/create-article/${id}`}
-      className="w-14 px-2 inline-block text-xs leading-5 cursor-pointer text-center border-r transition-colors duration-300 border-neutral-800 text-white bg-neutral-900 hover:bg-neutral-800"
-    >
-      Edit
-    </Link>
+          </AlertDialogTitle>
+        </AlertDialogHeader>
+        <div className="border-y border-neutral-700">
+          <AlertDialogDescription className="w-full text-warning flex items-center gap-2">
+            <AlertIcon />
+            Essa ação não poderá ser desfeita!
+          </AlertDialogDescription>
+          <fieldset className="p-3 flex flex-col gap-2">
+            <label
+              htmlFor="delete-article-input"
+              className="text-sm text-neutral-400"
+            >
+              Escreva{" "}
+              <span className="text-neutral-100 font-bold">
+                {expectedString}
+              </span>{" "}
+              para confirmar.
+            </label>
+            <input
+              id="delete-article-input"
+              type="text"
+              placeholder={expectedString}
+              autoComplete="off"
+              value={inputString}
+              onChange={(e) => setInputString(e.target.value)}
+              className="px-2 py-1 text-sm rounded outline-none transition-all focus-visible:border-neutral-500/75 focus-visible:ring-neutral-100/10 focus-visible:ring-[3px] border border-neutral-700 placeholder:text-neutral-600 bg-neutral-800"
+            />
+            {state && <p className="text-xs text-warning">{state.error}</p>}
+          </fieldset>
+        </div>
+        <AlertDialogFooter className="flex items-center gap-2 bg-neutral-950">
+          <AlertDialogCancel onClick={handleCloseDialog}>
+            Cancelar
+          </AlertDialogCancel>
+          <form action={action}>
+            <AlertDialogAction
+              type="submit"
+              disabled={disabledButton}
+              className={buttonVariants({ variant: "destructive" })}
+            >
+              Confirmar <LoadingSpinning loadingState={isPending} />
+            </AlertDialogAction>
+          </form>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
@@ -389,7 +403,7 @@ export const LockEditorButton = () => {
         <button
           type="button"
           className={cn(
-            "cursor-pointer p-1 rounded-xs border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800",
+            "cursor-pointer px-2 py-3 rounded-sm border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800 hover:bg-neutral-800",
             focusVisibleWhiteRing
           )}
         >
@@ -426,7 +440,7 @@ export const DeleteEditorButton = ({
             <button
               type="button"
               className={cn(
-                "cursor-pointer p-1 rounded-xs border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800",
+                "cursor-pointer px-2 py-3 rounded-sm border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800 hover:bg-neutral-800",
                 focusVisibleWhiteRing
               )}
             >
@@ -468,6 +482,43 @@ export const DeleteEditorButton = ({
   );
 };
 
+export const DragEditorButton = ({
+  attributes,
+  listeners,
+  isDragging,
+}: {
+  attributes: DraggableAttributes;
+  listeners: SyntheticListenerMap | undefined;
+  isDragging?: boolean;
+}) => {
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  return (
+    <Tooltip
+      open={isTooltipOpen}
+      onOpenChange={() => {
+        if (isDragging) return setIsTooltipOpen(false);
+        return setIsTooltipOpen(!isTooltipOpen);
+      }}
+    >
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className={cn(
+            "px-2 py-3 cursor-grab active:cursor-grabbing active:scale-95 active:bg-neutral-800 hover:bg-neutral-800 rounded-sm transition-all duration-300 focus-visible:bg-neutral-800 group",
+            isDragging && "cursor-grabbing scale-95 bg-neutral-800",
+            focusVisibleWhiteRing
+          )}
+        >
+          <MovableIcon className="size-4 transition-colors duration-300 stroke-neutral-500 group-hover:stroke-neutral-100 group-focus-visible:stroke-neutral-100" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent sideOffset={11}>Arrastar</TooltipContent>
+    </Tooltip>
+  );
+};
+
 export const PushEditorDownButton = ({
   moveToNext,
 }: {
@@ -478,7 +529,7 @@ export const PushEditorDownButton = ({
       <button
         type="button"
         className={cn(
-          "cursor-pointer p-1 rounded-xs border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800",
+          "cursor-pointer px-2 py-3 rounded-sm border border-transparent outline-none transition-all [&_svg]:transition-all duration-300 [&_svg]:stroke-neutral-500 hover:[&_svg]:stroke-neutral-100 focus-visible:[&_svg]:stroke-neutral-100 focus-visible:bg-neutral-800 hover:bg-neutral-800",
           focusVisibleWhiteRing
         )}
         onClick={moveToNext}

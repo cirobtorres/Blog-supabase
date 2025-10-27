@@ -2,6 +2,8 @@ import Link from "next/link";
 import { EditOrDeleteArticleButtons } from "../Buttons/client";
 import { convertToLargeDate } from "@/utils/dates";
 import Image from "next/image";
+import { cn } from "@/utils/classnames";
+import { focusVisibleWhiteRing } from "@/styles/classNames";
 
 export const ArticleFeedGrid = async ({
   articles,
@@ -69,7 +71,10 @@ export const ArticleGridElement = ({
           <h2 className="text-lg font-bold">
             <Link
               href={`/articles/${article.id}`}
-              className="transition-colors duration-300 hover:text-neutral-100"
+              className={cn(
+                "rounded-xs transition-all duration-300 hover:text-neutral-100",
+                focusVisibleWhiteRing
+              )}
             >
               {article.title}
             </Link>
@@ -81,7 +86,10 @@ export const ArticleGridElement = ({
       </div>
       <Link
         href={`/articles/${article.id}`}
-        className="text-center py-1 px-2 rounded border border-neutral-800 hover:border-neutral-700 transition-colors duration-300 bg-neutral-900 hover:text-neutral-100 hover:bg-neutral-800" // max-w-48
+        className={cn(
+          "text-center py-1 px-2 rounded-xs border border-neutral-800 hover:border-neutral-700 transition-all duration-300 bg-neutral-900 hover:text-neutral-100 hover:bg-neutral-800 focus-visible:border-neutral-700 focus-visible:bg-neutral-800",
+          focusVisibleWhiteRing
+        )} // max-w-48
       >
         Leia mais
       </Link>

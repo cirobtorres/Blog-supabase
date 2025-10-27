@@ -18,37 +18,24 @@ import {
   QuoteEditorIcon,
   TextEditorIcon,
 } from "../Icons";
-import {
-  AccordionEditor,
-  AlertEditor,
-  CodeEditor,
-  ImageCarouselEditor,
-  ImageEditor,
-  QuizEditor,
-  QuoteEditor,
-  TextEditor,
-} from ".";
+import { ImageEditor } from ".";
 import { cn } from "@/utils/classnames";
 import { focusWithinWhiteRing } from "@/styles/classNames";
 import { initialAccordionState } from "@/reducers";
 import {
   DndContext,
   closestCenter,
-  KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
   DragEndEvent,
-  MouseSensor,
   TouchSensor,
   DragStartEvent,
   UniqueIdentifier,
-  DragOverlay,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -57,6 +44,13 @@ import {
   restrictToVerticalAxis,
   restrictToWindowEdges,
 } from "@dnd-kit/modifiers";
+import BlockEditorWrapper from "./accordion";
+import TipTapTextEditor from "./TipTapTextEditor";
+import { FloatingFieldset, FloatingInput, FloatingLabel } from "../Fieldsets";
+import TipTapCodeEditor from "./TipTapCodeEditor";
+import TipTapQuoteEditor from "./TipTapQuoteEditor";
+import AccordionEditorContent from "./AccordionEditor";
+import TipTapAlertEditor from "./TipTapAlertEditor";
 
 const newBlockArray: BlockButton[] = [
   {
@@ -122,58 +116,118 @@ const BlockItem = memo(function BlockItem({
 }) {
   switch (block.type) {
     case "text":
+      const textEditorId = "input-body-" + block.id; // input-body-text-1, 2, 3, 4, ..., n
+
+      console.log("Text REMOUNT"); // TODO (DEBUG): remove me
+
       return (
-        <TextEditor
-          key={block.id}
+        <BlockEditorWrapper
           id={block.id}
           wrapperLabel="Editor de Texto"
-          value={(block.data as BlogText)?.body ?? ""}
-          setVal={(val) => updateBlock(block.id, { body: val })}
           onRemove={removeBlock}
           moveToNext={moveToNext}
-        />
+        >
+          <fieldset className="h-full flex flex-col p-1">
+            <TipTapTextEditor
+              id={textEditorId}
+              setVal={(val) => updateBlock(block.id, { body: val })}
+              defaultValue={(block.data as BlogText)?.body ?? ""}
+            />
+          </fieldset>
+        </BlockEditorWrapper>
       );
     case "code":
+      const filenameEditorId = "input-filename-" + block.id; // input-filename-1, 2, 3, 4, ..., n
+      const codeEditorId = "input-codebody-" + block.id; // input-codebody-1, 2, 3, 4, ..., n
+
+      console.log("Code REMOUNT"); // TODO (DEBUG): remove me
+
       return (
-        <CodeEditor
-          key={block.id}
+        <BlockEditorWrapper
           id={block.id}
           wrapperLabel="Editor de Código"
-          filename={(block.data as BlogCode)?.filename ?? ""}
-          code={(block.data as BlogCode)?.code ?? ""}
-          language={(block.data as BlogCode)?.language ?? "typescript"}
-          setFilename={(val) => updateBlock(block.id, { filename: val })}
-          setCode={(val) => updateBlock(block.id, { code: val })}
-          setLanguage={(val) => updateBlock(block.id, { language: val })}
           onRemove={removeBlock}
           moveToNext={moveToNext}
-        />
+        >
+          <fieldset className="h-full flex flex-col gap-1 p-1 [&_fieldset]:mt-0">
+            <FloatingFieldset className="focus-within:ring-0 focus-within:ring-offset-0">
+              <FloatingInput
+                id={filenameEditorId}
+                placeholder="path/to/my/file.py"
+                value={(block.data as BlogCode)?.filename ?? ""}
+                onChange={(e) =>
+                  updateBlock(block.id, { filename: e.target.value })
+                }
+              />
+              <FloatingLabel
+                htmlFor={filenameEditorId}
+                label="Caminho do Arquivo"
+              />
+            </FloatingFieldset>
+            <TipTapCodeEditor
+              id={codeEditorId}
+              defaultCode={(block.data as BlogCode)?.code ?? ""}
+              defaultlanguage={
+                (block.data as BlogCode)?.language ?? "typescript"
+              }
+              setVal={(val) => updateBlock(block.id, { code: val })}
+              setLanguage={(val) => updateBlock(block.id, { language: val })}
+            />
+          </fieldset>
+        </BlockEditorWrapper>
       );
     case "quote":
+      const quoteEditorId = "input-quote-" + block.id; // input-quote-text-1, 2, 3, 4, ..., n
+      const authorEditorId = "input-author-" + block.id; // input-author-text-1, 2, 3, 4, ..., n
+
+      console.log("Quote REMOUNT"); // TODO (DEBUG): remove me
+
       return (
-        <QuoteEditor
-          key={block.id}
+        <BlockEditorWrapper
           id={block.id}
           wrapperLabel="Citação"
-          author={(block.data as BlogQuote)?.author ?? ""}
-          quote={(block.data as BlogQuote)?.quote ?? ""}
-          setAuthor={(val) => updateBlock(block.id, { author: val })}
-          setQuote={(val) => updateBlock(block.id, { quote: val })}
           onRemove={removeBlock}
           moveToNext={moveToNext}
-        />
+        >
+          <fieldset className="h-full flex flex-col gap-1 p-1 [&_fieldset]:mt-0">
+            <FloatingFieldset>
+              <FloatingInput
+                id={authorEditorId}
+                placeholder="Arthur Schopenhauer"
+                value={(block.data as BlogQuote)?.author ?? ""}
+                onChange={(e) =>
+                  updateBlock(block.id, { author: e.target.value })
+                }
+              />
+              <FloatingLabel
+                htmlFor={authorEditorId}
+                label="Autor da citação"
+              />
+            </FloatingFieldset>
+            <TipTapQuoteEditor
+              id={quoteEditorId}
+              setVal={(val) => updateBlock(block.id, { quote: val })}
+              defaultValue={(block.data as BlogQuote)?.quote ?? ""}
+            />
+          </fieldset>
+        </BlockEditorWrapper>
       );
     case "accordion":
+      const accordions = (block.data as BlogAccordion)?.accordions ?? null;
+      const setAccordions = (val: AccordionItem[]) =>
+        updateBlock(block.id, { accordions: val });
+
+      console.log("Accordion REMOUNT"); // TODO (DEBUG): remove me
+
       return (
-        <AccordionEditor
-          key={block.id}
+        <BlockEditorWrapper
           id={block.id}
-          accordions={(block.data as BlogAccordion)?.accordions ?? null}
-          setAccordions={(val) => updateBlock(block.id, { accordions: val })}
           wrapperLabel="Acordeão"
           onRemove={removeBlock}
           moveToNext={moveToNext}
-        />
+        >
+          <AccordionEditorContent {...{ accordions, setAccordions }} />
+        </BlockEditorWrapper>
       );
     case "image":
       return (
@@ -196,74 +250,60 @@ const BlockItem = memo(function BlockItem({
         />
       );
     case "imageCarousel":
+      console.log("Image Carousel REMOUNT"); // TODO (DEBUG): remove me
+
       return (
         // TODO
-        <ImageCarouselEditor
-          key={block.id}
-          id={block.id}
-          wrapperLabel="Carrossel de Imagem"
-          onRemove={removeBlock}
-          moveToNext={moveToNext}
-        />
-      );
-    case "alert":
-      return (
-        <AlertEditor
-          key={block.id}
-          id={block.id}
-          wrapperLabel="Alerta"
-          type={(block.data as BlogAlert)?.type ?? "default"}
-          body={(block.data as BlogAlert)?.body ?? ""}
-          setType={(val) => updateBlock(block.id, { type: val })}
-          setBody={(val) => updateBlock(block.id, { body: val })}
-          onRemove={removeBlock}
-          moveToNext={moveToNext}
-        />
-      );
-    case "quiz":
-      return (
-        // TODO
-        <QuizEditor
-          key={block.id}
+        <BlockEditorWrapper
           id={block.id}
           wrapperLabel="Quiz"
           onRemove={removeBlock}
           moveToNext={moveToNext}
-        />
+        >
+          ImageCarousel
+        </BlockEditorWrapper>
+      );
+    case "alert":
+      const alertEditorId = "input-alert-" + block.id; // input-alert-text-1, 2, 3, 4, ..., n
+
+      console.log("Alert REMOUNT"); // TODO (DEBUG): remove me
+
+      return (
+        <BlockEditorWrapper
+          id={block.id}
+          wrapperLabel="Alerta"
+          onRemove={removeBlock}
+          moveToNext={moveToNext}
+        >
+          <fieldset className="h-full flex flex-col p-1">
+            <TipTapAlertEditor
+              id={alertEditorId}
+              defaultBody={(block.data as BlogAlert)?.body ?? ""}
+              setVal={(val) => updateBlock(block.id, { body: val })}
+              defaultType={(block.data as BlogAlert)?.type ?? "default"}
+              setDefaultType={(val) => updateBlock(block.id, { type: val })}
+            />
+          </fieldset>
+        </BlockEditorWrapper>
+      );
+    case "quiz":
+      console.log("Quiz REMOUNT"); // TODO (DEBUG): remove me
+
+      return (
+        // TODO
+        <BlockEditorWrapper
+          id={block.id}
+          wrapperLabel="Quiz"
+          onRemove={removeBlock}
+          moveToNext={moveToNext}
+        >
+          Quiz
+        </BlockEditorWrapper>
       );
     default:
       return null;
   }
 });
-
-const SortableItem = ({
-  children,
-  id,
-}: {
-  children: React.ReactNode;
-  id: string;
-}) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className="w-full"
-      tabIndex={-1}
-    >
-      {children}
-    </div>
-  );
-};
 
 const BlockList = ({
   blocks,
@@ -276,20 +316,7 @@ const BlockList = ({
     null
   );
 
-  const sensors = useSensors(
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250, // Press delay of 250ms
-        tolerance: 25, // Tolerance of 25px of movement
-      },
-    }),
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        delay: 250, // Press delay of 250ms
-        tolerance: 25, // Tolerance of 25px of movement
-      },
-    })
-  );
+  const sensors = useSensors(useSensor(TouchSensor), useSensor(PointerSensor));
 
   const moveToNext = useCallback(
     (id: string) => {
@@ -375,15 +402,13 @@ const BlockList = ({
       >
         <SortableContext items={blocks} strategy={verticalListSortingStrategy}>
           {blocks.map((block) => (
-            <SortableItem key={block.id} id={block.id}>
-              <BlockItem
-                key={block.id}
-                block={block}
-                updateBlock={updateBlock}
-                removeBlock={removeBlock}
-                moveToNext={moveToNext}
-              />
-            </SortableItem>
+            <BlockItem
+              key={block.id}
+              block={block}
+              updateBlock={updateBlock}
+              removeBlock={removeBlock}
+              moveToNext={moveToNext}
+            />
           ))}
         </SortableContext>
       </DndContext>

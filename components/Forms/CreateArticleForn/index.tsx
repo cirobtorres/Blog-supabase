@@ -37,21 +37,6 @@ import { cn } from "@/utils/classnames";
 import { convertToLargeDate } from "@/utils/dates";
 import { useRouter } from "next/navigation";
 
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-
 const initialPostState = {
   ok: false,
   success: null,
