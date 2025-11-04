@@ -83,7 +83,7 @@ export const AnchorTracker = ({ anchors }: { anchors: AnchorTracher }) => {
                           <Link
                             href={`#${id}`}
                             className={
-                              `flex text-sm transition-all break-words rounded outline-none hover:text-neutral-100` +
+                              `flex text-xs transition-all break-words rounded outline-none hover:text-neutral-100` +
                               ` focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50 ` +
                               generatePaddings(tag)
                             }

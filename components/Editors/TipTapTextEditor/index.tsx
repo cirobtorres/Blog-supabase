@@ -49,6 +49,19 @@ import {
   FloatingLabel,
 } from "../../Fieldsets";
 import { validateAllowedAutoLink, validateAllowedUri } from "../utils";
+import { Redo2, Undo2 } from "lucide-react";
+import { Gapcursor } from "@tiptap/extensions";
+import { TableKit } from "@tiptap/extension-table";
+import {
+  TbColumnInsertLeft,
+  TbColumnInsertRight,
+  TbColumnRemove,
+  TbRowInsertBottom,
+  TbRowInsertTop,
+  TbRowRemove,
+} from "react-icons/tb";
+import { PiTableFill } from "react-icons/pi";
+import { RiMergeCellsVertical } from "react-icons/ri";
 
 export default function TipTapTextEditor({
   id,
@@ -77,6 +90,10 @@ export default function TipTapTextEditor({
       BulletList,
       OrderedList,
       ListItem,
+      Gapcursor,
+      TableKit.configure({
+        table: { resizable: true },
+      }),
       Heading.configure({
         levels: [2, 3, 4],
       }),
@@ -134,7 +151,7 @@ export default function TipTapTextEditor({
           )
           .run();
       } else {
-        // Fallback: se não houver range de link, apenas atualiza o href
+        // Fallback
         editor
           .chain()
           .focus()
@@ -239,86 +256,92 @@ export default function TipTapTextEditor({
   return (
     <>
       <div
-        className="w-full flex gap-4 items-center pb-1" // border-y border-neutral-800
+        className="w-full flex flex-wrap gap-x-4 items-center pb-1" // border-y border-neutral-800
       >
+        {!editor.isActive("table") && (
+          <>
+            <div
+              className={cn(
+                "relative flex items-center p-2 my-2 gap-0.5 [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-px [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424] border border-neutral-700 rounded-lg",
+                "after:absolute after:content-['Cabeçalhos'] after:-top-2 after:left-1/2 after:-translate-x-1/2 after:text-xs after:text-neutral-500 after:font-semibold after:px-1 after:bg-neutral-950"
+              )}
+            >
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() =>
+                    editor.chain().focus().toggleHeading({ level: 2 }).run()
+                  }
+                  className={cn(
+                    editor.isActive("heading", { level: 2 })
+                      ? "text-theme-color bg-[#242424]"
+                      : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <HeaderH2Icon className="size-7 p-1" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Header H2</p>
+                  {/* <Kbd>Ctrl + Alt + 1</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() =>
+                    editor.chain().focus().toggleHeading({ level: 3 }).run()
+                  }
+                  className={cn(
+                    editor.isActive("heading", { level: 3 })
+                      ? "text-theme-color bg-[#242424]"
+                      : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <HeaderH3Icon className="size-7 p-1" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Header H3</p>
+                  {/* <Kbd>Ctrl + Alt + 2</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() =>
+                    editor.chain().focus().toggleHeading({ level: 4 }).run()
+                  }
+                  className={cn(
+                    editor.isActive("heading", { level: 4 })
+                      ? "text-theme-color bg-[#242424]"
+                      : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <HeaderH4Icon className="size-7 p-1" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Header H4</p>
+                  {/* <Kbd>Ctrl + Alt + 3</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </>
+        )}
         <div
           className={cn(
-            "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-[1px] [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
-          )}
-        >
-          <Tooltip>
-            <TooltipTrigger
-              type="button"
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 2 }).run()
-              }
-              className={cn(
-                editor.isActive("heading", { level: 2 })
-                  ? "text-theme-color bg-[#242424]"
-                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
-                focusVisibleWhiteRing
-              )}
-            >
-              <HeaderH2Icon className="size-7 p-1" />
-            </TooltipTrigger>
-            <TooltipContent
-              sideOffset={10}
-              className="flex flex-col items-center justify-center gap-1"
-            >
-              <p className="text-neutral-100">Header H2</p>
-              {/* <Kbd>Ctrl + Alt + 1</Kbd> */}
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger
-              type="button"
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 3 }).run()
-              }
-              className={cn(
-                editor.isActive("heading", { level: 3 })
-                  ? "text-theme-color bg-[#242424]"
-                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
-                focusVisibleWhiteRing
-              )}
-            >
-              <HeaderH3Icon className="size-7 p-1" />
-            </TooltipTrigger>
-            <TooltipContent
-              sideOffset={10}
-              className="flex flex-col items-center justify-center gap-1"
-            >
-              <p className="text-neutral-100">Header H3</p>
-              {/* <Kbd>Ctrl + Alt + 2</Kbd> */}
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger
-              type="button"
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 4 }).run()
-              }
-              className={cn(
-                editor.isActive("heading", { level: 4 })
-                  ? "text-theme-color bg-[#242424]"
-                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
-                focusVisibleWhiteRing
-              )}
-            >
-              <HeaderH4Icon className="size-7 p-1" />
-            </TooltipTrigger>
-            <TooltipContent
-              sideOffset={10}
-              className="flex flex-col items-center justify-center gap-1"
-            >
-              <p className="text-neutral-100">Header H4</p>
-              {/* <Kbd>Ctrl + Alt + 3</Kbd> */}
-            </TooltipContent>
-          </Tooltip>
-        </div>
-        <div
-          className={cn(
-            "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-[1px] [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
+            "relative flex items-center p-2 my-2 gap-0.5 [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-px [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424] border border-neutral-700 rounded-lg",
+            "after:absolute after:content-['Realces'] after:-top-2 after:left-1/2 after:-translate-x-1/2 after:text-xs after:text-neutral-500 after:font-semibold after:px-1 after:bg-neutral-950"
           )}
         >
           <Tooltip>
@@ -481,51 +504,324 @@ export default function TipTapTextEditor({
             </AlertDialogContent>
           </AlertDialog>
         </div>
+        {!editor.isActive("table") && (
+          <>
+            <div
+              className={cn(
+                "relative flex items-center p-2 my-2 gap-0.5 [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-px [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424] border border-neutral-700 rounded-lg",
+                "after:absolute after:content-['Listas'] after:-top-2 after:left-1/2 after:-translate-x-1/2 after:text-xs after:text-neutral-500 after:font-semibold after:px-1 after:bg-neutral-950"
+              )}
+            >
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() =>
+                    editor.chain().focus().toggleOrderedList().run()
+                  }
+                  className={cn(
+                    editor.isActive("orderedList")
+                      ? "text-theme-color bg-[#242424]"
+                      : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <OrderedListIcon className="size-7 p-1" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Lista ordenada</p>
+                  <Kbd>Ctrl + Shift + 7</Kbd>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() =>
+                    editor.chain().focus().toggleBulletList().run()
+                  }
+                  className={cn(
+                    editor.isActive("bulletList")
+                      ? "text-theme-color bg-[#242424]"
+                      : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <BulletListIcon className="size-7 p-1" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Lista não ordenada</p>
+                  <Kbd>Ctrl + Shift + 8</Kbd>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </>
+        )}
         <div
           className={cn(
-            "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-[1px] [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
+            "flex flex-col items-center gap-0.5 [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:rounded [&_button]:border-neutral-700 [&_button]:p-px [&_button]:h-8 [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
+          )}
+        >
+          {!editor.isActive("table") ? (
+            <button
+              type="button"
+              onClick={() =>
+                editor
+                  .chain()
+                  .focus()
+                  .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                  .run()
+              }
+              className={cn(
+                "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                editor.isActive("table") && "text-theme-color bg-[#242424]",
+                focusVisibleWhiteRing
+              )}
+            >
+              <p className="w-24 text-xs font-600">Criar tabela</p>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => editor.chain().focus().deleteTable().run()}
+              className={cn(
+                "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                focusVisibleWhiteRing
+              )}
+            >
+              <p className="w-24 text-xs font-600">Excluir tabela</p>
+            </button>
+          )}
+        </div>
+        {editor.isActive("table") && (
+          <>
+            <div
+              className={cn(
+                "relative flex items-center p-2 my-2 gap-0.5 [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-px [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424] border border-neutral-700 rounded-lg",
+                "after:absolute after:content-['Colunas'] after:-top-2 after:left-1/2 after:-translate-x-1/2 after:text-xs after:text-neutral-500 after:font-semibold after:px-1 after:bg-neutral-950"
+              )}
+            >
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() => editor.chain().focus().addColumnBefore().run()}
+                  className={cn(
+                    "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <TbColumnInsertLeft className="size-7 p-1 stroke-neutral-100" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Adicionar coluna atrás</p>
+                  {/* <Kbd>Ctrl + Alt + 1</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() => editor.chain().focus().addColumnAfter().run()}
+                  className={cn(
+                    "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <TbColumnInsertRight className="size-7 p-1 stroke-neutral-100" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Adicionar coluna a frente</p>
+                  {/* <Kbd>Ctrl + Alt + 1</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() => editor.chain().focus().deleteColumn().run()}
+                  className={cn(
+                    "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <TbColumnRemove className="size-7 p-1 stroke-neutral-100" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Excluir coluna</p>
+                  {/* <Kbd>Ctrl + Alt + 1</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <div
+              className={cn(
+                "relative flex items-center p-2 my-2 gap-0.5 [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-px [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424] border border-neutral-700 rounded-lg",
+                "after:absolute after:content-['Linhas'] after:-top-2 after:left-1/2 after:-translate-x-1/2 after:text-xs after:text-neutral-500 after:font-semibold after:px-1 after:bg-neutral-950"
+              )}
+            >
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() => editor.chain().focus().addRowBefore().run()}
+                  className={cn(
+                    "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <TbRowInsertTop className="size-7 p-1 stroke-neutral-100" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Adicionar linha acima</p>
+                  {/* <Kbd>Ctrl + Alt + 1</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() => editor.chain().focus().addRowAfter().run()}
+                  className={cn(
+                    "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <TbRowInsertBottom className="size-7 p-1 stroke-neutral-100" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Adicionar linha abaixo</p>
+                  {/* <Kbd>Ctrl + Alt + 1</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() => editor.chain().focus().deleteRow().run()}
+                  className={cn(
+                    "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <TbRowRemove className="size-7 p-1 stroke-neutral-100" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Excluir linha</p>
+                  {/* <Kbd>Ctrl + Alt + 1</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <div
+              className={cn(
+                "flex items-center gap-0.5 [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-px [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
+              )}
+            >
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() =>
+                    editor.chain().focus().toggleHeaderCell().run()
+                  }
+                  className={cn(
+                    "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    editor.isActive("tableHeader") &&
+                      "text-theme-color bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <PiTableFill className="size-7 p-1 stroke-neutral-100" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">
+                    {editor.isActive("tableHeader")
+                      ? "Remover Cabeçalho"
+                      : "Tornar cabeçalho"}
+                  </p>
+                  {/* <Kbd>Ctrl + Alt + 1</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  onClick={() => editor.chain().focus().mergeOrSplit().run()}
+                  className={cn(
+                    "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                    focusVisibleWhiteRing
+                  )}
+                >
+                  <RiMergeCellsVertical className="size-7 p-1 stroke-neutral-100" />
+                </TooltipTrigger>
+                <TooltipContent
+                  sideOffset={10}
+                  className="flex flex-col items-center justify-center gap-1"
+                >
+                  <p className="text-neutral-100">Unir células</p>
+                  {/* <Kbd>Ctrl + Alt + 1</Kbd> */}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </>
+        )}
+        <div
+          className={cn(
+            "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-px [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
           )}
         >
           <Tooltip>
             <TooltipTrigger
               type="button"
-              onClick={() => editor.chain().focus().toggleOrderedList().run()}
+              onClick={() => editor.chain().focus().undo().run()}
               className={cn(
-                editor.isActive("orderedList")
-                  ? "text-theme-color bg-[#242424]"
-                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
                 focusVisibleWhiteRing
               )}
             >
-              <OrderedListIcon className="size-7 p-1" />
+              <Undo2 className="size-7 p-1" />
             </TooltipTrigger>
             <TooltipContent
               sideOffset={10}
               className="flex flex-col items-center justify-center gap-1"
             >
-              <p className="text-neutral-100">Lista ordenada</p>
-              <Kbd>Ctrl + Shift + 7</Kbd>
+              <p className="text-neutral-100">Desfazer</p>
+              <Kbd>Ctrl + z</Kbd>
             </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger
               type="button"
-              onClick={() => editor.chain().focus().toggleBulletList().run()}
+              onClick={() => editor.chain().focus().redo().run()}
               className={cn(
-                editor.isActive("bulletList")
-                  ? "text-theme-color bg-[#242424]"
-                  : "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
+                "text-neutral-100 bg-neutral-900 hover:bg-[#242424]",
                 focusVisibleWhiteRing
               )}
             >
-              <BulletListIcon className="size-7 p-1" />
+              <Redo2 className="size-7 p-1" />
             </TooltipTrigger>
             <TooltipContent
               sideOffset={10}
               className="flex flex-col items-center justify-center gap-1"
             >
-              <p className="text-neutral-100">Lista não ordenada</p>
-              <Kbd>Ctrl + Shift + 8</Kbd>
+              <p className="text-neutral-100">Refazer</p>
+              <Kbd>Ctrl + Shift + z</Kbd>
             </TooltipContent>
           </Tooltip>
         </div>
@@ -538,7 +834,12 @@ export default function TipTapTextEditor({
         spellCheck={false}
         onFocus={() => editor.chain().selectTextblockEnd().focus()}
         className={cn(
-          "p-1 flex flex-col transition-all duration-300 [&_p]:pb-6 [&_p]:text-base [&_p]:text-neutral-400 [&_strong]:text-neutral-400 [&_p_strong]:text-neutral-300 rounded border border-neutral-700 [&_p_a]:text-theme-color [&_p_a]:underline [&_p_a]:bg-neutral-700 [&_p_a]:hover:text-theme-link [&_p_a]:border [&_p_a]:border-neutral-600 [&_p_a]:px-1 [&_p_a]:py-0.5 [&_p_a]:rounded-md [&_p_mark]:text-neutral-100 [&_p_mark]:bg-neutral-700 [&_p_mark]:border [&_p_mark]:border-neutral-600 [&_p_mark]:px-1 [&_p_mark]:py-0.5 [&_p_mark]:rounded-md [&_h2]:text-[2rem] [&_h2]:font-bold [&_h2]:pb-6 [&_h3]:text-2xl [&_h4]:text-xl [&_h3]:pb-6 [&_h4]:pb-6 [&_ul]:pb-6 [&_ul_li:last-child_p]:pb-0 [&_ul]:ml-5 [&_ul_li]:list-disc [&_ol]:pb-6 [&_ol_li:last-child_p]:pb-0 [&_ol]:ml-5 [&_ol_li]:list-decimal [&_.tiptap.ProseMirror]:h-[320px] [&_.tiptap.ProseMirror]:overflow-y-auto  [&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6 [&_.tiptap.ProseMirror]:rounded-b-xs [&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all bg-neutral-900"
+          "p-1 flex flex-col transition-all duration-300 rounded border border-neutral-700",
+          "[&_p]:pb-6 [&_p]:text-base [&_p]:text-neutral-400 [&_strong]:text-neutral-400 [&_p_strong]:text-neutral-300 [&_p_a]:text-theme-color [&_p_a]:underline [&_p_a]:bg-neutral-700 [&_p_a]:hover:text-theme-link [&_p_a]:border [&_p_a]:border-neutral-600 [&_p_a]:px-1 [&_p_a]:py-0.5 [&_p_a]:rounded-md [&_p_mark]:text-neutral-100 [&_p_mark]:bg-neutral-700 [&_p_mark]:border [&_p_mark]:border-neutral-600 [&_p_mark]:px-1 [&_p_mark]:py-0.5 [&_p_mark]:rounded-md",
+          "[&_h2]:text-[2rem] [&_h2]:font-bold [&_h2]:pb-6 [&_h3]:text-2xl [&_h4]:text-xl [&_h3]:pb-6 [&_h4]:pb-6",
+          "[&_ul]:pb-6 [&_ul_li:last-child_p]:pb-0 [&_ul]:ml-5 [&_ul_li]:list-disc [&_ol]:pb-6 [&_ol_li:last-child_p]:pb-0 [&_ol]:ml-5 [&_ol_li]:list-decimal",
+          "[&_table_p]:pb-0",
+          "[&_.tiptap.ProseMirror]:h-80 [&_.tiptap.ProseMirror]:overflow-y-auto  [&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6 [&_.tiptap.ProseMirror]:rounded-b-xs [&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all bg-neutral-900"
           // focusWithinWhiteRing
         )}
       />

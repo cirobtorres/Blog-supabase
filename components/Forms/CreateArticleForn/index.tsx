@@ -268,7 +268,7 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
             <DropPlaceholder />
           </AspectRatio>
           <BlockList blocks={blocks} setBlocks={setBlocks} />
-          <NewBlockButtons setBlocks={setBlocks} />
+          <NewBlockButtons blocks={blocks} setBlocks={setBlocks} />
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex flex-col gap-1 p-4 rounded-sm border border-neutral-700 bg-neutral-900">

@@ -1,7 +1,7 @@
 import { escapeCharacters, cleanPreCodeBlocks } from "./strings";
 import { createHighlighter } from "shiki";
 import {
-  transformerNotationDiff,
+  // transformerNotationDiff,
   transformerNotationHighlight,
   transformerNotationWordHighlight,
 } from "@shikijs/transformers";
@@ -30,10 +30,10 @@ export const highlightCodeWithShiki = async ({
     lang: language || "ts",
     theme: DEFAULT_THEME,
     transformers: [
-      transformerNotationDiff({
-        matchAlgorithm: "v3",
-        // https://shiki.style/packages/transformers#transformernotationdiff
-      }),
+      // transformerNotationDiff({
+      //   matchAlgorithm: "v3",
+      //   // https://shiki.style/packages/transformers#transformernotationdiff
+      // }),
       transformerNotationHighlight({
         matchAlgorithm: "v3",
         // https://shiki.style/packages/transformers#transformernotationhighlight

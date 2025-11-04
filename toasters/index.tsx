@@ -26,7 +26,9 @@ export const sonnerToastPromise = (
     loading,
     success: (data) => success(data),
     error: (data) => error(data),
-    style, // style is injected at the same place where classNames: { toast: "..." } is. Use either style or classNames toast (with !important)
+    style,
+    // style is injected at the same place where classNames: { toast: "..." } is.
+    // Use either style or classNames (with !important)
     classNames: {
       // toast: "text-neutral-100! rounded-lg! border-neutral-700! bg-neutral-900!",
       // icon: "",
@@ -44,25 +46,10 @@ export const sonnerToastPromise = (
   ... TOAST
   <div data-icon="">
     ... ICON
-    <div class="sonner-loading-wrapper" data-visible="false"> ... LOADING
-      <div class="sonner-spinner">
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-        <div class="sonner-loading-bar" />
-      </div>
+    <div class="sonner-loading-wrapper" data-visible="false"> 
+      ... LOADING
     </div>
-    <svg>
-      <path />
-    </svg>
+    ... SVG
   </div>
   <div data-content="">
     ... CONTENT

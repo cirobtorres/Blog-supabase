@@ -3,7 +3,7 @@ import {
   HomeIcon,
   ImageEditorIcon,
   ArticlePencilIcon,
-} from "@/components/Icons";
+} from "../components/Icons";
 
 export const MENU_ITEMS = [
   {

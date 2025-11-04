@@ -17,10 +17,17 @@ export const labelId = (str: string) => `label-${slugify(str)}`;
 export const escapeCharacters = (str: string) => he.decode(str);
 
 export const cleanPreCodeBlocks = (htmlDecoded: string) => {
-  return htmlDecoded
-    .replace(/[\u00A0\u200B\uFEFF]/g, " ")
-    .replace(/(<pre[^>]*>\n*<code[^>]*>\n*)+/g, "")
-    .replace(/(\n*<\/code>\n*<\/pre>\n*)+/g, "");
+  return (
+    htmlDecoded
+      // Normaliza CRLF (Windows) e CR (Mac antigo) para LF
+      .replace(/\r\n?/g, "\n")
+      // Remove caracteres invisíveis
+      .replace(/[\u00A0\u200B\uFEFF]/g, " ")
+      // Remove tags <pre><code> iniciais
+      .replace(/(<pre[^>]*>\n*<code[^>]*>\n*)+/g, "")
+      // Remove tags </code></pre> finais
+      .replace(/(\n*<\/code>\n*<\/pre>\n*)+/g, "")
+  );
 };
 
 export const formatCodeBlockLanguage = (

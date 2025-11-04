@@ -1,6 +1,6 @@
 "use client";
 
-import { ActionDispatch } from "react";
+import { ActionDispatch, useEffect, useReducer, useRef } from "react";
 import {
   FloatingFieldset,
   FloatingInput,
@@ -16,37 +16,144 @@ import {
   getImageDimensionsByFile,
   imageToDownload,
 } from "../../../utils/media";
+import { imageInitialState, imageReducer } from "@/reducers";
+
+export default function ImageEditor({
+  id,
+  // src,
+  alt,
+  filename,
+  caption,
+  setFile,
+  // setSrc,
+  setAlt,
+  setFilename,
+  setCaption,
+  wrapperLabel,
+  moveToNext,
+  onRemove,
+}: ImageEditorProps) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [imageData, dispatch] = useReducer(imageReducer, imageInitialState);
+
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // <input type="file"> triggers onChange only if (.value) changes
+    // Reseting input.value = "" avoids several unexpected behaviors
+    const input = e.currentTarget;
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (isNotImageFile(file)) {
+      input.value = ""; // Select the same file again
+      return;
+    }
+
+    if (imageData?.preview && imageData.preview.startsWith("blob:")) {
+      try {
+        URL.revokeObjectURL(imageData.preview);
+      } catch {}
+    }
+
+    const url = URL.createObjectURL(file);
+
+    let width: number | null = null;
+    let height: number | null = null;
+
+    try {
+      const dims = await getImageDimensionsByFile(file);
+      width = dims.width;
+      height = dims.height;
+    } catch (err) {
+      console.error("Error (getImageWidthAndHeight):", err);
+    }
+
+    const today = new Date();
+
+    dispatch({
+      type: "SET_ALL",
+      payload: {
+        preview: url,
+        file,
+        size: file.size,
+        type: file.type.replace("image/", ""),
+        width,
+        height,
+        date: comercialDate(today),
+      },
+    });
+
+    setFilename(file.name);
+    setFile(file);
+
+    input.value = ""; // Select the same file again
+  };
+
+  useEffect(() => {
+    // Preventing memmory leak
+    const prev = imageData.preview;
+    return () => {
+      if (prev && prev.startsWith("blob:")) {
+        try {
+          URL.revokeObjectURL(prev);
+        } catch {}
+      }
+    };
+  }, [imageData.preview]);
+
+  return (
+    <div className="flex justify-center w-full h-full">
+      <DragAndDropZone
+        imageData={imageData}
+        inputRef={inputRef}
+        onFileChange={onFileChange}
+        setFilename={setFilename}
+        setAlt={setAlt}
+        setCaption={setCaption}
+        dispatch={dispatch}
+      />
+      <InfoZone
+        imageData={imageData}
+        filename={filename}
+        alt={alt}
+        caption={caption}
+        setFilename={setFilename}
+        setAlt={setAlt}
+        setCaption={setCaption}
+      />
+    </div>
+  );
+} // TODO
 
 export const ImageDataInfo = ({ imageData }: { imageData: ImageState }) => (
   <div
     className={
-      `relative grid grid-cols-[repeat(2,minmax(0,1fr))] gap-1 p-2 bg-neutral-900 ` +
-      `after:absolute after:h-[1px] after:left-0 after:right-0 after:bottom-0 after:bg-neutral-700 `
+      `relative grid grid-cols-2 gap-1 p-2 bg-neutral-900 ` +
+      `after:absolute after:h-px after:left-0 after:right-0 after:bottom-0 after:bg-neutral-700 `
     }
   >
-    <div className="[&_*]:text-xs">
+    <div className="**:text-xs">
       <p className="text-neutral-500">Tamanho</p>
-      <p className="text-neutral-300 font-[600]">
+      <p className="text-neutral-300 font-semibold">
         {imageData.size
           ? `${(imageData.size / (1024 * 1024)).toFixed(3)}KB`
           : "--"}
       </p>
     </div>
-    <div className="[&_*]:text-xs">
+    <div className="**:text-xs">
       <p className="text-neutral-500">Data</p>
-      <p className="text-neutral-300 font-[600]">{imageData.date}</p>
+      <p className="text-neutral-300 font-semibold">{imageData.date}</p>
     </div>
-    <div className="[&_*]:text-xs">
+    <div className="**:text-xs">
       <p className="text-neutral-500">Dimensões</p>
-      <p className="text-neutral-300 font-[600]">
+      <p className="text-neutral-300 font-semibold">
         {imageData.width && imageData.height
           ? `${imageData.width}x${imageData.height}`
           : "--"}
       </p>
     </div>
-    <div className="[&_*]:text-xs">
+    <div className="**:text-xs">
       <p className="text-neutral-500">Extensão</p>
-      <p className="text-neutral-300 font-[600]">{imageData.type}</p>
+      <p className="text-neutral-300 font-semibold">{imageData.type}</p>
     </div>
   </div>
 );
@@ -187,7 +294,7 @@ export const DragAndDropZone = ({
       onDragOver={(e) => e.preventDefault()}
       className={
         `relative w-[70%] min-h-96 h-full shrink-0 ` +
-        `after:absolute after:right-0 after:w-[1px] after:top-0 after:bottom-0 after:bg-neutral-700 `
+        `after:absolute after:right-0 after:w-px after:top-0 after:bottom-0 after:bg-neutral-700 `
       }
       onDrop={handleDrop}
     >

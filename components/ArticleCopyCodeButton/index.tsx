@@ -44,7 +44,7 @@ export default function ArticleCopyCodeButton({
             className={cn(
               "flex justify-center items-center rounded size-9 " +
                 "cursor-pointer disabled:cursor-auto disabled:bg-neutral-800 " +
-                "border border-neutral-600 " +
+                "border border-neutral-700 " +
                 "hover:bg-neutral-800",
               className
             )}

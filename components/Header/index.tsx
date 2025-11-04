@@ -1,17 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { ProgressBar } from "./ProgressBar";
 import { LogoutButton } from "../Buttons/client";
-import Image from "next/image";
-import { cn } from "@/utils/classnames";
-import { focusVisibleWhiteRing } from "@/styles/classNames";
+import { focusVisibleWhiteRing } from "../../styles/classNames";
+import { cn } from "../../utils/classnames";
 
 export const StaticHeader = ({ profile }: { profile: Profile | null }) => {
   return (
-    <header className="w-full h-[var(--header-height)] border-b border-neutral-800 backdrop-blur-sm bg-neutral-950/50">
-      <div className="relative max-w-[1440px] mx-auto h-full">
+    <header className="w-full h-(--header-height) border-b border-neutral-800 backdrop-blur-sm bg-neutral-950/50">
+      <div className="relative max-w-10/12 mx-auto h-full">
         <HeaderContent profile={profile} />
       </div>
     </header>
@@ -63,10 +63,10 @@ export const FixedHeader = ({ profile }: { profile: Profile | null }) => {
       ref={headerRef}
       id="floating-header"
       data-testid="floating-header"
-      className="fixed top-0 [z-index:10] w-full h-[var(--header-height)] shrink-0 transition-[top] duration-300 border-b border-neutral-800 backdrop-blur-sm bg-neutral-950/50"
+      className="fixed top-0 z-10 w-full h-(--header-height) shrink-0 transition-[top] duration-300 border-b border-neutral-800 bg-neutral-950" // bg-neutral-950/50 backdrop-blur-sm
       style={{ top: 0 }}
     >
-      <div className="relative max-w-[1440px] mx-auto h-full">
+      <div className="relative max-w-10/12 mx-auto h-full">
         <HeaderContent profile={profile} />
       </div>
       <ProgressBar />

@@ -5,23 +5,8 @@ import {
   useMemo,
   useState,
   memo,
+  useEffect,
 } from "react";
-import { Popover, PopoverContentClipPath, PopoverTrigger } from "../ui/popover";
-import {
-  AccordionEditorIcon,
-  AlertEditorIcon,
-  CodeEditorIcon,
-  ImageCarouselEditorIcon,
-  ImageEditorIcon,
-  PlusIcon,
-  QuizEditorIcon,
-  QuoteEditorIcon,
-  TextEditorIcon,
-} from "../Icons";
-import { ImageEditor } from ".";
-import { cn } from "@/utils/classnames";
-import { focusWithinWhiteRing } from "@/styles/classNames";
-import { initialAccordionState } from "@/reducers";
 import {
   DndContext,
   closestCenter,
@@ -36,14 +21,28 @@ import {
 import {
   arrayMove,
   SortableContext,
-  useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import {
   restrictToVerticalAxis,
   restrictToWindowEdges,
 } from "@dnd-kit/modifiers";
+import { Popover, PopoverContentClipPath, PopoverTrigger } from "../ui/popover";
+import {
+  AccordionEditorIcon,
+  AlertEditorIcon,
+  CodeEditorIcon,
+  ImageCarouselEditorIcon,
+  ImageEditorIcon,
+  PlusIcon,
+  QuizEditorIcon,
+  QuoteEditorIcon,
+  TextEditorIcon,
+} from "../Icons";
+import ImageEditor from "./ImageEditor";
+import { cn } from "../../utils/classnames";
+import { focusWithinWhiteRing } from "../../styles/classNames";
+import { initialAccordionState } from "../../reducers";
 import BlockEditorWrapper from "./accordion";
 import TipTapTextEditor from "./TipTapTextEditor";
 import { FloatingFieldset, FloatingInput, FloatingLabel } from "../Fieldsets";
@@ -60,43 +59,43 @@ const newBlockArray: BlockButton[] = [
     svg: TextEditorIcon,
   },
   {
-    id: "2",
+    id: "3",
     type: "code",
     tooltip: "Código",
     svg: CodeEditorIcon,
   },
   {
-    id: "3",
+    id: "4",
     type: "quote",
     tooltip: "Citação",
     svg: QuoteEditorIcon,
   },
   {
-    id: "4",
+    id: "5",
     type: "accordion",
     tooltip: "Acordeão",
     svg: AccordionEditorIcon,
   },
   {
-    id: "5",
+    id: "6",
     type: "alert",
     tooltip: "Alerta",
     svg: AlertEditorIcon,
   },
   {
-    id: "6",
+    id: "7",
     type: "image",
     tooltip: "Imagem",
     svg: ImageEditorIcon,
   },
   {
-    id: "7",
+    id: "8",
     type: "imageCarousel",
     tooltip: "Imagens",
     svg: ImageCarouselEditorIcon,
   },
   {
-    id: "8",
+    id: "9",
     type: "quiz",
     tooltip: "Quiz",
     svg: QuizEditorIcon,
@@ -123,17 +122,18 @@ const BlockItem = memo(function BlockItem({
       return (
         <BlockEditorWrapper
           id={block.id}
-          wrapperLabel="Editor de Texto"
+          wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
+          // wrapperLabel="Texto"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
-          <fieldset className="h-full flex flex-col p-1">
+          <div className="h-full flex flex-col p-1">
             <TipTapTextEditor
               id={textEditorId}
               setVal={(val) => updateBlock(block.id, { body: val })}
               defaultValue={(block.data as BlogText)?.body ?? ""}
             />
-          </fieldset>
+          </div>
         </BlockEditorWrapper>
       );
     case "code":
@@ -145,7 +145,8 @@ const BlockItem = memo(function BlockItem({
       return (
         <BlockEditorWrapper
           id={block.id}
-          wrapperLabel="Editor de Código"
+          wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
+          // wrapperLabel="Código"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -185,7 +186,8 @@ const BlockItem = memo(function BlockItem({
       return (
         <BlockEditorWrapper
           id={block.id}
-          wrapperLabel="Citação"
+          wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
+          // wrapperLabel="Citação"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -222,7 +224,8 @@ const BlockItem = memo(function BlockItem({
       return (
         <BlockEditorWrapper
           id={block.id}
-          wrapperLabel="Acordeão"
+          wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
+          // wrapperLabel="Acordeão"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -232,31 +235,40 @@ const BlockItem = memo(function BlockItem({
     case "image":
       return (
         // TODO
-        <ImageEditor
-          key={block.id}
+        <BlockEditorWrapper
           id={block.id}
-          wrapperLabel="Imagem"
-          src={(block.data as BlogImage)?.src ?? ""}
-          alt={(block.data as BlogImage)?.alt ?? ""}
-          filename={(block.data as BlogImage)?.filename ?? ""}
-          caption={(block.data as BlogImage)?.caption ?? ""}
-          setSrc={(val) => updateBlock(block.id, { src: val })}
-          setAlt={(val) => updateBlock(block.id, { alt: val })}
-          setFile={(val) => updateBlock(block.id, { file: val })}
-          setFilename={(val) => updateBlock(block.id, { filename: val })}
-          setCaption={(val) => updateBlock(block.id, { caption: val })}
+          wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
+          // wrapperLabel="Imagem"
           onRemove={removeBlock}
           moveToNext={moveToNext}
-        />
+        >
+          <ImageEditor
+            key={block.id}
+            id={block.id}
+            wrapperLabel="Imagem"
+            src={(block.data as BlogImage)?.src ?? ""}
+            alt={(block.data as BlogImage)?.alt ?? ""}
+            filename={(block.data as BlogImage)?.filename ?? ""}
+            caption={(block.data as BlogImage)?.caption ?? ""}
+            setSrc={(val) => updateBlock(block.id, { src: val })}
+            setAlt={(val) => updateBlock(block.id, { alt: val })}
+            setFile={(val) => updateBlock(block.id, { file: val })}
+            setFilename={(val) => updateBlock(block.id, { filename: val })}
+            setCaption={(val) => updateBlock(block.id, { caption: val })}
+            onRemove={removeBlock}
+            moveToNext={moveToNext}
+          />
+        </BlockEditorWrapper>
       );
     case "imageCarousel":
-      console.log("Image Carousel REMOUNT"); // TODO (DEBUG): remove me
+      console.log("imageCarousel REMOUNT"); // TODO (DEBUG): remove me
 
       return (
         // TODO
         <BlockEditorWrapper
           id={block.id}
-          wrapperLabel="Quiz"
+          wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
+          // wrapperLabel="Imagens"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -271,7 +283,8 @@ const BlockItem = memo(function BlockItem({
       return (
         <BlockEditorWrapper
           id={block.id}
-          wrapperLabel="Alerta"
+          wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
+          // wrapperLabel="Alerta"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -293,7 +306,8 @@ const BlockItem = memo(function BlockItem({
         // TODO
         <BlockEditorWrapper
           id={block.id}
-          wrapperLabel="Quiz"
+          wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
+          // wrapperLabel="Quiz"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -472,17 +486,28 @@ const createNewBlock = (id: string, type: Block["type"]): Block => {
 };
 
 const NewBlockButtons = ({
+  blocks,
   setBlocks,
 }: {
+  blocks: Block[];
   setBlocks: Dispatch<SetStateAction<Block[]>>;
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [nextId, setNextId] = useState(1);
 
+  useEffect(() => {
+    const usedIds = blocks
+      .map((b) => parseInt(b.id.split("-").pop() || "0", 10))
+      .filter((n) => !isNaN(n));
+
+    const maxUsedId = usedIds.length > 0 ? Math.max(...usedIds) : 0;
+    setNextId(maxUsedId + 1);
+  }, [blocks]);
+
   const addBlock = (type: Block["type"]) => {
     const newBlock = createNewBlock(`${type}-${nextId}`, type);
     setBlocks((prevBlocks) => [...prevBlocks, newBlock]);
-    setNextId(nextId + 1);
+    setNextId((prev) => prev + 1);
   };
 
   return (
@@ -500,7 +525,7 @@ const NewBlockButtons = ({
         <PlusIcon
           className={`transition-all duration-300 ${
             isMenuOpen
-              ? "stroke-neutral-100 -rotate-[135deg] -translate-x-0.5"
+              ? "stroke-neutral-100 -rotate-135 -translate-x-0.5"
               : "stroke-neutral-500 rotate-0"
           }`}
         />

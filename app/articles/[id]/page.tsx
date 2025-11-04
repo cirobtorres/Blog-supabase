@@ -7,6 +7,7 @@ import { ArticleTitle } from "../../../components/ArticleTitle";
 import { ArticleCover } from "@/components/ArticleCover";
 import { CommentProvider } from "@/providers/CommentProvider";
 import Comments from "@/components/Comment";
+import { getArticleLikes, getHasUserLiked } from "@/services/article";
 
 export default async function ArticlePage({
   params,
@@ -41,15 +42,23 @@ export default async function ArticlePage({
     .eq("id", user?.id)
     .single();
 
+  const [hasUserLiked, articleLikesCount] = await Promise.all([
+    getHasUserLiked(article.id, profile.id),
+    getArticleLikes(article.id),
+  ]);
+
   return (
     <>
       <FixedHeader profile={profile} />
-      <main className="flex flex-col items-center mt-[var(--header-height)]">
-        <ArticleTitle {...article} />
+      <main className="flex flex-col items-center mt-(--header-height)">
+        <ArticleTitle
+          article={article}
+          profile={profile}
+          hasUserLiked={hasUserLiked.ok}
+          articleLikesCount={articleLikesCount.data}
+        />
         <ArticleCover />
-        <section className="w-full max-w-7xl mx-auto py-10">
-          <Article articleId={article.id} body={article.body} />
-        </section>
+        <Article articleId={article.id} body={article.body} profile={profile} />
         <RelatedArticles />
         <CommentProvider>
           <Comments />

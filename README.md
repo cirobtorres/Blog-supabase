@@ -6,7 +6,7 @@
 
 <details>
   <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">SCHEMA</summary>
-  <small>(last updated 10-20-2025)</small>
+  <small>(last updated 11-03-2025)</small>
 
 ```sql
 create table if not exists public.profiles (
@@ -36,6 +36,8 @@ create table if not exists public.articles (
   sub_title varchar(256) null,
   slug text unique not null,
   body text,
+  comment_count integer not null default 0,
+  likes_count integer not null default 0;
   is_private boolean default false,
   updated_at timestamptz default null,
   created_at timestamptz default now()
@@ -44,7 +46,6 @@ create table if not exists public.articles (
 create table if not exists public.article_likes (
   profile_id uuid not null references public.profiles(id) on delete cascade,
   article_id uuid not null references public.articles(id) on delete cascade,
-  updated_at timestamptz with time zone,
   created_at timestamptz with time zone default now(),
   primary key (profile_id, article_id)
 );
@@ -267,29 +268,93 @@ $$ language plpgsql;
 
 </details>
 
+<details>
+  <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Article Like/Dislike</summary>
+  <small>(last updated 11-03-2025)</small>
+
+```sql
+-- Funções para dar/remover like (parâmetros renomeados para evitar ambiguidades)
+CREATE OR REPLACE FUNCTION public.add_article_like(p_article_id uuid, p_profile_id uuid)
+RETURNS void AS $$
+BEGIN
+  INSERT INTO public.article_likes (article_id, profile_id)
+  VALUES (p_article_id, p_profile_id)
+  ON CONFLICT (article_id, profile_id) DO NOTHING;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.remove_article_like(p_article_id uuid, p_profile_id uuid)
+RETURNS void AS $$
+BEGIN
+  DELETE FROM public.article_likes
+  WHERE article_id = p_article_id
+    AND profile_id = p_profile_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger function que incrementa o contador
+CREATE OR REPLACE FUNCTION public.increment_article_likes_count()
+RETURNS trigger AS $$
+BEGIN
+  UPDATE public.articles
+  SET likes_count = likes_count + 1
+  WHERE id = NEW.article_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger function que decrementa o contador
+CREATE OR REPLACE FUNCTION public.decrement_article_likes_count()
+RETURNS trigger AS $$
+BEGIN
+  UPDATE public.articles
+  SET likes_count = GREATEST(likes_count - 1, 0)
+  WHERE id = OLD.article_id;
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Triggers em article_likes
+DROP TRIGGER IF EXISTS article_likes_after_insert ON public.article_likes;
+DROP TRIGGER IF EXISTS article_likes_after_delete ON public.article_likes;
+
+CREATE TRIGGER article_likes_after_insert
+AFTER INSERT ON public.article_likes
+FOR EACH ROW
+EXECUTE FUNCTION public.increment_article_likes_count();
+
+CREATE TRIGGER article_likes_after_delete
+AFTER DELETE ON public.article_likes
+FOR EACH ROW
+EXECUTE FUNCTION public.decrement_article_likes_count();
+```
+
+</details>
+
 <h2 style="font-weight:500;font-size:30px;color:#9c2f70">TODO</h2>
 <small>Temporário</small>
 
 <ol style="font-weight:500;font-size:15px">
-  <li>MELHORAR: redirecionar usuário recém logado de volta para página de origem;</li>
-  <li>MELHORAR: uniformizar os headers. Em /admin, ele deve ser fixed também;</li>
-  <li>MELHORAR: uniformizar os types;</li>
-  <li>MELHORAR: a altura hardcoded dos editores, que devem ocupar o espaço máximo definido pelo seu wrapper;</li>
-  <li style="color:#b22222">CORRIGIR (BUG): comentários deletados não atualizam CommentCount na mesma sessão;</li>
-  <li style="color:#b22222">CORRIGIR (BUG): códigos copiados do vscode diretamente para o codeblock não são formatados corretamente para o usuário em articles;</li>
-  <li style="color:#b22222">CORRIGIR (BUG): AdminPanel precisa criar o highlight de currentPage seguindo uma ordem de prioridade, da URL mais específica para a mais genérica;</li>
   <li>ADICIONAR: indicativo ao "CreateArticleForm" de que o artigo não está publicado, apenas salvo;</li>
   <li>ADICIONAR: criar "você precisa fazer log in" para botão responder;</li>
   <li>ADICIONAR: menções nas sessões de comentários (ao responder um comentário, o autor do comentário respondido tem seu nome no início do comentário resposta);</li>
   <li>ADICIONAR: "Save Article";</li>
   <li>ADICIONAR: imagem do artigo;</li>
+  <li>MELHORAR: redirecionar usuário recém logado de volta para página de origem;</li>
+  <li>MELHORAR: uniformizar os headers. Em /admin, ele deve ser fixed também;</li>
+  <li>MELHORAR: uniformizar os types;</li>
+  <li style="color:#b22222">CORRIGIR (BUG): comentários deletados não atualizam CommentCount na mesma sessão;</li>
+  <li style="color:#b22222">CORRIGIR (BUG): códigos copiados do vscode diretamente para o codeblock não são formatados corretamente para o usuário em articles;</li>
   <ul>
-    <li style="color:#b22222">CRIAR: bloco de vídeos;</li>
-    <li style="color:#b22222">CRIAR: bloco de arquivos;</li>
-    <li>FINALIZAR: bloco de imagens;</li>
-    <li>FINALIZAR: bloco de múltiplas imagens (carrossel);</li>
-    <li>FINALIZAR: bloco de quiz;</li>
+    <li>ADICIONAR: tabelas ao tiptap;</li>
+    <li>ADICIONAR: bloco de vídeos;</li>
+    <li>ADICIONAR: bloco de arquivos;</li>
+    <li>ADICIONAR: bloco de imagens;</li>
+    <li>ADICIONAR: bloco de múltiplas imagens (carrossel);</li>
+    <li>ADICIONAR: bloco de quiz;</li>
   </ul>
+  <li><span style="font-weight:900;color:orange">&#40;EM TESTE&#41;</span> MELHORAR: a altura hardcoded dos editores, que devem ocupar o espaço máximo definido pelo seu wrapper;</li>
+  <li><span style="font-weight:900;color:orange">&#40;EM TESTE&#41;</span> CORRIGIR (BUG): AdminPanel precisa criar o highlight de currentPage seguindo uma ordem de prioridade, da URL mais específica para a mais genérica;</li>
 </ol>
 
 <h2 style="font-weight:500;font-size:30px;color:#9c2f70">Aide</h2>

@@ -5,6 +5,62 @@ import { createServerAppClient } from "@/supabase/server";
 import { slugify } from "@/utils/strings";
 import { SupabaseClient } from "@supabase/supabase-js";
 
+export const getHasUserLiked = async (
+  article_id: string,
+  profile_id: string
+) => {
+  const supabase = await createServerAppClient();
+
+  const { data, error } = await supabase
+    .from("article_likes")
+    .select("*")
+    .eq("article_id", article_id)
+    .eq("profile_id", profile_id);
+
+  if (error) {
+    console.error(error.message);
+    return {
+      ok: false,
+      success: null,
+      error: "Error while fetching user like to article.",
+      data: null,
+    };
+  }
+
+  return {
+    ok: data.length > 0,
+    success: null,
+    error: null,
+    data: data,
+  };
+};
+
+export const getArticleLikes = async (article_id: string) => {
+  const supabase = await createServerAppClient();
+
+  const { data, error } = await supabase
+    .from("article_likes")
+    .select("*")
+    .eq("article_id", article_id);
+
+  if (error) {
+    console.error(error.message);
+    return {
+      ok: false,
+      success: null,
+      error: "Error while fetching likes of article.",
+      data: null,
+    };
+  }
+
+  return {
+    ok: true,
+    success: null,
+    error: null,
+    data: data.length,
+  };
+};
+
 export const postArticlePublic = async (
   prevState: ArticleActionStateProps,
   formData: FormData
@@ -91,6 +147,68 @@ export const postArticleSave = async (
     success: null,
     error: null,
     data: null,
+  };
+};
+
+export const postArticleLike = async (
+  formData: FormData
+): Promise<ArticleActionStateProps> => {
+  const article_id = formData.get("article_id");
+  const profile_id = formData.get("profile_id");
+
+  const supabase = await createServerAppClient();
+
+  const { data, error } = await supabase.rpc("add_article_like", {
+    p_article_id: article_id,
+    p_profile_id: profile_id,
+  });
+
+  if (error) {
+    console.error(error.message);
+    return {
+      ok: false,
+      success: null,
+      error: "Error while liking article.",
+      data: null,
+    };
+  }
+
+  return {
+    ok: true,
+    success: "User liked",
+    error: null,
+    data,
+  };
+};
+
+export const postArticleDislike = async (
+  formData: FormData
+): Promise<ArticleActionStateProps> => {
+  const article_id = formData.get("article_id");
+  const profile_id = formData.get("profile_id");
+
+  const supabase = await createServerAppClient();
+
+  const { data, error } = await supabase.rpc("remove_article_like", {
+    p_article_id: article_id,
+    p_profile_id: profile_id,
+  });
+
+  if (error) {
+    console.error(error.message);
+    return {
+      ok: false,
+      success: null,
+      error: "Error while disliking article.",
+      data: null,
+    };
+  }
+
+  return {
+    ok: true,
+    success: "User disliked",
+    error: null,
+    data,
   };
 };
 

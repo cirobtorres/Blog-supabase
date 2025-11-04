@@ -34,11 +34,7 @@ import {
   LinkIcon,
   OrderedListIcon,
 } from "../../Icons";
-import ToolTipWrapper, {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 import { LoadingSpinning } from "../../LoadingSpinning";
 import {
   validateAllowedAutoLink,
@@ -49,9 +45,8 @@ import {
   FloatingInput,
   FloatingLabel,
 } from "../../Fieldsets";
-import { Select } from "@/components/ui/select";
 import AlertTypeSelect from "./AlertTypeSelect";
-import { Kbd } from "@/components/ui/kbd";
+import { Kbd } from "../../../components/ui/kbd";
 
 export default function TipTapAlertEditor({
   id,
@@ -135,7 +130,7 @@ export default function TipTapAlertEditor({
           )
           .run();
       } else {
-        // Fallback: se não houver range de link, apenas atualiza o href
+        // Fallback
         editor
           .chain()
           .focus()

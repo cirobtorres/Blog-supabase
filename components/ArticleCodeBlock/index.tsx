@@ -23,8 +23,8 @@ export const ArticleCodeBlock = ({
   }, [filename, language, code]);
 
   return (
-    <div className="overflow-hidden mb-8 rounded border border-neutral-600 bg-[#1E1E1E] group">
-      <div className="flex justify-between p-3 font-medium text-sm border-b border-neutral-600">
+    <div className="overflow-hidden mb-8 rounded border border-neutral-700 bg-neutral-900 group">
+      <div className="flex justify-between p-3 font-medium text-sm border-b border-neutral-700">
         <p className="pb-0! text-neutral-300">{filename}</p>
         <p className="pb-0! text-neutral-500">
           {formatCodeBlockLanguage(language as BundledLanguage)}
@@ -39,7 +39,7 @@ export const ArticleCodeBlock = ({
         />
         <ArticleCopyCodeButton
           code={code}
-          className="transition-opacity duration-200 absolute top-1 right-1 bg-[#1e1e1e]" // opacity-0 group-hover:opacity-100
+          className="transition-opacity duration-200 absolute top-1 right-1 bg-neutral-900" // opacity-0 group-hover:opacity-100
         />
       </div>
     </div>
