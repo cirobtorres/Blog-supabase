@@ -284,11 +284,11 @@ export const createComment = async ({
       `
         *,
         profiles:comments_profile_id_fkey (
-          id, 
-          email, 
-          username, 
-          avatar_url, 
-          updated_at, 
+          id,
+          email,
+          username,
+          avatar_url,
+          updated_at,
           created_at
         )
       `

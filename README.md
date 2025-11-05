@@ -331,6 +331,78 @@ EXECUTE FUNCTION public.decrement_article_likes_count();
 
 </details>
 
+<details>
+  <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Article comment count</summary>
+  <small>(last updated 11-04-2025)</small>
+
+```sql
+-- 1. ------------------------------------------------
+-- FUNCTION to increase comment_count at ARTICLES after row INSERT to COMMENTS
+create or replace function public.increment_comment_count()
+returns trigger as $$
+begin
+  update public.articles
+  set comment_count = comment_count + 1
+  where id = new.article_id;
+  return new;
+end;
+$$ language plpgsql;
+
+-- TRIGGER after INSERT to COMMENTS
+create trigger trg_increment_comment_count
+after insert on public.comments
+for each row
+execute function public.increment_comment_count();
+
+-- 2. ------------------------------------------------
+-- FUNCTION to decrease comment_count at ARTICLES after row DELETE to COMMENTS
+create or replace function public.decrement_comment_count()
+returns trigger as $$
+begin
+  update public.articles
+  set comment_count = greatest(comment_count - 1, 0)
+  where id = old.article_id;
+  return old;
+end;
+$$ language plpgsql;
+
+-- TRIGGER after DELETE to COMMENTS
+create trigger trg_decrement_comment_count
+after delete on public.comments
+for each row
+execute function public.decrement_comment_count();
+
+-- 3. ------------------------------------------------
+-- FUNCTION to handle UPDATE to COMMENTS' is_deleted column
+create or replace function public.handle_comment_soft_delete()
+returns trigger as $$
+begin
+  -- FALSE -> TRUE, decrease
+  if (old.is_deleted = false and new.is_deleted = true) then
+    update public.articles
+    set comment_count = greatest(comment_count - 1, 0)
+    where id = new.article_id;
+
+  -- TRUE -> FALSE, increase
+  elsif (old.is_deleted = true and new.is_deleted = false) then
+    update public.articles
+    set comment_count = comment_count + 1
+    where id = new.article_id;
+  end if;
+
+  return new;
+end;
+$$ language plpgsql;
+
+-- TRIGGER after UPDATE to COMMENTS' is_deleted column
+create trigger trg_handle_comment_soft_delete
+after update of is_deleted on public.comments
+for each row
+execute function public.handle_comment_soft_delete();
+```
+
+</details>
+
 <h2 style="font-weight:500;font-size:30px;color:#9c2f70">TODO</h2>
 <small>Temporário</small>
 

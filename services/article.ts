@@ -35,32 +35,7 @@ export const getHasUserLiked = async (
   };
 };
 
-export const getArticleLikes = async (article_id: string) => {
-  const supabase = await createServerAppClient();
-
-  const { data, error } = await supabase
-    .from("article_likes")
-    .select("*")
-    .eq("article_id", article_id);
-
-  if (error) {
-    console.error(error.message);
-    return {
-      ok: false,
-      success: null,
-      error: "Error while fetching likes of article.",
-      data: null,
-    };
-  }
-
-  return {
-    ok: true,
-    success: null,
-    error: null,
-    data: data.length,
-  };
-};
-
+// ---
 export const postArticlePublic = async (
   prevState: ArticleActionStateProps,
   formData: FormData

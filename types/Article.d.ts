@@ -6,6 +6,8 @@ type Article = {
   sub_title: string | null;
   body: string;
   is_private: boolean;
+  comment_count: number;
+  likes_count: number;
   updated_at: Date | null;
   created_at: Date;
 };

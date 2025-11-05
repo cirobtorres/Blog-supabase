@@ -7,7 +7,7 @@ import { ArticleTitle } from "../../../components/ArticleTitle";
 import { ArticleCover } from "@/components/ArticleCover";
 import { CommentProvider } from "@/providers/CommentProvider";
 import Comments from "@/components/Comment";
-import { getArticleLikes, getHasUserLiked } from "@/services/article";
+import { getHasUserLiked } from "@/services/article";
 
 export default async function ArticlePage({
   params,
@@ -36,16 +36,15 @@ export default async function ArticlePage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: profile } = await supabase
+  const { data: profile }: { data: Profile | null } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user?.id)
     .single();
 
-  const [hasUserLiked, articleLikesCount] = await Promise.all([
-    getHasUserLiked(article.id, profile.id),
-    getArticleLikes(article.id),
-  ]);
+  const hasUserLiked = profile
+    ? (await getHasUserLiked(article.id, profile.id)).ok
+    : false;
 
   return (
     <>
@@ -54,8 +53,7 @@ export default async function ArticlePage({
         <ArticleTitle
           article={article}
           profile={profile}
-          hasUserLiked={hasUserLiked.ok}
-          articleLikesCount={articleLikesCount.data}
+          hasUserLiked={hasUserLiked}
         />
         <ArticleCover />
         <Article articleId={article.id} body={article.body} profile={profile} />

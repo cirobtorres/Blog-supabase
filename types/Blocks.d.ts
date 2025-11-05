@@ -15,7 +15,6 @@ type AlertValuesProps = "default" | "alert" | "warning" | "info" | "success";
 
 type Accordion = {
   id: string;
-  checked: boolean;
   title: string;
   message: string;
 };
