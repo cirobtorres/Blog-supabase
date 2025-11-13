@@ -34,17 +34,18 @@ import {
   ImageEditorButtonLi,
   ImageEditorButtonList,
 } from "../../Editors/ImageEditor";
-import { formatType } from "@/utils/strings";
+import { formatType } from "../../../utils/strings";
 import {
   buttonVariants,
   focusVisibleWhiteRing,
   hoverWhiteRing,
-} from "@/styles/classNames";
+} from "../../../styles/classNames";
 import { cn } from "../../../utils/classnames";
 import { deleteFile, deleteFiles } from "../../../services/media.server";
 import { sonnerToastPromise } from "../../../toasters";
 import { Skeleton } from "../../../components/ui/skeleton";
 import Link from "next/link";
+import { useRenderCount } from "../../../utils/renderCount";
 
 const initState: MediaStateProps = {
   ok: false,
@@ -53,179 +54,47 @@ const initState: MediaStateProps = {
   data: null,
 };
 
-export default function MediaList({
-  images,
-  checkedCards,
-  setCheckedCards,
+export const ImagePreviewCard = React.memo(function ({
+  image,
+  handleCheckbox,
 }: {
-  images: SupabaseBucketImage[];
-  checkedCards: {
-    url: string;
-  }[];
-  setCheckedCards: Dispatch<
-    SetStateAction<
-      {
-        url: string;
-      }[]
-    >
-  >;
+  image: SupabaseBucketImage;
+  handleCheckbox: Dispatch<SetStateAction<{ url: string }[]>>;
 }) {
-  console.log("MediaList renderizou (PAI)"); // TODO: remover
+  useRenderCount("ImagePreviewCard"); // DEBUG
 
-  const [, delCheckedAction, isDelCheckedPending] = React.useActionState(
-    async (state: MediaStateProps) => {
-      try {
-        const formData = new FormData();
-
-        // TODO (SUGESTÃO???): ??? criar um botão de desfazer a exclusão do arquivo ???
-        const success = (serverResponse: ArticleActionStateProps) => {
-          // console.log(serverResponse); // DEBUG
-          return <p>Arquivo excluído!</p>;
-        };
-
-        const error = (serverResponse: ArticleActionStateProps) => {
-          // console.log(serverResponse); // DEBUG
-          return <p>Arquivo não excluído</p>;
-        };
-
-        formData.set("checkBoxList", JSON.stringify(checkedCards));
-
-        const result = deleteFiles(state, formData);
-
-        const promise = new Promise((resolve, reject) => {
-          result.then((data) => {
-            if (data.ok) {
-              resolve(result);
-              setCheckedCards([]);
-            } else {
-              reject(result);
-            }
-          });
-        });
-
-        sonnerToastPromise(promise, success, error, "Excluindo arquivo...");
-
-        return result;
-      } catch (e) {
-        console.error(e);
-        const error = {
-          ok: false,
-          success: null,
-          error: null,
-          data: null,
-        };
-        return error;
-      }
-    },
-    initState
+  const Checkbox = () => (
+    <fieldset className="size-6 absolute left-3 top-3 z-10">
+      <label htmlFor={image.id} className="cursor-pointer size-6 absolute">
+        <ShadcnUICheckbox
+          id={image.id}
+          name="checkboxList[]"
+          value={image.url}
+          className="cursor-pointer"
+          onCheckedChange={(check) => {
+            if (check) handleCheckbox((prev) => [...prev, { url: image.url }]);
+            else
+              handleCheckbox((prev) =>
+                prev.filter((obj) => obj.url !== image.url)
+              );
+            return !check;
+          }}
+        />
+        <p className="sr-only">{`Arquivo (${image.name})`}</p>
+      </label>
+    </fieldset>
   );
 
-  return (
-    <>
-      <div className="flex items-center gap-2">
-        <p className="text-neutral-500">
-          {checkedCards.length} arquivo{checkedCards.length > 1 && "s"}
-        </p>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <button
-              type="button"
-              disabled={checkedCards.length === 0}
-              className={cn(buttonVariants({ variant: "destructive" }))}
-            >
-              <TrashBinIcon className="size-4 duration-300 stroke-red-500 group-disabled:stroke-neutral-600" />
-              Excluir
-            </button>
-          </AlertDialogTrigger>
-          <AlertDialogContent className="overflow-hidden">
-            <AlertDialogTitle className="text-neutral-300 flex justify-between bg-neutral-950">
-              Confirmação
-              <AlertDialogCancelIcon />
-            </AlertDialogTitle>
-            <AlertDialogDescription className="flex gap-2 items-center min-h-20 border-y border-neutral-800">
-              <AlertIcon className="stroke-red-500" />{" "}
-              <span className="text-red-500 font-medium">
-                Confirmar a exclusão{" "}
-                {checkedCards.length > 1 ? "dos arquivos" : "do arquivo"}?
-              </span>
-            </AlertDialogDescription>
-            <AlertDialogFooter className="flex justify-between sm:justify-between bg-neutral-950">
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <form>
-                <AlertDialogAction
-                  type="submit"
-                  disabled={checkedCards.length === 0 || isDelCheckedPending}
-                  formAction={delCheckedAction}
-                >
-                  Confirmar
-                </AlertDialogAction>
-              </form>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-      <h2 className="text-xl font-extrabold text-neutral-300">
-        Assets ({images.length})
-      </h2>
-      {images.length > 0 && (
-        <ul className="grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-2">
-          {images.map((image) => (
-            <ImagePreviewCard
-              key={image.id}
-              image={image}
-              handleCheckbox={setCheckedCards}
-            />
-          ))}
-        </ul>
-      )}
-    </>
+  return image ? (
+    <article className="relative w-full h-56 min-w-0 grid grid-rows-1 group">
+      <Checkbox />
+      <ImagePreview image={image} />
+      <ImageButtonList image={image} />
+    </article>
+  ) : (
+    <Skeleton className="w-full h-56 min-w-0" />
   );
-}
-
-export const ImagePreviewCard = React.memo(
-  ({
-    image,
-    handleCheckbox,
-  }: {
-    image: SupabaseBucketImage;
-    handleCheckbox: Dispatch<SetStateAction<{ url: string }[]>>;
-  }) => {
-    console.log("ImagePreviewCard renderizou (FILHO)"); // TODO: remover
-
-    const Checkbox = () => (
-      <fieldset className="size-6 absolute left-3 top-3 z-10">
-        <label htmlFor={image.id} className="cursor-pointer size-6 absolute">
-          <ShadcnUICheckbox
-            id={image.id}
-            name="checkboxList[]"
-            value={image.url}
-            className="cursor-pointer"
-            onCheckedChange={(check) => {
-              if (check)
-                handleCheckbox((prev) => [...prev, { url: image.url }]);
-              else
-                handleCheckbox((prev) =>
-                  prev.filter((obj) => obj.url !== image.url)
-                );
-              return !check;
-            }}
-          />
-          <p className="sr-only">{`Arquivo (${image.name})`}</p>
-        </label>
-      </fieldset>
-    );
-
-    return image ? (
-      <article className="relative w-full h-56 min-w-0 grid grid-rows-1 group">
-        <Checkbox />
-        <ImagePreview image={image} />
-        <ImageButtonList image={image} />
-      </article>
-    ) : (
-      <Skeleton className="w-full h-56 min-w-0" />
-    );
-  }
-);
+});
 ImagePreviewCard.displayName = "ImagePreviewCard";
 
 const ImagePreview = ({ image }: { image: SupabaseBucketImage }) => {
@@ -238,6 +107,8 @@ const ImagePreview = ({ image }: { image: SupabaseBucketImage }) => {
       className="absolute object-contain"
     />
   );
+
+  useRenderCount("ImagePreview"); // DEBUG
 
   return (
     <Link
@@ -258,7 +129,6 @@ const ImagePreview = ({ image }: { image: SupabaseBucketImage }) => {
           <p className="text-xs text-neutral-300">{image.name}</p>
           <p className="text-xs text-neutral-500">
             {image.metadata.mimetype.split("/")[1]}
-            {/* - {image.width}x{image.height} */}
           </p>
         </div>
         <div className="w-fit h-fit px-2.5 py-1.5 text-xs text-neutral-500 font-[600] flex justify-center items-center rounded bg-neutral-800">
@@ -316,6 +186,8 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketImage }) => {
     },
     initState
   );
+
+  useRenderCount("ImageButtonList"); // DEBUG
 
   return (
     <ImageEditorButtonList className="transition-opacity duration-300 opacity-0 hover:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100">
@@ -383,32 +255,36 @@ const AlertDialogContentEditMedia = ({
   image,
 }: {
   image: SupabaseBucketImage;
-}) => (
-  <AlertDialogContent className="sm:max-w-sm lg:max-w-3xl overflow-hidden">
-    <AlertDialogTitle className="flex justify-between items-center px-3 border-b border-neutral-800 bg-neutral-950">
-      Detalhes
-      <AlertDialogCancelIcon />
-    </AlertDialogTitle>
-    <AlertDialogContentMediaBody image={image} />
-    <AlertDialogFooter className="flex flex-row sm:flex-row justify-between items-center p-2 border-t border-neutral-800 bg-neutral-950">
-      <AlertDialogCancel className="text-xs sm:text-sm p-2">
-        Cancelar
-      </AlertDialogCancel>
-      <form className="flex-1 flex gap-2 justify-end">
-        <AlertDialogAction
-          className={cn(buttonVariants({ variant: "default" }))}
-        >
-          Trocar arquivo
-        </AlertDialogAction>
-        <AlertDialogAction
-          className={cn(buttonVariants({ variant: "default" }))}
-        >
-          Salvar
-        </AlertDialogAction>
-      </form>
-    </AlertDialogFooter>
-  </AlertDialogContent>
-);
+}) => {
+  useRenderCount("AlertDialogContentEditMedia"); // DEBUG
+
+  return (
+    <AlertDialogContent className="sm:max-w-sm lg:max-w-3xl overflow-hidden">
+      <AlertDialogTitle className="flex justify-between items-center px-3 border-b border-neutral-800 bg-neutral-950">
+        Detalhes
+        <AlertDialogCancelIcon />
+      </AlertDialogTitle>
+      <AlertDialogContentMediaBody image={image} />
+      <AlertDialogFooter className="flex flex-row sm:flex-row justify-between items-center p-2 border-t border-neutral-800 bg-neutral-950">
+        <AlertDialogCancel className="text-xs sm:text-sm p-2">
+          Cancelar
+        </AlertDialogCancel>
+        <form className="flex-1 flex gap-2 justify-end">
+          <AlertDialogAction
+            className={cn(buttonVariants({ variant: "default" }))}
+          >
+            Trocar arquivo
+          </AlertDialogAction>
+          <AlertDialogAction
+            className={cn(buttonVariants({ variant: "default" }))}
+          >
+            Salvar
+          </AlertDialogAction>
+        </form>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  );
+};
 
 const AlertDialogContentMediaBody = ({
   image,
@@ -418,6 +294,8 @@ const AlertDialogContentMediaBody = ({
   const [filename, setFilename] = React.useState(image.name);
   const [alt, setAlt] = React.useState(image.name);
   const [caption, setCaption] = React.useState(""); // TODO: create caption table
+
+  useRenderCount("AlertDialogContentMediaBody"); // DEBUG
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">

@@ -18,14 +18,15 @@ import {
 } from "@/components/ui/select";
 import { focusVisibleWhiteRing } from "@/styles/classNames";
 import { cn } from "@/utils/classnames";
-import { Dispatch, SetStateAction } from "react";
+import { useRenderCount } from "@/utils/renderCount";
+import React, { Dispatch, SetStateAction } from "react";
 
-export default function MediaSorter({
+const MediaSorter = React.memo(function ({
   images,
-  setCheckedCards,
+  setCheck,
 }: {
   images: SupabaseBucketImage[];
-  setCheckedCards: Dispatch<
+  setCheck: Dispatch<
     SetStateAction<
       {
         url: string;
@@ -33,6 +34,8 @@ export default function MediaSorter({
     >
   >;
 }) {
+  useRenderCount("MediaSorter"); // DEBUG
+
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-2">
@@ -45,14 +48,14 @@ export default function MediaSorter({
               className="cursor-pointer"
               onCheckedChange={(check) => {
                 if (check) {
-                  setCheckedCards(() => {
+                  setCheck(() => {
                     const allURLsArray = images.map((image) => ({
                       url: image.url,
                     }));
                     return [...allURLsArray];
                   });
                 } else {
-                  setCheckedCards([]);
+                  setCheck([]);
                 }
                 return !check;
               }}
@@ -147,4 +150,6 @@ export default function MediaSorter({
       </div>
     </div>
   );
-}
+});
+
+export default MediaSorter;

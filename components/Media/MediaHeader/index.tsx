@@ -1,7 +1,29 @@
 "use client";
 
-import { cn } from "@/utils/classnames";
-import { CancelIcon, PencilIcon, PlusIcon, TrashBinIcon } from "../../Icons";
+import React from "react";
+import Image from "next/image";
+import { postFiles } from "../../../services/media.client";
+import {
+  FloatingFieldset,
+  FloatingInput,
+  FloatingLabel,
+} from "../../../components/Fieldsets";
+import { HazardBorder } from "../../HazardBorder";
+import { sonnerToastPromise } from "../../../toasters";
+import { Spinner } from "../../../components/ui/spinner";
+import {
+  ImageEditorButton,
+  ImageEditorButtonLi,
+  ImageEditorButtonList,
+} from "../../../components/Editors/ImageEditor";
+import {
+  buttonVariants,
+  focusVisibleWhiteRing,
+} from "../../../styles/classNames";
+import { CancelIcon, PlusIcon, TrashBinIcon } from "../../Icons";
+import { formatType } from "../../../utils/strings";
+import { useRenderCount } from "../../../utils/renderCount";
+import { cn } from "../../../utils/classnames";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,23 +35,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../../ui/alert-dialog";
-import React from "react";
-import { HazardBorder } from "../../HazardBorder";
-import { formatType } from "@/utils/strings";
-import {
-  buttonVariants,
-  focusVisibleWhiteRing,
-} from "../../../styles/classNames";
-import Image from "next/image";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
-import {
-  FloatingFieldset,
-  FloatingInput,
-  FloatingLabel,
-} from "@/components/Fieldsets";
-import { sonnerToastPromise } from "@/toasters";
-import { Spinner } from "@/components/ui/spinner";
-import { postFiles } from "@/services/media.client";
 
 const className = cn(
   "w-40 cursor-pointer flex justify-center items-center gap-2 rounded px-2 py-1 text-sm border duration-300 outline-none",
@@ -54,12 +59,14 @@ interface FilePreviewCardProps {
   removeFiles: (file: File) => void;
 }
 
-interface ConfirmExitButtonProps {
+interface ExitButtonProps {
   onConfirm: () => void;
   children: React.ReactNode;
 }
 
-export default function MediaHeader() {
+const MediaHeader = React.memo(function () {
+  useRenderCount("MediaHeader"); // DEBUG
+
   return (
     <div className="flex flex-col md:flex-row md:justify-between">
       <h1 className="text-5xl font-extrabold text-neutral-300 mb-8 md:mb-0">
@@ -71,9 +78,11 @@ export default function MediaHeader() {
       </div>
     </div>
   );
-}
+});
 
-const CreateFile = () => (
+export default MediaHeader;
+
+const CreateFile = React.memo(() => (
   <button
     type="submit"
     onClick={() => console.log("Criar Pasta")}
@@ -84,9 +93,9 @@ const CreateFile = () => (
   >
     <PlusIcon className="size-4" /> Criar Pasta
   </button>
-);
+));
 
-const AddFile = () => {
+const AddFile = React.memo(() => {
   const [openStep, setOpenStep] = React.useState<"upload" | "preview" | null>(
     null
   );
@@ -100,7 +109,7 @@ const AddFile = () => {
       caption: "",
       altText: f.name,
     }));
-    setFiles(mapped);
+    setFiles((prev) => [...prev, ...mapped]);
     setOpenStep("preview");
   };
 
@@ -116,7 +125,11 @@ const AddFile = () => {
   );
 
   const removeFiles = (fileToRemove: File) => {
-    setFiles((prev) => prev.filter(({ file }) => file !== fileToRemove));
+    setFiles((prev) => {
+      const remainingFiles = prev.filter(({ file }) => file !== fileToRemove);
+      if (remainingFiles.length === 0) setOpenStep("upload");
+      return remainingFiles;
+    });
   };
 
   const handleSubmitFiles = async () => {
@@ -160,6 +173,8 @@ const AddFile = () => {
     }
   };
 
+  useRenderCount("AddFile"); // DEBUG
+
   return (
     <AlertDialog
       open={!!openStep}
@@ -195,19 +210,19 @@ const AddFile = () => {
       )}
 
       {openStep === "preview" && (
-        <AlertDialogContent className="sm:max-w-3xl overflow-hidden">
+        <AlertDialogContent className="min-[768px]:max-w-[calc(1024px-2rem)] md:max-w-[calc(768px-2rem)] sm:max-w-[calc(100%-2rem)] overflow-hidden">
           <AlertDialogTitle className="relative flex justify-between items-center after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-700 bg-neutral-950">
             <AlertDialogDescription>
               Adicione novos assets
             </AlertDialogDescription>
-            <ConfirmExitButton onConfirm={() => setOpenStep(null)}>
+            <ExitButton onConfirm={() => setOpenStep(null)}>
               <button
                 type="button"
                 className={cn(buttonVariants({ variant: "default" }))}
               >
                 <CancelIcon />
               </button>
-            </ConfirmExitButton>
+            </ExitButton>
           </AlertDialogTitle>
           <div className="px-2 py-4">
             <div className="max-h-[502px] px-2 grid grid-cols-1 gap-2 scrollbar overflow-y-auto">
@@ -220,17 +235,18 @@ const AddFile = () => {
                   removeFiles={removeFiles}
                 />
               ))}
+              <DragAndDropZone onFilesSelected={handleFilesSelected} />
             </div>
           </div>
           <AlertDialogFooter className="w-full flex justify-between sm:justify-between items-center relative after:absolute after:top-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-700 bg-neutral-950">
-            <ConfirmExitButton onConfirm={() => setOpenStep(null)}>
+            <ExitButton onConfirm={() => setOpenStep(null)}>
               <button
                 type="button"
                 className={cn(buttonVariants({ variant: "default" }))}
               >
                 Cancelar
               </button>
-            </ConfirmExitButton>
+            </ExitButton>
             <form>
               <button
                 type="submit"
@@ -247,7 +263,7 @@ const AddFile = () => {
       )}
     </AlertDialog>
   );
-};
+});
 
 const DragAndDropZone = ({ onFilesSelected }: DragAndDropZoneProps) => {
   const [isDragging, setIsDragging] = React.useState(false);
@@ -284,6 +300,8 @@ const DragAndDropZone = ({ onFilesSelected }: DragAndDropZoneProps) => {
     inputRef.current?.click();
   };
 
+  useRenderCount("DragAndDropZone"); // DEBUG
+
   return (
     <div className="p-8">
       <form
@@ -292,7 +310,7 @@ const DragAndDropZone = ({ onFilesSelected }: DragAndDropZoneProps) => {
         onDrop={handleDrop}
         className={cn(
           "h-72 rounded border-dashed outline-none transition-all duration-300 border border-neutral-700 bg-neutral-950",
-          isDragging ? "ring-2 ring-theme-color" : ""
+          isDragging ? "ring-2 ring-theme-color bg-theme-color-backdrop" : ""
         )}
       >
         <label className="h-full relative flex flex-col gap-4 justify-center items-center">
@@ -330,51 +348,37 @@ const FilePreviewCard = React.memo(
   ({ data, index, updateFiles, removeFiles }: FilePreviewCardProps) => {
     const { file, filename, caption, altText } = data;
     const isImage = file.type.startsWith("image/");
-    const previewUrl = isImage ? URL.createObjectURL(file) : null;
+    const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
 
-    console.log("FilePreviewCard RENDERIZEI!");
+    React.useEffect(() => {
+      if (!isImage) return;
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    }, [file, isImage]);
+
+    useRenderCount("FilePreviewCard"); // DEBUG
 
     return (
-      <div className="w-full rounded grid grid-cols-[240px_1fr] border border-neutral-700 overflow-hidden">
-        <article
-          className={
-            "w-60 h-40 min-w-0 cursor-pointer duration-300 overflow-hidden outline-none " +
-            "grid grid-rows-[1fr_minmax(0,calc(16px_*_3_+_16px_+_1px))] " +
-            "group "
-          }
-        >
+      <div className="w-full h-full rounded grid grid-cols-[240px_1fr] border border-neutral-700 overflow-hidden">
+        <article className="w-60 h-40 min-w-0 grid grid-rows-[1fr_minmax(0,calc(16px_*_3_+_16px_+_1px))] duration-300 overflow-hidden outline-none group">
           <div className="relative">
-            <div className="z-10 absolute top-1 right-1 flex gap-2 group-focus-within:[&_button]:opacity-100">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    onClick={() => console.log("Editar")}
-                    className={cn(
-                      "cursor-pointer shrink-0 transition-all duration-300 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100",
-                      focusVisibleWhiteRing
-                    )}
-                  >
-                    <PencilIcon className="size-7 p-1.5 stroke-neutral-500" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent sideOffset={8}>Editar</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
+            <div
+              className="absolute top-1 right-1 flex gap-2 group-focus-within:[&_button]:opacity-100"
+              // É necessário "z-10" para o Tooltip funcionar
+              // O Tooltip está alterando a cor no padding
+            >
+              <ImageEditorButtonList className="top-0 right-0 opacity-0 group-hover:opacity-100 focus-within:opacity-100">
+                <ImageEditorButtonLi>
+                  <ImageEditorButton
                     type="button"
                     onClick={() => removeFiles(file)}
-                    className={cn(
-                      "cursor-pointer shrink-0 transition-all duration-300 rounded outline-none border border-neutral-700 bg-neutral-800 hover:bg-neutral-900 opacity-0 group-hover:opacity-100",
-                      focusVisibleWhiteRing
-                    )}
+                    className="size-7"
                   >
-                    <TrashBinIcon className="size-7 p-1.5 stroke-neutral-500" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent sideOffset={8}>Remover</TooltipContent>
-              </Tooltip>
+                    <TrashBinIcon className="size-6 p-1 stroke-neutral-500" />
+                  </ImageEditorButton>
+                </ImageEditorButtonLi>
+              </ImageEditorButtonList>
             </div>
             <HazardBorder />
             <Image
@@ -385,13 +389,10 @@ const FilePreviewCard = React.memo(
               className="absolute object-contain"
             />
           </div>
-          <div className="px-3 py-2 flex justify-between gap-2 items-start border-t border-neutral-700 bg-neutral-900">
+          <div className="max-w-[240px] h-full px-3 py-2 border-t border-neutral-700 bg-neutral-900">
             <p className="text-xs text-neutral-300 font-medium line-clamp-3">
               {file.name}
             </p>
-            <div className="w-fit h-fit p-1.5 text-[10px] text-neutral-500 font-[600] flex justify-center items-center rounded bg-neutral-800">
-              <p>{formatType(file.type)}</p>
-            </div>
           </div>
         </article>
         <div className="w-full flex flex-col gap-2 p-2 border-l border-neutral-700">
@@ -434,6 +435,9 @@ const FilePreviewCard = React.memo(
           <p className="text-neutral-500 text-xs">
             Alt é o texto apresentado caso a imagem não possa ser renderizada.
           </p>
+          <div className="w-fit h-fit p-1.5 text-[10px] text-neutral-500 font-[600] rounded bg-neutral-800">
+            <p>{formatType(file.type)}</p>
+          </div>
         </div>
       </div>
     );
@@ -442,7 +446,7 @@ const FilePreviewCard = React.memo(
 
 FilePreviewCard.displayName = "FilePreviewCard";
 
-const ConfirmExitButton = ({ onConfirm, children }: ConfirmExitButtonProps) => {
+const ExitButton = ({ onConfirm, children }: ExitButtonProps) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>

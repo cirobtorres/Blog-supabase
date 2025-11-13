@@ -32,7 +32,7 @@ export async function getFiles({
 
   const imagesSup: SupabaseBucketImage[] = data
     // TODO: (WARN) ".emptyFolderPlaceholder" is a supabase artifact left behind after the last file of a bucket has been deleted
-    // It might lead to bugs with "getImageDimensionsByString" (cards never displayed because promises keeps pending forever)
+    // It might lead to bugs with "getImageDimensionsByString" (cards never displayed because promises keeps pending nonstop)
     .filter((file) => file.name !== ".emptyFolderPlaceholder")
     .map((file) => {
       const {
@@ -42,6 +42,25 @@ export async function getFiles({
     });
 
   return imagesSup;
+}
+
+export async function getCountFiles({
+  bucket,
+  folder,
+}: {
+  bucket: string;
+  folder?: string;
+}) {
+  const supabase = await createServerAppClient();
+
+  const { data, error } = await supabase.storage.from(bucket).list(folder);
+
+  if (error) {
+    console.error(error);
+    return 0;
+  }
+
+  return data.length;
 }
 
 export async function deleteFiles(

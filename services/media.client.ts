@@ -3,6 +3,9 @@ export async function postFiles(formData: FormData) {
     method: "POST",
     body: formData,
   });
-  if (!res.ok) throw new Error("Failed to post files.");
+  if (!res.ok) {
+    // console.error(res); // DEBUG
+    throw new Error("Failed to post files.");
+  }
   return res.json();
 }

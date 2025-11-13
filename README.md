@@ -417,6 +417,8 @@ execute function public.handle_comment_soft_delete();
   <li>MELHORAR: uniformizar os types;</li>
   <li style="color:#b22222">CORRIGIR (BUG): comentários deletados não atualizam CommentCount na mesma sessão;</li>
   <li style="color:#b22222">CORRIGIR (BUG): códigos copiados do vscode diretamente para o codeblock não são formatados corretamente para o usuário em articles;</li>
+  <li style="color:#b22222">CORRIGIR (BUG): media enviada ao storage não é puxada sem que seja necessário reiniciar a sessão;</li>
+  <li style="color:#b22222">CORRIGIR (BUG): (REPRODUÇÃO): selecionar checkbox de um card e selecionar e descelecionar o checkbox de todos os cards ainda mantém o checkbox VISUALMENTE selecionado, embora o array de images seja zerado;</li>
   <ul>
     <li>ADICIONAR: tabelas ao tiptap;</li>
     <li>ADICIONAR: bloco de vídeos;</li>
