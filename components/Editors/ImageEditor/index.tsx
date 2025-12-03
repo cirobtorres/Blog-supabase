@@ -16,7 +16,7 @@ import {
   getImageDimensionsByFile,
   imageToDownload,
 } from "../../../utils/media";
-import { imageInitialState, imageReducer } from "@/reducers";
+import { imageInitialState, imageReducer } from "../../../reducers";
 
 export default function ImageEditor({
   id,
@@ -141,7 +141,7 @@ export const ImageDataInfo = ({ imageData }: { imageData: ImageState }) => (
     </div>
     <div className="**:text-xs">
       <p className="text-neutral-500">Data</p>
-      <p className="text-neutral-300 font-semibold">{imageData.date}</p>
+      <p className="text-neutral-300 font-semibold">{imageData.date || "--"}</p>
     </div>
     <div className="**:text-xs">
       <p className="text-neutral-500">Dimensões</p>

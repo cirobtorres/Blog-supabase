@@ -6,7 +6,7 @@
 
 <details>
   <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">SCHEMA</summary>
-  <small>(last updated 11-03-2025)</small>
+  <small>(last updated 2025-11-18)</small>
 
 ```sql
 create table if not exists public.profiles (
@@ -73,12 +73,11 @@ create table if not exists public.comment_likes (
 
 create table if not exists public.media_metadata (
   id uuid primary key default gen_random_uuid(),
-  storage_path text not null unique,  -- Supabase storage file path (ex: "public/videos/foo.mp4")
-  caption text null,                  -- Caption (opcional)
-  mime_type text null,                -- Ex: "image/png", "video/mp4"
-  metadata jsonb default '{}'::jsonb, -- Extras (ex: { "width": 1920, "height": 1080 })
-  updated_at timestamptz default now(),
-  created_at timestamptz default now()
+  storage_path text not null unique,          -- Supabase storage file path (ex: "public/videos/foo.mp4")
+  mime_type text null,                        -- Ex: "image/png", "video/mp4"
+  metadata jsonb default '{}'::jsonb,         -- Extras (ex: { "width": 1920, "height": 1080 })
+  updated_at timestamptz with time zone,
+  created_at timestamptz with time zone default now()
 );
 ```
 
@@ -86,7 +85,7 @@ create table if not exists public.media_metadata (
 
 <details>
   <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">like_count TRIGGER</summary>
-  <small>(last updated 08-22-2025)</small>
+  <small>(last updated 2025-08-22)</small>
 
 ```sql
 -- Updates like_count for every insert/delete on comment_likes
@@ -125,7 +124,7 @@ execute function update_comment_like_count();
 
 <details>
   <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Bucket RLS</summary>
-  <small>(last updated 10-24-2025)</small>
+  <small>(last updated 2025-10-24)</small>
 
 ```sql
 -- Remove old policies
@@ -190,7 +189,7 @@ and exists (
 
 <details>
   <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Comment Safe View</summary>
-  <small>(last updated 10-24-2025)</small>
+  <small>(last updated 2025-10-24)</small>
   
   ```sql
   drop view if exists public.comments_safe;
@@ -227,7 +226,7 @@ and exists (
 
 <details>
 <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Profile Creation from User Authentication</summary>
-<small>(last updated 10-24-2025)</small>
+<small>(last updated 2025-10-24)</small>
 
 ```sql
 -- inserts a row into public.profiles
@@ -252,7 +251,7 @@ for each row execute procedure public.create_profile_for_new_user();
 
 <details>
   <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Article Privacy Toggle</summary>
-  <small>(last updated 10-24-2025)</small>
+  <small>(last updated 2025-10-24)</small>
 
 ```sql
 -- Alternate article is_private from true to false and vice versa
@@ -270,7 +269,7 @@ $$ language plpgsql;
 
 <details>
   <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Article Like/Dislike</summary>
-  <small>(last updated 11-03-2025)</small>
+  <small>(last updated 2025-11-03)</small>
 
 ```sql
 -- Funções para dar/remover like (parâmetros renomeados para evitar ambiguidades)
@@ -333,7 +332,7 @@ EXECUTE FUNCTION public.decrement_article_likes_count();
 
 <details>
   <summary style="font-size:18px;cursor:pointer;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040;margin-bottom:1rem">Article comment count</summary>
-  <small>(last updated 11-04-2025)</small>
+  <small>(last updated 2025-11-04)</small>
 
 ```sql
 -- 1. ------------------------------------------------
@@ -417,10 +416,9 @@ execute function public.handle_comment_soft_delete();
   <li>MELHORAR: uniformizar os types;</li>
   <li style="color:#b22222">CORRIGIR (BUG): comentários deletados não atualizam CommentCount na mesma sessão;</li>
   <li style="color:#b22222">CORRIGIR (BUG): códigos copiados do vscode diretamente para o codeblock não são formatados corretamente para o usuário em articles;</li>
-  <li style="color:#b22222">CORRIGIR (BUG): media enviada ao storage não é puxada sem que seja necessário reiniciar a sessão;</li>
   <li style="color:#b22222">CORRIGIR (BUG): (REPRODUÇÃO): selecionar checkbox de um card e selecionar e descelecionar o checkbox de todos os cards ainda mantém o checkbox VISUALMENTE selecionado, embora o array de images seja zerado;</li>
+  <li style="color:#b22222">CORRIGIR (BUG): media só aceita formData de até 3mb. Criar um handler para lidar com esse erro em addFile;</li>
   <ul>
-    <li>ADICIONAR: tabelas ao tiptap;</li>
     <li>ADICIONAR: bloco de vídeos;</li>
     <li>ADICIONAR: bloco de arquivos;</li>
     <li>ADICIONAR: bloco de imagens;</li>
@@ -432,6 +430,12 @@ execute function public.handle_comment_soft_delete();
 </ol>
 
 <h2 style="font-weight:500;font-size:30px;color:#9c2f70">Aide</h2>
+
+<h3 style="font-weight:500;font-size:20px;color:#15bf67">Update supabase storage path</h3>
+
+<p style="font-weight:500;font-size:15px">Supabase não fornece uma função que atualize o path de um arquivo. Precisamos copiar em uma nova variável esses dados, deletar o arquivo e então injetar um arquivo novo com os dados copiados nessa variável, mas agora com o path desejado.</p>
+
+<hr/>
 
 <h3 style="font-weight:500;font-size:20px;color:#15bf67">TipTapCodeEditor</h3>
 
@@ -447,5 +451,3 @@ execute function public.handle_comment_soft_delete();
 <p style="font-weight:500;font-size:15px">Esse comportamento foi removido por meio de CustomCodeBlockShiki. <a href="https://github.com/timomeh/tiptap-extension-code-block-shiki" style="color:#1e90ff;text-decoration:underline;">CodeBlockShiki</a> é uma third party extention do tiptap para integração com <a href="https://shiki.matsu.io/" style="color:#1e90ff;text-decoration:underline;">Shiki</a>. O tiptap por padrão trabalha com <a href="https://github.com/wooorm/lowlight" style="color:#1e90ff;text-decoration:underline;">Lowlight</a> por meio de sua extensão nativa CodeBlockLowlight.</p>
 
 <p style="font-weight:500;font-size:15px">O Shiki faz um wrapper &#40;envelopa&#41; do conteúdo por padrão &#40;em tags &lt;pre&gt;&lt;code&gt;&#41;. O TipTap também envelopa o conteúdo nessas tags. Foi optado pela remoção, então, das tags provenientes do TipTap. Ao editor de código TipTapCodeEditor é permitido apenas um pré formatador de code block.</p>
-```
-````

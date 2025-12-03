@@ -1,8 +1,14 @@
 "use client";
 
-import { HazardBorder } from "@/components/HazardBorder";
-import { Checkbox as ShadcnUICheckbox } from "@/components/ui/checkbox";
-import NextImage from "next/image";
+import { useActionState, useState } from "react";
+import Image from "next/image";
+import { HazardBorder } from "../../../components/HazardBorder";
+import {
+  ImageDataInfo,
+  ImageEditorButton,
+  ImageEditorButtonLi,
+  ImageEditorButtonList,
+} from "../../../components/Editors/ImageEditor";
 import {
   AlertIcon,
   DownloadIcon,
@@ -10,7 +16,7 @@ import {
   PencilIcon,
   TrashBinIcon,
   UploadIcon,
-} from "../../Icons";
+} from "../../../components/Icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,35 +27,19 @@ import {
   AlertDialogFooter,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../../ui/alert-dialog";
+} from "../../../components/ui/alert-dialog";
+import { deleteFile, updateFile } from "../../../services/media.server";
+import { sonnerToastPromise } from "../../../toasters";
+import { cn } from "../../../utils/classnames";
 import {
   FloatingFieldset,
   FloatingInput,
   FloatingLabel,
-} from "../../Fieldsets";
-import React, { Dispatch, SetStateAction, useActionState } from "react";
-import {
-  ImageDataInfo,
-  ImageEditorButton,
-  ImageEditorButtonLi,
-  ImageEditorButtonList,
-} from "../../Editors/ImageEditor";
-import { formatType } from "../../../utils/strings";
+} from "../../../components/Fieldsets";
 import {
   buttonVariants,
   focusVisibleWhiteRing,
-  hoverWhiteRing,
 } from "../../../styles/classNames";
-import { cn } from "../../../utils/classnames";
-import {
-  deleteFile,
-  deleteFiles,
-  updateFile,
-} from "../../../services/media.server";
-import { sonnerToastPromise } from "../../../toasters";
-import { Skeleton } from "../../../components/ui/skeleton";
-import Link from "next/link";
-import { useRenderCount } from "../../../utils/renderCount";
 
 const initState: MediaStateProps = {
   ok: false,
@@ -58,111 +48,30 @@ const initState: MediaStateProps = {
   data: null,
 };
 
-export const ImagePreviewCard = React.memo(function ({
-  image,
-  handleCheckbox,
+export default function PreviewCardButtons({
+  data,
 }: {
-  image: SupabaseBucketMedia;
-  handleCheckbox: Dispatch<SetStateAction<{ url: string }[]>>;
+  data: SupabaseBucketMedia;
 }) {
-  useRenderCount("ImagePreviewCard"); // DEBUG
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
-  const Checkbox = () => (
-    <fieldset className="size-6 absolute left-3 top-3 z-10">
-      <label htmlFor={image.id} className="cursor-pointer size-6 absolute">
-        <ShadcnUICheckbox
-          id={image.id}
-          name="checkboxList[]"
-          value={image.url}
-          className="cursor-pointer"
-          onCheckedChange={(check) => {
-            if (check) handleCheckbox((prev) => [...prev, { url: image.url }]);
-            else
-              handleCheckbox((prev) =>
-                prev.filter((obj) => obj.url !== image.url)
-              );
-            return !check;
-          }}
-        />
-        <p className="sr-only">{`Arquivo (${image.name})`}</p>
-      </label>
-    </fieldset>
-  );
-
-  return image ? (
-    <article className="relative w-full h-56 min-w-0 grid grid-rows-1 group">
-      <Checkbox />
-      <ImagePreview image={image} />
-      <ImageButtonList image={image} />
-    </article>
-  ) : (
-    <Skeleton className="w-full h-56 min-w-0" />
-  );
-});
-ImagePreviewCard.displayName = "ImagePreviewCard";
-
-const ImagePreview = ({ image }: { image: SupabaseBucketMedia }) => {
-  const AbsoluteImagePreview = () => (
-    <NextImage
-      src={image.url}
-      alt={image.name}
-      fill
-      sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-      className="absolute object-contain"
-    />
-  );
-
-  useRenderCount("ImagePreview"); // DEBUG
-
-  return (
-    <Link
-      href={image.url}
-      target="_blank"
-      className={cn(
-        "cursor-pointer w-full h-full grid grid-rows-[1fr_60px] transition-shadow duration-300 overflow-hidden rounded outline-none border border-neutral-700",
-        hoverWhiteRing,
-        focusVisibleWhiteRing
-      )}
-    >
-      <div className="h-full relative">
-        <HazardBorder />
-        <AbsoluteImagePreview />
-      </div>
-      <div className="px-3 flex justify-between items-center border-t border-neutral-700 bg-neutral-900">
-        <div className="flex flex-col text-left">
-          <p className="text-xs text-neutral-300">{image.name}</p>
-          <p className="text-xs text-neutral-500">
-            {image.metadata.mimetype.split("/")[1]}
-          </p>
-        </div>
-        <div className="w-fit h-fit px-2.5 py-1.5 text-xs text-neutral-500 font-[600] flex justify-center items-center rounded bg-neutral-800">
-          <p>{formatType(image.metadata.mimetype)}</p>
-        </div>
-      </div>
-    </Link>
-  );
-};
-
-const ImageButtonList = ({ image }: { image: SupabaseBucketMedia }) => {
-  const [, delAction, isDelPending] = React.useActionState(
+  const [, delAction, isDelPending] = useActionState(
     async (state: MediaStateProps) => {
       try {
         const formData = new FormData();
-        const url = image.url;
+        const url = data.url;
         formData.set("fileURL", url);
 
-        // TODO (SUGESTÃO???): ??? criar um botão de desfazer a exclusão do arquivo ???
+        const result = deleteFile(state, formData);
+
         const success = (serverResponse: ArticleActionStateProps) => {
-          // console.log(serverResponse); // DEBUG
           return <p>Arquivo excluído!</p>;
         };
 
         const error = (serverResponse: ArticleActionStateProps) => {
-          // console.log(serverResponse); // DEBUG
           return <p>Arquivo não excluído</p>;
         };
-
-        const result = deleteFile(state, formData);
 
         const promise = new Promise((resolve, reject) => {
           result.then((data) => {
@@ -191,28 +100,36 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketMedia }) => {
     initState
   );
 
-  useRenderCount("ImageButtonList"); // DEBUG
-
   return (
     <ImageEditorButtonList className="transition-opacity duration-300 opacity-0 hover:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100">
-      <AlertDialog>
+      <AlertDialog open={openEdit} onOpenChange={setOpenEdit}>
         <ImageEditorButtonLi tooltip="Editar">
           <AlertDialogTrigger asChild>
             <ImageEditorButton
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpenEdit(true);
+              }}
               className={cn("size-8", focusVisibleWhiteRing)}
             >
               <PencilIcon className="size-7 p-1.5 stroke-neutral-500" />
             </ImageEditorButton>
           </AlertDialogTrigger>
         </ImageEditorButtonLi>
-        <AlertDialogContentEditMedia image={image} />
+        {/* -------------------------------------------------------------------------------- */}
+        <EditMediaContent data={data} />
+        {/* -------------------------------------------------------------------------------- */}
       </AlertDialog>
-      <AlertDialog>
+      <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
         <ImageEditorButtonLi tooltip="Excluir">
           <AlertDialogTrigger asChild>
             <ImageEditorButton
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpenDelete(true);
+              }}
               className={cn("size-8", focusVisibleWhiteRing)}
             >
               <TrashBinIcon className="size-7 p-1.5 stroke-neutral-500" />
@@ -253,23 +170,23 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketMedia }) => {
       </AlertDialog>
     </ImageEditorButtonList>
   );
-};
+}
 
-const AlertDialogContentEditMedia = ({
-  image,
-}: {
-  image: SupabaseBucketMedia;
-}) => {
-  const [filename, setFilename] = React.useState(image.name);
-  const [altText, setAltText] = React.useState(image.name);
-  const [caption, setCaption] = React.useState("");
+const EditMediaContent = ({ data }: { data: SupabaseBucketMedia }) => {
+  const [filename, setFilename] = useState(data.name);
+  const [altText, setAltText] = useState(
+    data.media_metadata.metadata.altText ?? data.name
+  );
+  const [caption, setCaption] = useState(
+    data.media_metadata.metadata.caption ?? ""
+  );
 
-  const [state, action] = useActionState(async (state) => {
+  const [, action] = useActionState(async (state) => {
     try {
       const formData = new FormData();
 
       formData.set("bucket", "articles"); // TODO
-      formData.append("fileToSubmit", JSON.stringify(image));
+      formData.append("fileToSubmit", JSON.stringify(data));
       formData.append("filename", filename);
       formData.append(
         "media_metadata",
@@ -279,14 +196,11 @@ const AlertDialogContentEditMedia = ({
         })
       );
 
-      // TODO (SUGESTÃO???): ??? criar um botão de desfazer a exclusão do arquivo ???
       const success = (serverResponse: ArticleActionStateProps) => {
-        // console.log(serverResponse); // DEBUG
         return <p>Arquivo editado!</p>;
       };
 
       const error = (serverResponse: ArticleActionStateProps) => {
-        // console.log(serverResponse); // DEBUG
         return <p>Arquivo não editado</p>;
       };
 
@@ -317,8 +231,6 @@ const AlertDialogContentEditMedia = ({
     }
   }, initState);
 
-  useRenderCount("AlertDialogContentEditMedia"); // DEBUG
-
   return (
     <AlertDialogContent className="sm:max-w-sm lg:max-w-3xl overflow-hidden">
       <AlertDialogTitle className="flex justify-between items-center px-3 border-b border-neutral-800 bg-neutral-950">
@@ -333,7 +245,7 @@ const AlertDialogContentEditMedia = ({
           setFilename,
           setAlt: setAltText,
           setCaption,
-          image,
+          data,
         }}
       />
       <AlertDialogFooter className="flex flex-row sm:flex-row justify-between items-center p-2 border-t border-neutral-800 bg-neutral-950">
@@ -366,7 +278,7 @@ const AlertDialogContentMediaBody = ({
   setFilename,
   setAlt,
   setCaption,
-  image,
+  data,
 }: {
   filename: string;
   alt: string;
@@ -374,10 +286,8 @@ const AlertDialogContentMediaBody = ({
   setFilename: (value: string) => void;
   setAlt: (value: string) => void;
   setCaption: (value: string) => void;
-  image: SupabaseBucketMedia;
+  data: SupabaseBucketMedia;
 }) => {
-  useRenderCount("AlertDialogContentMediaBody"); // DEBUG
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
       <AlertDialogDescription className="sr-only">
@@ -386,9 +296,9 @@ const AlertDialogContentMediaBody = ({
       <div className="w-full h-56 min-w-0 overflow-hidden rounded border border-neutral-700">
         <div className="relative w-full h-full flex justify-center items-center">
           <HazardBorder />
-          <NextImage
-            src={image.url}
-            alt={image.name}
+          <Image
+            src={data.url}
+            alt={data.name}
             fill
             sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="absolute object-contain"
@@ -424,12 +334,12 @@ const AlertDialogContentMediaBody = ({
         <ImageDataInfo
           imageData={{
             preview: null,
-            filename: image.name,
-            height: image.media_metadata.metadata.height ?? 0,
-            width: image.media_metadata.metadata.width ?? 0,
-            type: image.metadata.mimetype.replace("image/", ""),
-            date: image.updated_at,
-            size: image.metadata.size,
+            filename: data.name,
+            height: data.media_metadata.metadata.height ?? null,
+            width: data.media_metadata.metadata.width ?? null,
+            type: data.metadata.mimetype.replace("image/", ""),
+            date: data.updated_at,
+            size: data.metadata.size,
           }}
         />
         <FloatingFieldset>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   ReturnToHome,
@@ -23,6 +23,7 @@ import {
   DownloadIcon,
   EllipsisIcon,
   LinkIcon,
+  PlusIcon,
   TrashBinIcon,
   UploadIcon,
 } from "@/components/Icons";
@@ -36,6 +37,7 @@ import { buttonVariants, focusVisibleWhiteRing } from "@/styles/classNames";
 import { cn } from "@/utils/classnames";
 import { convertToLargeDate } from "@/utils/dates";
 import { useRouter } from "next/navigation";
+import { useRenderCount } from "@/utils/renderCount";
 
 const initialPostState = {
   ok: false,
@@ -51,12 +53,162 @@ const initialSaveState = {
   data: null,
 };
 
+type FileWithMetadata = {
+  file: File;
+  filename: string;
+  caption: string;
+  altText: string;
+};
+
+const DragAndDropZone = ({
+  imageFile,
+  openStep,
+  previewUrl,
+  setImageFile,
+  setOpenStep,
+  setPreviewUrl,
+  onFileSelected,
+}: DragAndDropZoneProp) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // ----------=== Drag events ===----------
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const file = Array.from(e.dataTransfer.files)[0];
+    onFileSelected(file);
+  };
+
+  // ----------=== Input control ===----------
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const file = Array.from(e.target.files)[0];
+    onFileSelected(file);
+  };
+
+  // ----------=== Optional: button ===----------
+  const handleButtonClick = () => {
+    inputRef.current?.click();
+  };
+
+  useEffect(() => {
+    if (!imageFile) return;
+    const { file } = imageFile;
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) return;
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile]);
+
+  useRenderCount("DragAndDropZone"); // DEBUG
+
+  return (
+    <AspectRatio
+      ratio={25 / 9}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className="relative w-full p-8 flex items-center overflow-hidden rounded-sm border border-neutral-700 outline-none transition-all duration-300 bg-neutral-950"
+    >
+      <ImageEditorButtonList>
+        <ImageEditorButtonLi>
+          <ImageEditorButton
+            className="size-9"
+            onClick={() => {
+              setImageFile(null);
+              setOpenStep("upload");
+              setPreviewUrl(null);
+            }}
+          >
+            <TrashBinIcon className="size-4" />
+          </ImageEditorButton>
+        </ImageEditorButtonLi>
+        <ImageEditorButtonLi>
+          <ImageEditorButton className="size-9">
+            <LinkIcon className="size-4" />
+          </ImageEditorButton>
+        </ImageEditorButtonLi>
+        <ImageEditorButtonLi>
+          <ImageEditorButton className="size-9">
+            <DownloadIcon className="size-4" />
+          </ImageEditorButton>
+        </ImageEditorButtonLi>
+        <ImageEditorButtonLi>
+          <ImageEditorButton className="size-9">
+            <UploadIcon className="size-4" />
+          </ImageEditorButton>
+        </ImageEditorButtonLi>
+      </ImageEditorButtonList>
+      {openStep === "upload" && !previewUrl && (
+        <label
+          className={cn(
+            "w-full h-72 flex flex-col gap-4 justify-center rounded items-center transition-all duration-300 border border-neutral-700 border-dashed",
+            isDragging ? "ring-2 ring-theme-color bg-theme-color-backdrop" : ""
+          )}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            name="files"
+            multiple
+            aria-label="Arraste e solte os arquivos aqui"
+            tabIndex={-1}
+            onChange={handleInputChange}
+            className="cursor-pointer absolute inset-0 outline-none opacity-0"
+          />
+          <PlusIcon className="rounded-full p-1 stroke-2 stroke-neutral-950 bg-theme-color" />
+          <span className="text-xs font-bold text-neutral-500">
+            Clique e selecione uma imagem do banco ou arraste e solte um arquivo
+            de imagem aqui.
+          </span>
+          <button
+            type="button"
+            onClick={handleButtonClick}
+            className={cn(
+              "w-fit cursor-pointer flex justify-center items-center gap-2 rounded px-2 py-1 text-sm border duration-300 outline-none",
+              "text-neutral-100 border-theme-color bg-theme-color-light",
+              focusVisibleWhiteRing
+            )}
+          >
+            Buscar arquivos
+          </button>
+        </label>
+      )}
+      {openStep === "preview" && previewUrl && (
+        <Image
+          src={previewUrl}
+          alt=""
+          fill
+          className="absolute object-contain p-8"
+        />
+      )}
+    </AspectRatio>
+  );
+};
+
 export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [htmlTitle, setHtmlTitle] = useState("");
   const [htmlSubtitle, setHtmlSubtitle] = useState("");
   const [isOpenState, setIsOpenState] = useState(false);
   const router = useRouter();
+  const [imageFile, setImageFile] = useState<FileWithMetadata | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [openStep, setOpenStep] = useState<"upload" | "preview" | null>(
+    "upload"
+  );
 
   const [postState, postAction, isPendingPost] = useActionState(async () => {
     try {
@@ -218,6 +370,18 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
       </div>
     );
 
+  const handleFileSelected = (newFile: File) => {
+    setImageFile({
+      file: newFile,
+      filename: newFile.name,
+      altText: newFile.name,
+      caption: "",
+    });
+    setOpenStep("preview");
+  };
+
+  useRenderCount("CreateArticleForm"); // DEBUG
+
   return (
     <div className="w-full mx-4">
       <div className="flex gap-10 max-sm:flex-col max-sm:gap-0 border-neutral-600">
@@ -233,40 +397,17 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
             <SubtitleFieldset value={htmlSubtitle} setVal={setHtmlSubtitle} />
             <AuthorAvatar />
           </div>
-          <AspectRatio
-            ratio={25 / 9}
-            className="relative rounded-sm overflow-hidden border border-neutral-700"
-          >
-            <ImageEditorButtonList>
-              <ImageEditorButtonLi>
-                <ImageEditorButton className="size-9">
-                  <TrashBinIcon className="size-4" />
-                </ImageEditorButton>
-              </ImageEditorButtonLi>
-              <ImageEditorButtonLi>
-                <ImageEditorButton className="size-9">
-                  <LinkIcon className="size-4" />
-                </ImageEditorButton>
-              </ImageEditorButtonLi>
-              <ImageEditorButtonLi>
-                <ImageEditorButton className="size-9">
-                  <DownloadIcon className="size-4" />
-                </ImageEditorButton>
-              </ImageEditorButtonLi>
-              <ImageEditorButtonLi>
-                <ImageEditorButton className="size-9">
-                  <UploadIcon className="size-4" />
-                </ImageEditorButton>
-              </ImageEditorButtonLi>
-            </ImageEditorButtonList>
-            {/* <Image
-                src="https://placehold.co/1920x1080/000000/FFFFFF.png"
-                alt="Photo by placehold.co"
-                fill
-                className="h-full w-full rounded-lg object-cover dark:brightness-[0.2]"
-              /> */}
-            <DropPlaceholder />
-          </AspectRatio>
+          <DragAndDropZone
+            {...{
+              imageFile,
+              openStep,
+              previewUrl,
+              setImageFile,
+              setOpenStep,
+              setPreviewUrl,
+              onFileSelected: handleFileSelected,
+            }}
+          />
           <BlockList blocks={blocks} setBlocks={setBlocks} />
           <NewBlockButtons blocks={blocks} setBlocks={setBlocks} />
         </div>

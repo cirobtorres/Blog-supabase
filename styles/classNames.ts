@@ -19,7 +19,7 @@ const buttonVariants = cva(
         disabled:
           "text-neutral-100 border border-neutral-700 bg-neutral-900 hover:border-neutral-600 hover:bg-[#202020] focus-visible:bg-[#202020] pointer-events-none opacity-50",
         outline:
-          "text-theme-color border border-neutral-800 bg-neutral-900 hover:border-neutral-700 hover:bg-[#202020] focus-visible:bg-neutral-900",
+          "text-theme-color border border-neutral-700 bg-neutral-900 hover:border-neutral-600 hover:bg-[#202020] focus-visible:bg-neutral-900",
         destructive:
           "text-neutral-100 border border-red-900 hover:border-red-800 bg-red-950 hover:bg-red-800/50 focus-visible:bg-red-800/50 [&_svg]:stroke-neutral-100",
         link: "underline underline-offset-4 text-blue-500 [&_svg]:stroke-blue-500",

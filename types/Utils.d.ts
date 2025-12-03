@@ -56,5 +56,5 @@ type ImageState = {
   type: string;
   width: number | null;
   height: number | null;
-  date: string;
+  date: string | null;
 };

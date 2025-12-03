@@ -1,12 +1,12 @@
 import * as React from "react";
+import Link, { LinkProps } from "next/link";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   MoreHorizontalIcon,
 } from "lucide-react";
 import { cn } from "../../utils/classnames";
-import { buttonVariants } from "@/styles/classNames";
-import Link, { LinkProps } from "next/link";
+import { buttonVariants } from "../../styles/classNames";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -64,40 +64,6 @@ function PaginationLink({
   );
 }
 
-function PaginationPrevious({
-  className,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) {
-  return (
-    <PaginationLink
-      aria-label="Navegar para página anterior"
-      className={cn("size-[34px]", className)}
-      // className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
-      {...props}
-    >
-      <ChevronLeftIcon />
-      {/* <span className="hidden sm:block">Voltar</span> */}
-    </PaginationLink>
-  );
-}
-
-function PaginationNext({
-  className,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) {
-  return (
-    <PaginationLink
-      aria-label="Navegar para próxima página"
-      className={cn("size-[34px]", className)}
-      // className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
-      {...props}
-    >
-      {/* <span className="hidden sm:block">Avançar</span> */}
-      <ChevronRightIcon />
-    </PaginationLink>
-  );
-}
-
 function PaginationEllipsis({
   className,
   ...props
@@ -115,12 +81,4 @@ function PaginationEllipsis({
   );
 }
 
-export {
-  Pagination,
-  PaginationContent,
-  PaginationLink,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-  PaginationEllipsis,
-};
+export { Pagination, PaginationContent, PaginationItem, PaginationEllipsis };

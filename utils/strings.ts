@@ -65,6 +65,8 @@ export const formatType = (type: string) => {
     case "image/png":
     case "bmp":
     case "image/bmp":
+    case "webp":
+    case "image/webp":
       return "IMAGE";
     default:
       return "UNKNOWN";

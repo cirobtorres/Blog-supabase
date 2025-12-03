@@ -45,7 +45,7 @@ export const TitleFieldset = ({
         `top-6 transform transition-top duration-100 ` +
         `left-0 peer-placeholder-shown:left-0 peer-placeholder-shown:translate-x-0 ` +
         `-translate-y-5 peer-focus:-translate-y-5 peer-placeholder-shown:translate-y-0 ` +
-        `-translate-x-0 peer-focus:-translate-x-0 ` +
+        `translate-x-0 peer-focus:translate-x-0 ` +
         `scale-75 peer-focus:scale-75 peer-placeholder-shown:scale-100 ` // peer-placeholder-shown:text-neutral-400
       }
     >
@@ -90,7 +90,7 @@ export const SubtitleFieldset = ({
         `top-6 transform transition-top duration-100 ` +
         `left-0 peer-placeholder-shown:left-0 peer-placeholder-shown:translate-x-0 ` +
         `-translate-y-5 peer-focus:-translate-y-5 peer-placeholder-shown:translate-y-0 ` +
-        `-translate-x-0 peer-focus:-translate-x-0 ` +
+        `translate-x-0 peer-focus:translate-x-0 ` +
         `scale-75 peer-focus:scale-75 peer-placeholder-shown:scale-100 ` // peer-placeholder-shown:text-neutral-400
       }
     >
@@ -115,7 +115,7 @@ export const FloatingFieldset = ({
       className={cn(
         "relative w-full transition-all duration-300 rounded-xs has-disabled:cursor-not-allowed has-disabled:[&_label]:text-neutral-700 bg-neutral-900 has-disabled:border-neutral-800 has-disabled:bg-neutral-900 border border-neutral-700 group has-[textarea]:p-1",
         focusWithinWhiteRing,
-        error && "border-red-500",
+        error && "border-red-500 has-disabled:border-red-900",
         className
       )}
     >
@@ -189,7 +189,7 @@ export const FloatingLabel = ({
     htmlFor={htmlFor}
     {...props}
     className={cn(
-      "absolute origin-[0] top-1/2 z-10 start-1 px-1 font-medium select-none text-sm pointer-events-none bg-transparent bg-opacity-50 transform transition-top duration-100 -translate-y-[18px] scale-75 peer-focus:-translate-y-[18px] peer-focus:scale-75 text-neutral-100 peer-focus:text-neutral-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white",
+      "absolute origin-left top-1/2 z-10 start-1 px-1 font-medium select-none text-sm pointer-events-none bg-transparent bg-opacity-50 transform transition-top duration-100 -translate-y-[18px] scale-75 peer-focus:-translate-y-[18px] peer-focus:scale-75 text-neutral-100 peer-focus:text-neutral-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white",
       className,
       error &&
         "text-red-500 peer-focus:text-red-500 peer-placeholder-shown:text-red-500"

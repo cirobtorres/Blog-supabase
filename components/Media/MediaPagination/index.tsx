@@ -1,15 +1,15 @@
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "../../../components/ui/pagination";
-import { cn } from "@/utils/classnames";
-import { buttonVariants } from "@/styles/classNames";
-// import { useRenderCount } from "@/utils/renderCount";
+import { cn } from "../../../utils/classnames";
+import { buttonVariants } from "../../../styles/classNames";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 interface MediaPaginationProps {
   currentPage: number;
@@ -17,111 +17,275 @@ interface MediaPaginationProps {
 }
 
 export default function MediaPagination(props: MediaPaginationProps) {
-  // useRenderCount("MediaPagination"); // DEBUG
+  const params = useSearchParams();
+  const router = useRouter();
+
+  const updateParam = (key: string, value: string) => {
+    const newParams = new URLSearchParams(params);
+    newParams.set(key, value);
+    router.push(`/admin/media?${newParams.toString()}`);
+  };
 
   return (
-    <Pagination className="mb-0 mt-auto">
-      <PaginationContent>
-        <NavToPreviousPage {...props} />
-        <FirstPage {...props} />
-        <PreviousEllipsis {...props} />
-        <PreviousPage {...props} />
-        <CurrentPage {...props} />
-        <NextPage {...props} />
-        <NextEllipsis {...props} />
-        <LastPage {...props} />
-        <NavToNextPage {...props} />
-      </PaginationContent>
-    </Pagination>
+    props.totalPages > 1 && (
+      <Pagination className="my-8">
+        <PaginationContent>
+          <NavToPreviousPage {...{ ...props, updateParam }} />
+          <FirstPage {...{ ...props, updateParam }} />
+          <PreviousEllipsis {...{ ...props, updateParam }} />
+          <PreviousPage {...{ ...props, updateParam }} />
+          <CurrentPage {...{ ...props, updateParam }} />
+          <NextPage {...{ ...props, updateParam }} />
+          <NextEllipsis {...{ ...props, updateParam }} />
+          <LastPage {...{ ...props, updateParam }} />
+          <NavToNextPage {...{ ...props, updateParam }} />
+        </PaginationContent>
+      </Pagination>
+    )
   );
 }
 
-const PreviousEllipsis = ({ currentPage }: MediaPaginationProps) =>
+const PreviousEllipsis = ({
+  currentPage,
+}: MediaPaginationProps & {
+  updateParam: (key: string, value: string) => void;
+}) =>
   currentPage > 3 && (
     <PaginationItem>
       <PaginationEllipsis />
     </PaginationItem>
   );
 
-const NextEllipsis = ({ currentPage, totalPages }: MediaPaginationProps) =>
+const NextEllipsis = ({
+  currentPage,
+  totalPages,
+}: MediaPaginationProps & {
+  updateParam: (key: string, value: string) => void;
+}) =>
   totalPages > currentPage + 2 && (
     <PaginationItem>
       <PaginationEllipsis />
     </PaginationItem>
   );
 
-const FirstPage = ({ currentPage }: MediaPaginationProps) =>
-  currentPage - 1 > 0 && (
+const FirstPage = ({
+  currentPage,
+  updateParam,
+}: MediaPaginationProps & {
+  updateParam: (key: string, value: string) => void;
+}) => {
+  const disabled = currentPage === 1;
+
+  return (
+    currentPage - 1 > 0 && (
+      <PaginationItem>
+        <button
+          role="button"
+          disabled={disabled}
+          onClick={() => updateParam("page", "1")}
+          aria-current={disabled ? "page" : undefined}
+          data-slot="pagination-link"
+          aria-label="Navegar para primeira página"
+          data-active={disabled}
+          className={cn(
+            buttonVariants({
+              variant: disabled ? "outline" : "default",
+            }),
+            disabled && "pointer-events-none opacity-50"
+          )}
+        >
+          1
+        </button>
+      </PaginationItem>
+    )
+  );
+};
+
+const LastPage = ({
+  totalPages,
+  currentPage,
+  updateParam,
+}: MediaPaginationProps & {
+  updateParam: (key: string, value: string) => void;
+}) => {
+  const disabled = currentPage === totalPages;
+
+  return (
+    currentPage < totalPages && (
+      <PaginationItem>
+        <button
+          role="button"
+          disabled={disabled}
+          onClick={() => updateParam("page", totalPages.toString())}
+          data-slot="pagination-link"
+          aria-label="Navegar para última página"
+          data-active={disabled}
+          className={cn(
+            buttonVariants({
+              variant: disabled ? "outline" : "default",
+            }),
+            disabled && "pointer-events-none opacity-50"
+          )}
+        >
+          {totalPages}
+        </button>
+      </PaginationItem>
+    )
+  );
+};
+
+const NavToPreviousPage = ({
+  currentPage,
+  updateParam,
+}: MediaPaginationProps & {
+  updateParam: (key: string, value: string) => void;
+}) => {
+  const disabled = currentPage === 1;
+  const navTo = currentPage > 1 ? currentPage - 1 : 1;
+
+  return (
     <PaginationItem>
-      <PaginationLink href="?page=1">1</PaginationLink>
+      <button
+        role="button"
+        disabled={disabled}
+        onClick={() => updateParam("page", navTo.toString())}
+        data-slot="pagination-link"
+        aria-label="Navegar para página anterior"
+        className={cn(
+          "size-[34px]",
+          buttonVariants({
+            variant: disabled ? "disabled" : "default",
+          }),
+          disabled && "pointer-events-none opacity-50"
+        )}
+      >
+        <ChevronLeftIcon />
+      </button>
     </PaginationItem>
   );
+};
 
-const LastPage = ({ totalPages, currentPage }: MediaPaginationProps) =>
-  currentPage < totalPages && (
+const NavToNextPage = ({
+  currentPage,
+  totalPages,
+  updateParam,
+}: MediaPaginationProps & {
+  updateParam: (key: string, value: string) => void;
+}) => {
+  const disabled = currentPage === totalPages;
+  const navTo = currentPage + 1 > totalPages ? totalPages : currentPage + 1;
+
+  return (
     <PaginationItem>
-      <PaginationLink href={`?page=${totalPages}`}>{totalPages}</PaginationLink>
+      <button
+        role="button"
+        disabled={disabled}
+        onClick={() => updateParam("page", navTo.toString())}
+        data-slot="pagination-link"
+        aria-label="Navegar para próxima página"
+        className={cn(
+          "size-[34px]",
+          buttonVariants({
+            variant: disabled ? "disabled" : "default",
+          }),
+          disabled && "pointer-events-none opacity-50"
+        )}
+      >
+        <ChevronRightIcon />
+      </button>
     </PaginationItem>
   );
+};
 
-const NavToPreviousPage = ({ currentPage }: MediaPaginationProps) => (
-  <PaginationItem>
-    <PaginationPrevious
-      href={`?page=${currentPage > 1 ? currentPage - 1 : 1}`}
-      className={cn(
-        `${
-          currentPage < 2
-            ? `${buttonVariants({ variant: "disabled" })} pointer-events-none`
-            : ""
-        }`
-      )}
-    />
-  </PaginationItem>
-);
+const PreviousPage = ({
+  currentPage,
+  updateParam,
+}: MediaPaginationProps & {
+  updateParam: (key: string, value: string) => void;
+}) => {
+  const navTo = currentPage - 1;
+  return (
+    currentPage - 1 > 1 && (
+      <PaginationItem>
+        <button
+          role="button"
+          onClick={() => updateParam("page", navTo.toString())}
+          data-slot="pagination-link"
+          aria-label={`Navegar para página ${navTo}`}
+          className={cn(
+            "size-[34px]",
+            buttonVariants({
+              variant: "default",
+            })
+          )}
+        >
+          {currentPage - 1}
+        </button>
+      </PaginationItem>
+    )
+  );
+};
 
-const NavToNextPage = ({ currentPage, totalPages }: MediaPaginationProps) => (
-  <PaginationItem>
-    <PaginationNext
-      href={`?page=${
-        currentPage + 1 > totalPages ? totalPages : currentPage + 1
-      }`}
-      className={cn(
-        `${
-          currentPage === totalPages
-            ? `${buttonVariants({ variant: "disabled" })} pointer-events-none`
-            : ""
-        }`
-      )}
-    />
-  </PaginationItem>
-);
-
-const PreviousPage = ({ currentPage }: MediaPaginationProps) =>
-  currentPage - 1 > 1 && (
+const CurrentPage = ({
+  currentPage,
+  totalPages,
+  updateParam,
+}: MediaPaginationProps & {
+  updateParam: (key: string, value: string) => void;
+}) => {
+  return (
     <PaginationItem>
-      <PaginationLink href={`?page=${currentPage - 1}`}>
-        {currentPage - 1}
-      </PaginationLink>
+      <button
+        role="button"
+        disabled
+        onClick={() => updateParam("page", currentPage.toString())}
+        aria-current={"page"}
+        data-slot="pagination-link"
+        aria-label="Página atual"
+        className={cn(
+          "size-[34px]",
+          buttonVariants({
+            variant: "outline",
+          })
+        )}
+      >
+        {currentPage < 1
+          ? 1
+          : currentPage > totalPages
+          ? totalPages
+          : currentPage}
+      </button>
     </PaginationItem>
   );
+};
 
-const CurrentPage = ({ currentPage, totalPages }: MediaPaginationProps) => (
-  <PaginationItem>
-    <PaginationLink href={`?page=${currentPage}`} isActive>
-      {currentPage < 1
-        ? 1
-        : currentPage > totalPages
-        ? totalPages
-        : currentPage}
-    </PaginationLink>
-  </PaginationItem>
-);
+const NextPage = ({
+  currentPage,
+  totalPages,
+  updateParam,
+}: MediaPaginationProps & {
+  updateParam: (key: string, value: string) => void;
+}) => {
+  const navTo = currentPage + 1;
 
-const NextPage = ({ currentPage, totalPages }: MediaPaginationProps) =>
-  currentPage + 1 < totalPages && (
-    <PaginationItem>
-      <PaginationLink href={`?page=${currentPage + 1}`}>
-        {currentPage + 1}
-      </PaginationLink>
-    </PaginationItem>
+  return (
+    currentPage + 1 < totalPages && (
+      <PaginationItem>
+        <button
+          role="button"
+          onClick={() => updateParam("page", navTo.toString())}
+          data-slot="pagination-link"
+          aria-label={`Navegar para página ${navTo}`}
+          className={cn(
+            "size-[34px]",
+            buttonVariants({
+              variant: "default",
+            })
+          )}
+        >
+          {currentPage + 1}
+        </button>
+      </PaginationItem>
+    )
   );
+};

@@ -20,11 +20,13 @@ export default async function AdminPage() {
     .eq("id", user?.id)
     .single();
 
-  const { data: userAdmin } = await supabase
+  const { data: userAdmin }: { data: Author | null } = await supabase
     .from("authors")
     .select("*")
     .eq("profile_id", profile.id)
     .single();
+
+  if (!userAdmin) return <div>Erro</div>; // TODO: se o profile é um admin, porém não está associado a um author
 
   return (
     <>
