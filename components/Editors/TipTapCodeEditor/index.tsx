@@ -52,7 +52,7 @@ export default function TipTapCodeEditor({
   }, [editor]);
 
   if (!editor) {
-    return <LoadingSpinning loadingState={true} />;
+    return <LoadingSpinning />;
   }
 
   const onLanguageChange = (lang: string) => {

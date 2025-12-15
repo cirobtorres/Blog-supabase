@@ -39,9 +39,7 @@ export const EditArticleForm = ({
       formData.set("article_subtitle", htmlSubtitle);
       formData.set("article_body", JSON.stringify(blocks));
 
-      // TODO (SUGESTÃO???): ??? criar um botão de desfazer publicação ???
       const success = (serverResponse: ArticleActionStateProps) => {
-        // console.log(serverResponse); // DEBUG
         const now = convertToLargeDate(
           new Date(serverResponse.data?.updated_at ?? new Date())
         );
@@ -69,8 +67,8 @@ export const EditArticleForm = ({
         );
       };
 
-      const error = (serverResponse: ArticleActionStateProps) => {
-        // console.log(serverResponse); // DEBUG
+      // const error = (serverResponse: ArticleActionStateProps) => {
+      const error = () => {
         setIsOpenState(true);
         return <p>Artigo não publicado</p>;
       };

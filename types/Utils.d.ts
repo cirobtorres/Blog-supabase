@@ -23,7 +23,6 @@ type FloatingInputProps =
 // REDUCERS
 type AccordionItem = {
   id: string;
-  checked: boolean;
   title: string;
   message: string;
 };

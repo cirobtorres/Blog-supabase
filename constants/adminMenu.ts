@@ -21,7 +21,7 @@ export const MENU_ITEMS = [
   {
     key: "adm-menu-item-media-manager",
     icon: ImageEditorIcon,
-    label: "Biblioteca de arquivos",
+    label: "Arquivos",
     href: "/admin/media",
   },
   {

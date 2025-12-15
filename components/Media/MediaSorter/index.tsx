@@ -1,12 +1,13 @@
 "use client";
 
-import { FiltersIcon } from "@/components/Icons";
-import { Checkbox } from "@/components/ui/checkbox";
+import React from "react";
+import { FiltersIcon } from "../../../components/Icons";
+import { Checkbox } from "../../../components/ui/checkbox";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "../../../components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -15,17 +16,16 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { focusVisibleWhiteRing } from "@/styles/classNames";
-import { cn } from "@/utils/classnames";
-import { useRenderCount } from "@/utils/renderCount";
-import React, { Dispatch, SetStateAction } from "react";
+} from "../../../components/ui/select";
+import { focusVisibleWhiteRing } from "../../../styles/classNames";
+import { cn } from "../../../utils/classnames";
+import { useRenderCount } from "../../../utils/renderCount";
 
 const MediaSorter = React.memo(function ({
-  medias,
+  // medias,
   totalFiles,
 }: {
-  medias: SupabaseBucketMedia[];
+  // medias: SupabaseBucketMedia[];
   totalFiles: number;
 }) {
   useRenderCount("MediaSorter"); // DEBUG
@@ -156,5 +156,7 @@ const MediaSorter = React.memo(function ({
     </div>
   );
 });
+
+MediaSorter.displayName = "MediaSorter";
 
 export default MediaSorter;

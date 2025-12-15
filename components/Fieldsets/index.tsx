@@ -1,5 +1,5 @@
 import { labelId, slugify } from "@/utils/strings";
-import { ChangeEventHandler, Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { cn } from "../../utils/classnames";
 import {
   focusVisibleWhiteRing,

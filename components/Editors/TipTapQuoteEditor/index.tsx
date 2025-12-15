@@ -33,7 +33,7 @@ export default function TipTapQuoteEditor({
   }, [editor]);
 
   if (!editor) {
-    return <LoadingSpinning loadingState={true} />;
+    return <LoadingSpinning />;
   }
 
   return (

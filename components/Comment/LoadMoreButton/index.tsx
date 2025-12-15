@@ -12,7 +12,7 @@ export default function LoadMoreButton() {
     // hasDbMoreComments &&
     false &&
     (loading ? (
-      <LoadingSpinning loadingState={true} />
+      <LoadingSpinning />
     ) : (
       <button
         type="button"

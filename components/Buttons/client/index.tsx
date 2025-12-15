@@ -237,7 +237,7 @@ export const DeleteArticleButton = ({ id }: { id: string }) => {
               disabled={disabledButton}
               className={buttonVariants({ variant: "destructive" })}
             >
-              Confirmar <LoadingSpinning loadingState={isPending} />
+              Confirmar {isPending && <LoadingSpinning />}
             </AlertDialogAction>
           </form>
         </AlertDialogFooter>

@@ -2,17 +2,17 @@ import {
   ImageEditorButton,
   ImageEditorButtonLi,
   ImageEditorButtonList,
-} from "@/components/Editors/ImageEditor";
+} from "../../../components/Editors/ImageEditor";
 import {
   FloatingFieldset,
   FloatingInput,
   FloatingLabel,
-} from "@/components/Fieldsets";
-import { HazardBorder } from "@/components/HazardBorder";
-import { TrashBinIcon } from "@/components/Icons";
-import { cn } from "@/utils/classnames";
-import { useRenderCount } from "@/utils/renderCount";
-import { formatType } from "@/utils/strings";
+} from "../../../components/Fieldsets";
+import { HazardBorder } from "../../../components/HazardBorder";
+import { TrashBinIcon } from "../../../components/Icons";
+import { cn } from "../../../utils/classnames";
+import { useRenderCount } from "../../../utils/renderCount";
+import { formatType } from "../../../utils/strings";
 import Image from "next/image";
 import React from "react";
 
@@ -29,7 +29,7 @@ export const FilePreviewCard = React.memo(
       return () => URL.revokeObjectURL(url);
     }, [file, isImage]);
 
-    useRenderCount("FilePreviewCard"); // DEBUG
+    // useRenderCount("FilePreviewCard"); // DEBUG
 
     return (
       <div
@@ -50,9 +50,9 @@ export const FilePreviewCard = React.memo(
                   <ImageEditorButton
                     type="button"
                     onClick={() => removeFiles(file)}
-                    className="size-7"
+                    className="size-9"
                   >
-                    <TrashBinIcon className="size-6 p-1 stroke-neutral-500" />
+                    <TrashBinIcon className="size-4" />
                   </ImageEditorButton>
                 </ImageEditorButtonLi>
               </ImageEditorButtonList>

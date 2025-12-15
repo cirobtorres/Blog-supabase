@@ -1,8 +1,8 @@
 "use client";
 
-import parse, { DOMNode, domToReact } from "html-react-parser";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Link from "next/link";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import parse, { DOMNode, domToReact } from "html-react-parser";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { ExternalLinkIcon, LinkIcon } from "../Icons";
 import { slugify } from "../../utils/strings";
@@ -34,7 +34,6 @@ export const ArticleBody = ({
     const boddies = block.map((block) => {
       switch (block.type) {
         case "text":
-          // console.log(block); // DEBUG
           const body = (block.data as { body: string }).body;
 
           const replace = (domNode: DOMNode) => {
@@ -94,10 +93,10 @@ export const ArticleBody = ({
 
             if (domNode.type === "tag" && domNode.name === "table") {
               // TODO
-              const tag = domNode.name;
-              const children = domToReact(domNode.children as DOMNode[], {
-                replace,
-              });
+              // const tag = domNode.name;
+              // const children = domToReact(domNode.children as DOMNode[], {
+              //   replace,
+              // });
             }
           };
 
@@ -125,7 +124,6 @@ export const ArticleBody = ({
           );
 
         case "alert":
-          // console.log(block); // DEBUG
           return (
             <div
               key={block.id}
@@ -143,7 +141,7 @@ export const ArticleBody = ({
 
     setParsedBody(boddies);
     anchorCallback(anchorsList);
-  }, [anchorCallback]); // TODO: tentar não depender desse useEffect
+  }, [anchorCallback]);
 
   return (
     <article
@@ -219,7 +217,7 @@ const ArticleAccordionBlock = ({ accordions }: { accordions: Accordion[] }) => {
             {acc.title}
           </ArticleAccordionTrigger>
           <ArticleAccordionContent
-            className="pt-px" // This is a fix for highlight and link style classes because they get overflowed otherwise (hidden)
+            className="pt-px" // Do not remove
           >
             {acc.message}
           </ArticleAccordionContent>

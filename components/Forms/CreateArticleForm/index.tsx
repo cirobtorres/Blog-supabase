@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   ReturnToHome,
@@ -13,7 +13,6 @@ import { BlockList, NewBlockButtons } from "../../Editors/blocks";
 import { useProfile } from "@/hooks/useProfile";
 import { AspectRatio } from "@/components/ui/aspect-ration";
 import {
-  DropPlaceholder,
   ImageEditorButton,
   ImageEditorButtonLi,
   ImageEditorButtonList,
@@ -25,7 +24,6 @@ import {
   LinkIcon,
   PlusIcon,
   TrashBinIcon,
-  UploadIcon,
 } from "@/components/Icons";
 import { sonnerToastPromise } from "@/toasters";
 import {
@@ -38,6 +36,20 @@ import { cn } from "@/utils/classnames";
 import { convertToLargeDate } from "@/utils/dates";
 import { useRouter } from "next/navigation";
 import { useRenderCount } from "@/utils/renderCount";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { getFiles } from "@/services/media.server";
+import PreviewCard from "@/components/Media/PreviewCards";
+import { LoadingSpinning } from "@/components/LoadingSpinning";
+import DragAndDropZone from "./DragAndDropZone";
 
 const initialPostState = {
   ok: false,
@@ -58,144 +70,6 @@ type FileWithMetadata = {
   filename: string;
   caption: string;
   altText: string;
-};
-
-const DragAndDropZone = ({
-  imageFile,
-  openStep,
-  previewUrl,
-  setImageFile,
-  setOpenStep,
-  setPreviewUrl,
-  onFileSelected,
-}: DragAndDropZoneProp) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  // ----------=== Drag events ===----------
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-
-    const file = Array.from(e.dataTransfer.files)[0];
-    onFileSelected(file);
-  };
-
-  // ----------=== Input control ===----------
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    const file = Array.from(e.target.files)[0];
-    onFileSelected(file);
-  };
-
-  // ----------=== Optional: button ===----------
-  const handleButtonClick = () => {
-    inputRef.current?.click();
-  };
-
-  useEffect(() => {
-    if (!imageFile) return;
-    const { file } = imageFile;
-    const isImage = file.type.startsWith("image/");
-    if (!isImage) return;
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [imageFile]);
-
-  useRenderCount("DragAndDropZone"); // DEBUG
-
-  return (
-    <AspectRatio
-      ratio={25 / 9}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      className="relative w-full p-8 flex items-center overflow-hidden rounded-sm border border-neutral-700 outline-none transition-all duration-300 bg-neutral-950"
-    >
-      <ImageEditorButtonList>
-        <ImageEditorButtonLi>
-          <ImageEditorButton
-            className="size-9"
-            onClick={() => {
-              setImageFile(null);
-              setOpenStep("upload");
-              setPreviewUrl(null);
-            }}
-          >
-            <TrashBinIcon className="size-4" />
-          </ImageEditorButton>
-        </ImageEditorButtonLi>
-        <ImageEditorButtonLi>
-          <ImageEditorButton className="size-9">
-            <LinkIcon className="size-4" />
-          </ImageEditorButton>
-        </ImageEditorButtonLi>
-        <ImageEditorButtonLi>
-          <ImageEditorButton className="size-9">
-            <DownloadIcon className="size-4" />
-          </ImageEditorButton>
-        </ImageEditorButtonLi>
-        <ImageEditorButtonLi>
-          <ImageEditorButton className="size-9">
-            <UploadIcon className="size-4" />
-          </ImageEditorButton>
-        </ImageEditorButtonLi>
-      </ImageEditorButtonList>
-      {openStep === "upload" && !previewUrl && (
-        <label
-          className={cn(
-            "w-full h-72 flex flex-col gap-4 justify-center rounded items-center transition-all duration-300 border border-neutral-700 border-dashed",
-            isDragging ? "ring-2 ring-theme-color bg-theme-color-backdrop" : ""
-          )}
-        >
-          <input
-            ref={inputRef}
-            type="file"
-            name="files"
-            multiple
-            aria-label="Arraste e solte os arquivos aqui"
-            tabIndex={-1}
-            onChange={handleInputChange}
-            className="cursor-pointer absolute inset-0 outline-none opacity-0"
-          />
-          <PlusIcon className="rounded-full p-1 stroke-2 stroke-neutral-950 bg-theme-color" />
-          <span className="text-xs font-bold text-neutral-500">
-            Clique e selecione uma imagem do banco ou arraste e solte um arquivo
-            de imagem aqui.
-          </span>
-          <button
-            type="button"
-            onClick={handleButtonClick}
-            className={cn(
-              "w-fit cursor-pointer flex justify-center items-center gap-2 rounded px-2 py-1 text-sm border duration-300 outline-none",
-              "text-neutral-100 border-theme-color bg-theme-color-light",
-              focusVisibleWhiteRing
-            )}
-          >
-            Buscar arquivos
-          </button>
-        </label>
-      )}
-      {openStep === "preview" && previewUrl && (
-        <Image
-          src={previewUrl}
-          alt=""
-          fill
-          className="absolute object-contain p-8"
-        />
-      )}
-    </AspectRatio>
-  );
 };
 
 export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
@@ -239,7 +113,7 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
                   router.push(`/articles/${serverResponse.data?.id}`)
                 }
                 className={cn(
-                  "cursor-pointer size-fit text-theme-color/85 hover:text-theme-color transition-all duration-300 text-xs font-[600] px-2 py-1 rounded border border-neutral-700 bg-neutral-800 hover:border-neutral-600 hover:bg-[#202020]",
+                  "cursor-pointer size-fit text-theme-color/85 hover:text-theme-color transition-all duration-300 text-xs font-semibold px-2 py-1 rounded border border-neutral-700 bg-neutral-800 hover:border-neutral-600 hover:bg-[#202020]",
                   focusVisibleWhiteRing
                 )}
               >
@@ -250,8 +124,8 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
         );
       };
 
-      const error = (serverResponse: ArticleActionStateProps) => {
-        // console.log(serverResponse); // DEBUG
+      // const error = (serverResponse: ArticleActionStateProps) => {
+      const error = () => {
         setIsOpenState(true);
         return <p>Artigo não publicado</p>;
       };
@@ -380,7 +254,7 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
     setOpenStep("preview");
   };
 
-  useRenderCount("CreateArticleForm"); // DEBUG
+  // useRenderCount("CreateArticleForm"); // DEBUG
 
   return (
     <div className="w-full mx-4">
@@ -390,7 +264,7 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
       </div>
       <PostArticleErrors />
       <SaveArticleErrors />
-      <form className="grid gap-2 grid-cols-1 md:grid-cols-[minmax(450px,1fr)_minmax(200px,400px)]">
+      <form className="grid gap-2 grid-cols-1 lg:grid-cols-[minmax(450px,1fr)_minmax(200px,400px)]">
         <div className="w-full flex flex-col items-center gap-3">
           <div className="w-full flex flex-col gap-4">
             <TitleFieldset value={htmlTitle} setVal={setHtmlTitle} />

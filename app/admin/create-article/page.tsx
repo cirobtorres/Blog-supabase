@@ -1,4 +1,4 @@
-import { CreateArticleForm } from "../../../components/Forms/CreateArticleForn";
+import { CreateArticleForm } from "../../../components/Forms/CreateArticleForm";
 import { ArticleBreadcrumb } from "@/components/Breadcrumb";
 import { createServerAppClient } from "@/supabase/server";
 

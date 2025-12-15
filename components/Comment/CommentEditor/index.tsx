@@ -82,7 +82,7 @@ export const CommentEditor = ({
     [isAuthenticated]
   );
 
-  if (!editor) return <LoadingSpinning loadingState={true} />;
+  if (!editor) return <LoadingSpinning />;
 
   const closeEditorFunc = () => {
     editor.commands.clearContent();

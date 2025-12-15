@@ -37,7 +37,7 @@ const CommentChildsRow = ({
           childComments={childComments}
           isHidden={isChildsHidden}
         />
-        <LoadingSpinning loadingState={loading} />
+        {loading && <LoadingSpinning />}
       </div>
     </div>
   );

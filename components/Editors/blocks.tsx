@@ -116,14 +116,10 @@ const BlockItem = memo(function BlockItem({
   switch (block.type) {
     case "text":
       const textEditorId = "input-body-" + block.id; // input-body-text-1, 2, 3, 4, ..., n
-
-      console.log("Text REMOUNT"); // TODO (DEBUG): remove me
-
       return (
         <BlockEditorWrapper
           id={block.id}
           wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
-          // wrapperLabel="Texto"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -139,14 +135,10 @@ const BlockItem = memo(function BlockItem({
     case "code":
       const filenameEditorId = "input-filename-" + block.id; // input-filename-1, 2, 3, 4, ..., n
       const codeEditorId = "input-codebody-" + block.id; // input-codebody-1, 2, 3, 4, ..., n
-
-      console.log("Code REMOUNT"); // TODO (DEBUG): remove me
-
       return (
         <BlockEditorWrapper
           id={block.id}
           wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
-          // wrapperLabel="Código"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -180,14 +172,10 @@ const BlockItem = memo(function BlockItem({
     case "quote":
       const quoteEditorId = "input-quote-" + block.id; // input-quote-text-1, 2, 3, 4, ..., n
       const authorEditorId = "input-author-" + block.id; // input-author-text-1, 2, 3, 4, ..., n
-
-      console.log("Quote REMOUNT"); // TODO (DEBUG): remove me
-
       return (
         <BlockEditorWrapper
           id={block.id}
           wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
-          // wrapperLabel="Citação"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -218,27 +206,21 @@ const BlockItem = memo(function BlockItem({
       const accordions = (block.data as BlogAccordion)?.accordions ?? null;
       const setAccordions = (val: AccordionItem[]) =>
         updateBlock(block.id, { accordions: val });
-
-      console.log("Accordion REMOUNT"); // TODO (DEBUG): remove me
-
       return (
         <BlockEditorWrapper
           id={block.id}
           wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
-          // wrapperLabel="Acordeão"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
           <AccordionEditorContent {...{ accordions, setAccordions }} />
         </BlockEditorWrapper>
       );
-    case "image":
+    case "image": // TODO: incomplete
       return (
-        // TODO
         <BlockEditorWrapper
           id={block.id}
           wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
-          // wrapperLabel="Imagem"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -260,15 +242,11 @@ const BlockItem = memo(function BlockItem({
           />
         </BlockEditorWrapper>
       );
-    case "imageCarousel":
-      console.log("imageCarousel REMOUNT"); // TODO (DEBUG): remove me
-
+    case "imageCarousel": // TODO: incomplete
       return (
-        // TODO
         <BlockEditorWrapper
           id={block.id}
           wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
-          // wrapperLabel="Imagens"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -277,14 +255,10 @@ const BlockItem = memo(function BlockItem({
       );
     case "alert":
       const alertEditorId = "input-alert-" + block.id; // input-alert-text-1, 2, 3, 4, ..., n
-
-      console.log("Alert REMOUNT"); // TODO (DEBUG): remove me
-
       return (
         <BlockEditorWrapper
           id={block.id}
           wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
-          // wrapperLabel="Alerta"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -299,15 +273,11 @@ const BlockItem = memo(function BlockItem({
           </fieldset>
         </BlockEditorWrapper>
       );
-    case "quiz":
-      console.log("Quiz REMOUNT"); // TODO (DEBUG): remove me
-
+    case "quiz": // TODO: incomplete
       return (
-        // TODO
         <BlockEditorWrapper
           id={block.id}
           wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
-          // wrapperLabel="Quiz"
           onRemove={removeBlock}
           moveToNext={moveToNext}
         >
@@ -326,9 +296,7 @@ const BlockList = ({
   blocks: Block[];
   setBlocks: Dispatch<SetStateAction<Block[]>>;
 }) => {
-  const [isDragActive, setIsDragActive] = useState<UniqueIdentifier | null>(
-    null
-  );
+  const [, setIsDragActive] = useState<UniqueIdentifier | null>(null);
 
   const sensors = useSensors(useSensor(TouchSensor), useSensor(PointerSensor));
 
@@ -395,12 +363,10 @@ const BlockList = ({
   }
 
   function handleDragStart(event: DragStartEvent) {
-    console.log("start");
     setIsDragActive(event.active.id);
   }
 
   function handleDragCancel() {
-    console.log("cancel");
     setIsDragActive(null);
   }
 

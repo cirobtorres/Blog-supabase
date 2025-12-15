@@ -25,7 +25,7 @@ export const imageReducer = (
 
 // ---
 export const initialAccordionState: AccordionItem[] = [
-  { id: crypto.randomUUID(), checked: false, title: "", message: "" },
+  { id: crypto.randomUUID(), title: "", message: "" },
 ];
 
 export const accordionReducer = (
@@ -34,10 +34,7 @@ export const accordionReducer = (
 ): AccordionItem[] => {
   switch (action.type) {
     case "ADD":
-      return [
-        ...state,
-        { id: crypto.randomUUID(), checked: false, title: "", message: "" },
-      ];
+      return [...state, { id: crypto.randomUUID(), title: "", message: "" }];
 
     case "REMOVE":
       if (state.length === 1) return state;

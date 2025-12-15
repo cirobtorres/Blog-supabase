@@ -1,6 +1,6 @@
-import { Toaster } from "@/components/ui/sonner";
-import { ProfileProvider } from "@/providers/ProfileProvider";
-import { createServerAppClient } from "@/supabase/server";
+import { Toaster } from "../components/ui/sonner";
+import { ProfileProvider } from "../providers/ProfileProvider";
+import { createServerAppClient } from "../supabase/server";
 
 export default async function RootProviders({
   children,

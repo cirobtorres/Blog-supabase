@@ -344,7 +344,7 @@ function TipTapAccordionEditor({
   };
 
   if (!editor) {
-    return <LoadingSpinning loadingState={true} />;
+    return <LoadingSpinning />;
   }
 
   return (

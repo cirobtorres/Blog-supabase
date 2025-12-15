@@ -19,7 +19,7 @@ import {
 import { imageInitialState, imageReducer } from "../../../reducers";
 
 export default function ImageEditor({
-  id,
+  // id,
   // src,
   alt,
   filename,
@@ -29,10 +29,10 @@ export default function ImageEditor({
   setAlt,
   setFilename,
   setCaption,
-  wrapperLabel,
-  moveToNext,
-  onRemove,
-}: ImageEditorProps) {
+}: // wrapperLabel,
+// moveToNext,
+// onRemove,
+ImageEditorProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [imageData, dispatch] = useReducer(imageReducer, imageInitialState);
 

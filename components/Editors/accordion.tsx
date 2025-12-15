@@ -1,6 +1,6 @@
-import { focusWithinWhiteRing, hoverWhiteRing } from "@/styles/classNames";
-import { cn } from "@/utils/classnames";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { ChevronDownIcon } from "lucide-react";
 import {
   DeleteEditorButton,
@@ -8,8 +8,8 @@ import {
   LockEditorButton,
   PushEditorDownButton,
 } from "../Buttons/client";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { cn } from "../../utils/classnames";
+import { focusWithinWhiteRing, hoverWhiteRing } from "../../styles/classNames";
 
 function BlkEdWrapperAccordion({
   id,
@@ -133,7 +133,6 @@ export default function BlockEditorWrapper({
             e.stopPropagation();
             moveToNext(id);
           }}
-          // e: React.MouseEvent<HTMLButtonElement, MouseEvent>
           onRemove={() => onRemove(id)}
         />
         <BlkEdWrapperAccordionContent>{children}</BlkEdWrapperAccordionContent>

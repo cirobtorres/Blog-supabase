@@ -1,13 +1,13 @@
 "use client";
 
-import { HazardBorder } from "@/components/HazardBorder";
-import { Checkbox as ShadcnUICheckbox } from "@/components/ui/checkbox";
+import Link from "next/link";
+import { HazardBorder } from "../../../components/HazardBorder";
+import { Checkbox as ShadcnUICheckbox } from "../../../components/ui/checkbox";
 import NextImage from "next/image";
 import {
   AlertIcon,
   DownloadIcon,
   LinkIcon,
-  PencilIcon,
   TrashBinIcon,
   UploadIcon,
 } from "../../Icons";
@@ -27,7 +27,7 @@ import {
   FloatingInput,
   FloatingLabel,
 } from "../../Fieldsets";
-import React, { Dispatch, SetStateAction, useActionState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import {
   ImageDataInfo,
   ImageEditorButton,
@@ -36,20 +36,15 @@ import {
 } from "../../Editors/ImageEditor";
 import { formatType } from "../../../utils/strings";
 import {
-  buttonVariants,
   focusVisibleWhiteRing,
   hoverWhiteRing,
 } from "../../../styles/classNames";
 import { cn } from "../../../utils/classnames";
-import {
-  deleteFile,
-  deleteFiles,
-  updateFile,
-} from "../../../services/media.server";
+import { deleteFile } from "../../../services/media.server";
 import { sonnerToastPromise } from "../../../toasters";
 import { Skeleton } from "../../../components/ui/skeleton";
-import Link from "next/link";
 import { useRenderCount } from "../../../utils/renderCount";
+import AlertDialogEditMedia from "../PreviewCardButtons/AlertDialogEditMedia";
 
 const initState: MediaStateProps = {
   ok: false,
@@ -135,7 +130,7 @@ const ImagePreview = ({ image }: { image: SupabaseBucketMedia }) => {
             {image.metadata.mimetype.split("/")[1]}
           </p>
         </div>
-        <div className="w-fit h-fit px-2.5 py-1.5 text-xs text-neutral-500 font-[600] flex justify-center items-center rounded bg-neutral-800">
+        <div className="w-fit h-fit px-2.5 py-1.5 text-xs text-neutral-500 font-semibold flex justify-center items-center rounded bg-neutral-800">
           <p>{formatType(image.metadata.mimetype)}</p>
         </div>
       </div>
@@ -151,14 +146,13 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketMedia }) => {
         const url = image.url;
         formData.set("fileURL", url);
 
-        // TODO (SUGESTÃO???): ??? criar um botão de desfazer a exclusão do arquivo ???
-        const success = (serverResponse: ArticleActionStateProps) => {
-          // console.log(serverResponse); // DEBUG
+        // const success = (serverResponse: ArticleActionStateProps) => {
+        const success = () => {
           return <p>Arquivo excluído!</p>;
         };
 
-        const error = (serverResponse: ArticleActionStateProps) => {
-          // console.log(serverResponse); // DEBUG
+        // const error = (serverResponse: ArticleActionStateProps) => {
+        const error = () => {
           return <p>Arquivo não excluído</p>;
         };
 
@@ -195,19 +189,7 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketMedia }) => {
 
   return (
     <ImageEditorButtonList className="transition-opacity duration-300 opacity-0 hover:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100">
-      <AlertDialog>
-        <ImageEditorButtonLi tooltip="Editar">
-          <AlertDialogTrigger asChild>
-            <ImageEditorButton
-              onClick={(e) => e.stopPropagation()}
-              className={cn("size-8", focusVisibleWhiteRing)}
-            >
-              <PencilIcon className="size-7 p-1.5 stroke-neutral-500" />
-            </ImageEditorButton>
-          </AlertDialogTrigger>
-        </ImageEditorButtonLi>
-        <AlertDialogContentEditMedia image={image} />
-      </AlertDialog>
+      <AlertDialogEditMedia media={image} />
       <AlertDialog>
         <ImageEditorButtonLi tooltip="Excluir">
           <AlertDialogTrigger asChild>
@@ -252,227 +234,5 @@ const ImageButtonList = ({ image }: { image: SupabaseBucketMedia }) => {
         </AlertDialogContent>
       </AlertDialog>
     </ImageEditorButtonList>
-  );
-};
-
-const AlertDialogContentEditMedia = ({
-  image,
-}: {
-  image: SupabaseBucketMedia;
-}) => {
-  const [filename, setFilename] = React.useState(image.name);
-  const [altText, setAltText] = React.useState(image.name);
-  const [caption, setCaption] = React.useState("");
-
-  const [state, action] = useActionState(async (state) => {
-    try {
-      const formData = new FormData();
-
-      formData.set("bucket", "articles"); // TODO
-      formData.append("fileToSubmit", JSON.stringify(image));
-      formData.append("filename", filename);
-      formData.append(
-        "media_metadata",
-        JSON.stringify({
-          caption: caption,
-          altText: altText,
-        })
-      );
-
-      // TODO (SUGESTÃO???): ??? criar um botão de desfazer a exclusão do arquivo ???
-      const success = (serverResponse: ArticleActionStateProps) => {
-        // console.log(serverResponse); // DEBUG
-        return <p>Arquivo editado!</p>;
-      };
-
-      const error = (serverResponse: ArticleActionStateProps) => {
-        // console.log(serverResponse); // DEBUG
-        return <p>Arquivo não editado</p>;
-      };
-
-      const result = updateFile(state, formData);
-
-      const promise = new Promise((resolve, reject) => {
-        result.then((data) => {
-          if (data.ok) {
-            resolve(result);
-          } else {
-            reject(result);
-          }
-        });
-      });
-
-      sonnerToastPromise(promise, success, error, "Editando arquivo...");
-
-      return result;
-    } catch (e) {
-      console.error(e);
-      const error = {
-        ok: false,
-        success: null,
-        error: null,
-        data: null,
-      };
-      return error;
-    }
-  }, initState);
-
-  useRenderCount("AlertDialogContentEditMedia"); // DEBUG
-
-  return (
-    <AlertDialogContent className="sm:max-w-sm lg:max-w-3xl overflow-hidden">
-      <AlertDialogTitle className="flex justify-between items-center px-3 border-b border-neutral-800 bg-neutral-950">
-        Detalhes
-        <AlertDialogCancelIcon />
-      </AlertDialogTitle>
-      <AlertDialogContentMediaBody
-        {...{
-          filename,
-          alt: altText,
-          caption,
-          setFilename,
-          setAlt: setAltText,
-          setCaption,
-          image,
-        }}
-      />
-      <AlertDialogFooter className="flex flex-row sm:flex-row justify-between items-center p-2 border-t border-neutral-800 bg-neutral-950">
-        <AlertDialogCancel className="text-xs sm:text-sm p-2">
-          Cancelar
-        </AlertDialogCancel>
-        <form className="flex-1 flex gap-2 justify-end">
-          <AlertDialogAction
-            className={cn(buttonVariants({ variant: "default" }))}
-          >
-            Trocar arquivo
-          </AlertDialogAction>
-          <AlertDialogAction
-            type="submit"
-            className={cn(buttonVariants({ variant: "default" }))}
-            formAction={action}
-          >
-            Salvar
-          </AlertDialogAction>
-        </form>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  );
-};
-
-const AlertDialogContentMediaBody = ({
-  filename,
-  alt,
-  caption,
-  setFilename,
-  setAlt,
-  setCaption,
-  image,
-}: {
-  filename: string;
-  alt: string;
-  caption: string;
-  setFilename: (value: string) => void;
-  setAlt: (value: string) => void;
-  setCaption: (value: string) => void;
-  image: SupabaseBucketMedia;
-}) => {
-  useRenderCount("AlertDialogContentMediaBody"); // DEBUG
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
-      <AlertDialogDescription className="sr-only">
-        Trocar Media
-      </AlertDialogDescription>
-      <div className="w-full h-56 min-w-0 overflow-hidden rounded border border-neutral-700">
-        <div className="relative w-full h-full flex justify-center items-center">
-          <HazardBorder />
-          <NextImage
-            src={image.url}
-            alt={image.name}
-            fill
-            sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            className="absolute object-contain"
-          />
-          <ImageEditorButtonList>
-            <ImageEditorButtonLi tooltip="Excluir">
-              <ImageEditorButton className="size-8">
-                <TrashBinIcon className="size-4" />
-              </ImageEditorButton>
-            </ImageEditorButtonLi>
-
-            <ImageEditorButtonLi tooltip="Copiar link">
-              <ImageEditorButton className="size-8">
-                <LinkIcon className="size-4" />
-              </ImageEditorButton>
-            </ImageEditorButtonLi>
-
-            <ImageEditorButtonLi tooltip="Baixar">
-              <ImageEditorButton className="size-8">
-                <DownloadIcon className="size-4" />
-              </ImageEditorButton>
-            </ImageEditorButtonLi>
-
-            <ImageEditorButtonLi tooltip="Enviar">
-              <ImageEditorButton className="size-8">
-                <UploadIcon className="size-4" />
-              </ImageEditorButton>
-            </ImageEditorButtonLi>
-          </ImageEditorButtonList>
-        </div>
-      </div>
-      <div className="flex flex-col gap-3">
-        <ImageDataInfo
-          imageData={{
-            preview: null,
-            filename: image.name,
-            height: image.media_metadata.metadata.height ?? 0,
-            width: image.media_metadata.metadata.width ?? 0,
-            type: image.metadata.mimetype.replace("image/", ""),
-            date: image.updated_at,
-            size: image.metadata.size,
-          }}
-        />
-        <FloatingFieldset>
-          <FloatingInput
-            id="alert-dialog-replace-media-filename"
-            value={filename}
-            onChange={(e) => setFilename(e.target.value)}
-            placeholder=""
-          />
-          <FloatingLabel
-            htmlFor="alert-dialog-replace-media-filename"
-            label="Filename"
-          />
-        </FloatingFieldset>
-        <div>
-          <FloatingFieldset>
-            <FloatingInput
-              id="alert-dialog-replace-media-alt"
-              value={alt}
-              onChange={(e) => setAlt(e.target.value)}
-              placeholder=""
-            />
-            <FloatingLabel
-              htmlFor="alert-dialog-replace-media-alt"
-              label="Alt"
-            />
-          </FloatingFieldset>
-          <p className="text-neutral-500 text-xs pt-1 px-1">
-            Alt é o texto apresentado caso a imagem não possa ser renderizada.
-          </p>
-        </div>
-        <FloatingFieldset>
-          <FloatingInput
-            id="alert-dialog-replace-media-caption"
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-          />
-          <FloatingLabel
-            htmlFor="alert-dialog-replace-media-caption"
-            label="Legenda"
-          />
-        </FloatingFieldset>
-      </div>
-    </div>
   );
 };

@@ -229,7 +229,7 @@ export default function TipTapAlertEditor({
   };
 
   if (!editor) {
-    return <LoadingSpinning loadingState={true} />;
+    return <LoadingSpinning />;
   }
 
   return (

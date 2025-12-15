@@ -1,6 +1,5 @@
 import { ArticleBreadcrumb } from "@/components/Breadcrumb";
 import { EditArticleForm } from "@/components/Forms/EditArticleForm";
-import { StaticHeader } from "@/components/Header";
 import { createServerAppClient } from "@/supabase/server";
 import { notFound } from "next/navigation";
 

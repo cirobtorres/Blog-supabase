@@ -250,7 +250,7 @@ export default function TipTapTextEditor({
   };
 
   if (!editor) {
-    return <LoadingSpinning loadingState={true} />;
+    return <LoadingSpinning />;
   }
 
   return (

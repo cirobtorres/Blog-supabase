@@ -1,9 +1,9 @@
-import { createBrowserAppClient } from "@/supabase/client";
-import { createServerAppClient } from "@/supabase/server";
-import { StaticHeader } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { ArticleFeedGrid } from "@/components/ArticleFeedGrid";
-import { ArticleCover } from "@/components/ArticleCover";
+import { createBrowserAppClient } from "../supabase/client";
+import { createServerAppClient } from "../supabase/server";
+import { StaticHeader } from "../components/Header";
+import { Footer } from "../components/Footer";
+import { ArticleFeedGrid } from "../components/ArticleFeedGrid";
+import { ArticleCover } from "../components/ArticleCover";
 
 export default async function HomePage() {
   let articles: ArticleJoinAuthor[] = [];

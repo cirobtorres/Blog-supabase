@@ -1,4 +1,4 @@
-import { AddFile } from "./AddFile";
+import AddFile from "./AddFile";
 import AddFolder from "./AddFolder";
 
 export default function MediaHeader() {

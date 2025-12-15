@@ -24,7 +24,7 @@ import { FilePreviewCard } from "../../FilePreviewCard";
 import { Spinner } from "../../../../components/ui/spinner";
 import { ExitButton } from "./ExitButton";
 
-export const AddFile = React.memo(() => {
+const AddFile = React.memo(() => {
   const MAX_SIZE = 5 * 1024 * 1024;
   const [openStep, setOpenStep] = React.useState<"upload" | "preview" | null>(
     null
@@ -101,11 +101,13 @@ export const AddFile = React.memo(() => {
         );
       });
 
-      const success = (serverResponse: ArticleActionStateProps) => {
+      // const success = (serverResponse: ArticleActionStateProps) => {
+      const success = () => {
         return <p>Arquivos enviados!</p>;
       };
 
-      const error = (serverResponse: ArticleActionStateProps) => {
+      // const error = (serverResponse: ArticleActionStateProps) => {
+      const error = () => {
         return <p>Falha ao enviar arquivos</p>;
       };
 
@@ -211,3 +213,7 @@ export const AddFile = React.memo(() => {
     </AlertDialog>
   );
 });
+
+AddFile.displayName = "AddFile";
+
+export default AddFile;
