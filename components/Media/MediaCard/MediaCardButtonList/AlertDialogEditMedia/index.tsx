@@ -1,22 +1,17 @@
+import NextImage from "next/image";
+import { useActionState, useState } from "react";
 import {
   ImageDataInfo,
   ImageEditorButton,
   ImageEditorButtonLi,
-  ImageEditorButtonList,
-} from "../../../Editors/ImageEditor";
+} from "../../../../Editors/ImageEditor";
 import {
   FloatingFieldset,
   FloatingInput,
   FloatingLabel,
-} from "../../../Fieldsets";
-import { HazardBorder } from "../../../HazardBorder";
-import {
-  DownloadIcon,
-  LinkIcon,
-  PencilIcon,
-  TrashBinIcon,
-  UploadIcon,
-} from "../../../Icons";
+} from "../../../../Fieldsets";
+import { HazardBorder } from "../../../../HazardBorder";
+import { PencilIcon } from "../../../../Icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,16 +22,14 @@ import {
   AlertDialogFooter,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../../../ui/alert-dialog";
-import { updateFile } from "../../../../services/media.server";
+} from "../../../../ui/alert-dialog";
+import { updateFile } from "../../../../../services/media.server";
 import {
   buttonVariants,
   focusVisibleWhiteRing,
-} from "../../../../styles/classNames";
-import { sonnerToastPromise } from "../../../../toasters";
-import { cn } from "../../../../utils/classnames";
-import NextImage from "next/image";
-import { useActionState, useState } from "react";
+} from "../../../../../styles/classNames";
+import { sonnerToastPromise } from "../../../../../toasters";
+import { cn } from "../../../../../utils/classnames";
 
 const initState: MediaStateProps = {
   ok: false,
@@ -110,9 +103,6 @@ export default function AlertDialogEditMedia({
       return error;
     }
   }, initState);
-
-  //   useRenderCount("AlertDialogContentEditMedia"); // DEBUG
-
   return (
     <AlertDialog open={openEdit} onOpenChange={setOpenEdit}>
       <ImageEditorButtonLi tooltip="Editar">
@@ -150,11 +140,6 @@ export default function AlertDialogEditMedia({
             Cancelar
           </AlertDialogCancel>
           <form className="flex-1 flex gap-2 justify-end">
-            {/* <AlertDialogAction
-              className={cn(buttonVariants({ variant: "default" }))}
-            >
-              Trocar arquivo
-            </AlertDialogAction> */}
             <AlertDialogAction
               type="submit"
               className={cn(buttonVariants({ variant: "default" }))}
@@ -186,8 +171,6 @@ const AlertDialogContentMediaBody = ({
   setCaption: (value: string) => void;
   media: SupabaseBucketMedia;
 }) => {
-  // useRenderCount("AlertDialogContentMediaBody"); // DEBUG
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
       <AlertDialogDescription className="sr-only">
@@ -203,28 +186,6 @@ const AlertDialogContentMediaBody = ({
             sizes="(min-width: 1536px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="absolute object-contain"
           />
-          <ImageEditorButtonList className="backdrop-blur bg-neutral-950/50">
-            <ImageEditorButtonLi tooltip="Excluir">
-              <ImageEditorButton className="size-8">
-                <TrashBinIcon className="size-4" />
-              </ImageEditorButton>
-            </ImageEditorButtonLi>
-            {/* <ImageEditorButtonLi tooltip="Copiar link">
-              <ImageEditorButton className="size-8">
-                <LinkIcon className="size-4" />
-              </ImageEditorButton>
-            </ImageEditorButtonLi> */}
-            <ImageEditorButtonLi tooltip="Baixar">
-              <ImageEditorButton className="size-8">
-                <DownloadIcon className="size-4" />
-              </ImageEditorButton>
-            </ImageEditorButtonLi>
-            {/* <ImageEditorButtonLi tooltip="Enviar">
-              <ImageEditorButton className="size-8">
-                <UploadIcon className="size-4" />
-              </ImageEditorButton>
-            </ImageEditorButtonLi> */}
-          </ImageEditorButtonList>
         </div>
       </div>
       <div className="flex flex-col gap-3">

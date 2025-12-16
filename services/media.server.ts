@@ -1,7 +1,7 @@
 "use server";
 
 import { SupabaseClient } from "@supabase/supabase-js";
-import { createServerAppClient } from "@/supabase/server";
+import { createServerAppClient } from "../supabase/server";
 import { revalidatePath } from "next/cache";
 import sizeOf from "buffer-image-size";
 
@@ -243,46 +243,69 @@ export async function deleteFiles(
   prevState: MediaStateProps,
   formData: FormData
 ) {
-  const stringOfUrlObjects = formData.get("checkBoxList")?.toString();
+  const paths = formData.get("checkBoxPaths[]")?.toString();
 
-  if (stringOfUrlObjects === undefined || stringOfUrlObjects === null)
+  if (paths === undefined || paths === null)
     return {
       ok: false,
       success: null,
-      error: `formData "checkBoxList" value is undefined`,
+      error: `formData "checkBoxPaths[]" value is undefined`,
       data: null,
     };
 
-  const arrayOfUrlObjects = JSON.parse(stringOfUrlObjects);
-  const bucket = "articles";
-
-  const arrayOfUrls = arrayOfUrlObjects.map((obj: SupabaseBucketMedia) => {
-    const path = obj.url.split(`${bucket}/`)[1];
-    return path;
-  });
-
+  const parsedPaths = JSON.parse(paths);
   const supabase = await createServerAppClient();
 
-  const { error } = await supabase.storage.from(bucket).remove(arrayOfUrls);
+  const groupedPaths: Record<string, string[]> = parsedPaths.reduce(
+    (acc: Record<string, string[]>, path: string) => {
+      console.log(path);
+      const [bucket, ...rest] = path.split("/");
+      if (!bucket || rest.length === 0) return acc;
+      const name = rest.join("/"); // subfolders
+      if (!acc[bucket]) acc[bucket] = [];
+      acc[bucket].push(name);
+      return acc;
+    },
+    {}
+  );
 
-  if (error) {
-    console.error(error);
-    return {
-      ok: false,
-      success: null,
-      error: "Error deleting files",
-      data: null,
-    };
-  }
+  await Promise.all(
+    Object.entries(groupedPaths).map(async ([bucket, paths]) => {
+      const { error: storageError } = await supabase.storage
+        .from(bucket)
+        .remove(paths);
 
-  arrayOfUrls.forEach(async (url: string) => {
-    await supabase
-      .from("media_metadata")
-      .delete()
-      .eq("storage_path", bucket + "/" + url);
-  });
+      if (storageError) {
+        console.error(storageError);
+        return {
+          ok: false,
+          success: null,
+          error: "Error deleting files",
+          data: null,
+        };
+      }
 
-  await supabase.storage.from(bucket).remove([".emptyFolderPlaceholder"]); // TODO: test
+      const { error: mediaMetadataError } = await supabase
+        .from("media_metadata")
+        .delete()
+        .in(
+          "storage_path",
+          paths.map((p) => `${bucket}/${p}`)
+        );
+
+      if (mediaMetadataError) {
+        console.error(mediaMetadataError);
+        return {
+          ok: false,
+          success: null,
+          error: "Error deleting metadata",
+          data: null,
+        };
+      }
+
+      await supabase.storage.from(bucket).remove([".emptyFolderPlaceholder"]); // TODO: test
+    })
+  );
 
   revalidatePath("/admin/media");
 
@@ -293,19 +316,17 @@ export async function deleteFile(
   prevState: MediaStateProps,
   formData: FormData
 ) {
-  const fileURL = formData.get("fileURL")?.toString();
+  const filePath = formData.get("filePath")?.toString();
 
-  if (fileURL === undefined || fileURL === null)
+  if (filePath === undefined || filePath === null)
     return {
       ok: false,
       success: null,
-      error: `formData "fileURL" value is undefined`,
+      error: `formData "filePath" value is undefined`,
       data: null,
     };
 
-  const bucket = "articles";
-  const path = fileURL.split(`${bucket}/`)[1];
-
+  const [bucket, path] = filePath.split("/"); // filePath = bucket/path
   const supabase = await createServerAppClient();
 
   const { error: mediaError } = await supabase.storage
@@ -325,7 +346,7 @@ export async function deleteFile(
   const { error: mediaMetadataError } = await supabase
     .from("media_metadata")
     .delete()
-    .eq("storage_path", bucket + "/" + path);
+    .eq("storage_path", filePath);
 
   if (mediaMetadataError) {
     console.error(mediaMetadataError);

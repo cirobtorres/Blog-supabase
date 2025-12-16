@@ -2,21 +2,20 @@ import {
   ImageEditorButton,
   ImageEditorButtonLi,
   ImageEditorButtonList,
-} from "../../../components/Editors/ImageEditor";
+} from "../../../Editors/ImageEditor";
 import {
   FloatingFieldset,
   FloatingInput,
   FloatingLabel,
-} from "../../../components/Fieldsets";
-import { HazardBorder } from "../../../components/HazardBorder";
-import { TrashBinIcon } from "../../../components/Icons";
-import { cn } from "../../../utils/classnames";
-import { useRenderCount } from "../../../utils/renderCount";
-import { formatType } from "../../../utils/strings";
+} from "../../../Fieldsets";
+import { HazardBorder } from "../../../HazardBorder";
+import { TrashBinIcon } from "../../../Icons";
+import { cn } from "../../../../utils/classnames";
+import { formatType } from "../../../../utils/strings";
 import Image from "next/image";
 import React from "react";
 
-export const FilePreviewCard = React.memo(
+export const SaveToDatabaseCard = React.memo(
   ({ data, index, updateFiles, removeFiles }: FilePreviewCardProps) => {
     const { file, filename, caption, altText, blocked } = data;
     const isImage = file.type.startsWith("image/");
@@ -136,4 +135,4 @@ export const FilePreviewCard = React.memo(
   }
 );
 
-FilePreviewCard.displayName = "FilePreviewCard";
+SaveToDatabaseCard.displayName = "SaveToDatabaseCard";

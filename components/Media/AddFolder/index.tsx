@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "../../../../utils/classnames";
-import { PlusIcon } from "../../../../components/Icons";
-import { focusVisibleWhiteRing } from "../../../../styles/classNames";
+import { cn } from "../../../utils/classnames";
+import { PlusIcon } from "../../../components/Icons";
+import { focusVisibleWhiteRing } from "../../../styles/classNames";
 
 export default function AddFolder() {
   return (

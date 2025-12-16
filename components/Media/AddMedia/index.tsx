@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CancelIcon, PlusIcon } from "../../../../components/Icons";
+import { CancelIcon, PlusIcon } from "../../Icons";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -11,20 +11,20 @@ import {
   AlertDialogFooter,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../../../../components/ui/alert-dialog";
-import { cn } from "../../../../utils/classnames";
-import { postFiles } from "../../../../services/media.server";
-import { sonnerToastPromise } from "../../../../toasters";
+} from "../../ui/alert-dialog";
+import { cn } from "../../../utils/classnames";
+import { postFiles } from "../../../services/media.server";
+import { sonnerToastPromise } from "../../../toasters";
 import { DragAndDropZone } from "./DragAndDropZone";
 import {
   buttonVariants,
   focusVisibleWhiteRing,
-} from "../../../../styles/classNames";
-import { FilePreviewCard } from "../../FilePreviewCard";
-import { Spinner } from "../../../../components/ui/spinner";
+} from "../../../styles/classNames";
+import { SaveToDatabaseCard } from "./SaveToDatabaseCard";
+import { Spinner } from "../../ui/spinner";
 import { ExitButton } from "./ExitButton";
 
-const AddFile = React.memo(() => {
+const AddMedia = React.memo(() => {
   const MAX_SIZE = 5 * 1024 * 1024;
   const [openStep, setOpenStep] = React.useState<"upload" | "preview" | null>(
     null
@@ -176,7 +176,7 @@ const AddFile = React.memo(() => {
           <div className="px-2 py-4">
             <div className="max-h-[502px] px-2 grid grid-cols-1 gap-2 scrollbar overflow-y-auto">
               {files.map((item, index) => (
-                <FilePreviewCard
+                <SaveToDatabaseCard
                   key={`${item.file.name}-${index}`}
                   data={item}
                   index={index}
@@ -214,6 +214,6 @@ const AddFile = React.memo(() => {
   );
 });
 
-AddFile.displayName = "AddFile";
+AddMedia.displayName = "AddMedia";
 
-export default AddFile;
+export default AddMedia;

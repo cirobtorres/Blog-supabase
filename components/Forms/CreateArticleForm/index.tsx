@@ -1,54 +1,30 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import Image from "next/image";
 import {
   ReturnToHome,
   ReturnToProfile,
   SubmitFormButton,
-} from "@/components/Buttons";
-import { SubtitleFieldset, TitleFieldset } from "@/components/Fieldsets";
-import { postArticlePublic, postArticleSave } from "@/services/article";
+} from "../../../components/Buttons";
+import { SubtitleFieldset, TitleFieldset } from "../../../components/Fieldsets";
+import { postArticlePublic, postArticleSave } from "../../../services/article";
 import { BlockList, NewBlockButtons } from "../../Editors/blocks";
-import { useProfile } from "@/hooks/useProfile";
-import { AspectRatio } from "@/components/ui/aspect-ration";
-import {
-  ImageEditorButton,
-  ImageEditorButtonLi,
-  ImageEditorButtonList,
-} from "@/components/Editors/ImageEditor";
-import {
-  CancelIcon,
-  DownloadIcon,
-  EllipsisIcon,
-  LinkIcon,
-  PlusIcon,
-  TrashBinIcon,
-} from "@/components/Icons";
-import { sonnerToastPromise } from "@/toasters";
+import { useProfile } from "../../../hooks/useProfile";
+import { CancelIcon, EllipsisIcon } from "../../../components/Icons";
+import { sonnerToastPromise } from "../../../toasters";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { buttonVariants, focusVisibleWhiteRing } from "@/styles/classNames";
-import { cn } from "@/utils/classnames";
-import { convertToLargeDate } from "@/utils/dates";
-import { useRouter } from "next/navigation";
-import { useRenderCount } from "@/utils/renderCount";
+} from "../../../components/ui/popover";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { getFiles } from "@/services/media.server";
-import PreviewCard from "@/components/Media/PreviewCards";
-import { LoadingSpinning } from "@/components/LoadingSpinning";
+  buttonVariants,
+  focusVisibleWhiteRing,
+} from "../../../styles/classNames";
+import { cn } from "../../../utils/classnames";
+import { convertToLargeDate } from "../../../utils/dates";
+import { useRouter } from "next/navigation";
 import DragAndDropZone from "./DragAndDropZone";
 
 const initialPostState = {
@@ -94,7 +70,6 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
       formData.set("article_subtitle", htmlSubtitle);
       formData.set("article_body", JSON.stringify(blocks));
 
-      // TODO (SUGESTÃO???): ??? criar um botão de desfazer publicação ???
       const success = (serverResponse: ArticleActionStateProps) => {
         // console.log(serverResponse); // DEBUG
         const now = convertToLargeDate(
@@ -333,9 +308,6 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
               )}
             />
           </div>
-          {/* <div className="min-h-48 p-3 rounded-lg border border-neutral-700">
-            <p>Sumário???</p>
-          </div> */}
         </div>
       </form>
     </div>

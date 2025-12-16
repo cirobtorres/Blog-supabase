@@ -6,7 +6,7 @@ import {
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
-} from "../../../components/ui/pagination";
+} from "../../ui/pagination";
 import { cn } from "../../../utils/classnames";
 import { buttonVariants } from "../../../styles/classNames";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";

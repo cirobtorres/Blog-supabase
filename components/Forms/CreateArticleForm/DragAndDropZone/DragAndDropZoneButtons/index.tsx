@@ -3,7 +3,7 @@ import {
   ImageEditorButtonLi,
   ImageEditorButtonList,
 } from "../../../../../components/Editors/ImageEditor";
-import AlertDialogEditMedia from "../../../../Media/PreviewCardButtons/AlertDialogEditMedia";
+import AlertDialogEditMedia from "../../../../Media/MediaCard/MediaCardButtonList/AlertDialogEditMedia";
 import { DownloadIcon, TrashBinIcon } from "../../../../../components/Icons";
 
 export default function DragAndDropZoneButtons({

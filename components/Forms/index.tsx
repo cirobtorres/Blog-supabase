@@ -75,7 +75,7 @@ export const SignUpForm = () => {
         {state.error.displayName && (
           <ul>
             {state.error.displayName.map((err, index) => (
-              <li key={index} className="text-xs font-medium text-red-500">
+              <li key={index} className="text-xs font-medium text-orange-700">
                 {err}
               </li>
             ))}
@@ -97,7 +97,7 @@ export const SignUpForm = () => {
         {state.error.email && (
           <ul>
             {state.error.email.map((err, index) => (
-              <li key={index} className="text-xs font-medium text-red-500">
+              <li key={index} className="text-xs font-medium text-orange-700">
                 {err}
               </li>
             ))}
@@ -120,7 +120,7 @@ export const SignUpForm = () => {
         {state.error.password && (
           <ul>
             {state.error.password.map((err, index) => (
-              <li key={index} className="text-xs font-medium text-red-500">
+              <li key={index} className="text-xs font-medium text-orange-700">
                 {err}
               </li>
             ))}
@@ -143,7 +143,7 @@ export const SignUpForm = () => {
         {state.error.passwordConfirm && (
           <ul>
             {state.error.passwordConfirm.map((err, index) => (
-              <li key={index} className="text-xs font-medium text-red-500">
+              <li key={index} className="text-xs font-medium text-orange-700">
                 {err}
               </li>
             ))}
@@ -181,7 +181,7 @@ export const SignUpForm = () => {
             {state.error.server.map((err, index) => (
               <li
                 key={index}
-                className="p-1 text-center text-sm text-neutral-100 font-medium rounded-xs border border-red-500 bg-red-900"
+                className="p-1 text-center text-sm text-neutral-100 font-medium rounded-xs border border-orange-700 bg-orange-900"
               >
                 {err}
               </li>
@@ -238,7 +238,7 @@ export const SignInForm = () => {
           />
         </FloatingFieldset>
         {state.error?.email && (
-          <ul className="text-sm text-red-500">
+          <ul className="text-sm text-orange-700">
             {state.error.email.map((error, index) => (
               <li key={index}>{error}</li>
             ))}
@@ -259,7 +259,7 @@ export const SignInForm = () => {
           <FloatingPassTypeBtn state={type} setState={setType} />
         </FloatingFieldset>
         {state.error?.password && (
-          <ul className="text-sm text-red-500">
+          <ul className="text-sm text-orange-700">
             {state.error.password.map((error, index) => (
               <li key={index}>{error}</li>
             ))}
@@ -267,7 +267,7 @@ export const SignInForm = () => {
         )}
         <SubmitFormButton label="Confirmar" isPending={isPending} />
         {state.error?.server && (
-          <ul className="text-sm text-red-500">
+          <ul className="text-sm text-orange-700">
             {state.error.server.map((error, index) => (
               <li key={index}>{error}</li>
             ))}

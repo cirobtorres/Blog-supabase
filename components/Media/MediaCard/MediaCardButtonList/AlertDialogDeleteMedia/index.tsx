@@ -1,8 +1,9 @@
+import { useActionState, useState } from "react";
 import {
   ImageEditorButton,
   ImageEditorButtonLi,
-} from "../../../../components/Editors/ImageEditor";
-import { AlertIcon, TrashBinIcon } from "../../../../components/Icons";
+} from "../../../../Editors/ImageEditor";
+import { AlertIcon, TrashBinIcon } from "../../../../Icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,12 +14,11 @@ import {
   AlertDialogFooter,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../../../../components/ui/alert-dialog";
-import { deleteFile } from "../../../../services/media.server";
-import { focusVisibleWhiteRing } from "../../../../styles/classNames";
-import { sonnerToastPromise } from "../../../../toasters";
-import { cn } from "../../../../utils/classnames";
-import { useActionState, useState } from "react";
+} from "../../../../ui/alert-dialog";
+import { deleteFile } from "../../../../../services/media.server";
+import { focusVisibleWhiteRing } from "../../../../../styles/classNames";
+import { sonnerToastPromise } from "../../../../../toasters";
+import { cn } from "../../../../../utils/classnames";
 
 const initState: MediaStateProps = {
   ok: false,
@@ -38,20 +38,18 @@ export default function AlertDialogDeleteMedia({
     async (state: MediaStateProps) => {
       try {
         const formData = new FormData();
-        const url = media.url;
-        formData.set("fileURL", url);
+        const path = media.media_metadata.storage_path;
+        formData.set("filePath", path);
 
-        const result = deleteFile(state, formData);
-
-        // const success = (serverResponse: ArticleActionStateProps) => {
         const success = () => {
           return <p>Arquivo excluído!</p>;
         };
 
-        // const error = (serverResponse: ArticleActionStateProps) => {
         const error = () => {
           return <p>Arquivo não excluído</p>;
         };
+
+        const result = deleteFile(state, formData);
 
         const promise = new Promise((resolve, reject) => {
           result.then((data) => {
@@ -106,9 +104,9 @@ export default function AlertDialogDeleteMedia({
         </AlertDialogDescription>
         <div className="flex items-center p-3 min-h-20 border-y border-neutral-800">
           <p className="text-sm flex items-center gap-2">
-            <AlertIcon className="stroke-red-500" />{" "}
-            <span className="text-red-500 font-medium">
-              Confirmar a exclusão do arquivo?
+            <AlertIcon className="stroke-orange-700" />{" "}
+            <span className="text-orange-700 font-medium">
+              Tem certeza que deseja excluir o arquivo?
             </span>
           </p>
         </div>

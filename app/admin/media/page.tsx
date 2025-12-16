@@ -1,9 +1,7 @@
 import { getCountFiles, getFiles } from "../../../services/media.server";
-import MediaPagination from "../../../components/Media/MediaPagination";
+import MediaPagination from "../../../components/Media/Pagination";
 import { ArticleBreadcrumb } from "../../../components/Breadcrumb";
-import MediaHeader from "../../../components/Media/MediaHeader";
-import MediaSorter from "../../../components/Media/MediaSorter";
-import PreviewCard from "../../../components/Media/PreviewCards";
+import Media from "../../../components/Media";
 
 interface SearchParamsProps {
   bucket: string;
@@ -39,18 +37,7 @@ export default async function MediaPage({
   return (
     <>
       <ArticleBreadcrumb />
-      <MediaHeader />
-      <MediaSorter
-        // medias={medias}
-        totalFiles={totalFiles}
-      />
-      {medias.length > 0 && (
-        <ul className="grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 gap-2">
-          {medias.map((media) => (
-            <PreviewCard key={media.id} data={media} />
-          ))}
-        </ul>
-      )}
+      <Media medias={medias} totalFiles={totalFiles} />
       <MediaPagination currentPage={page} totalPages={totalPages} />
     </>
   );

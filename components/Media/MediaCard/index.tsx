@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import PreviewCardButtons from "../PreviewCardButtons";
-import { HazardBorder } from "../../../components/HazardBorder";
+import NextImage from "next/image";
+import MediaCardButtonList from "./MediaCardButtonList";
+import { HazardBorder } from "../../HazardBorder";
 import { formatType } from "../../../utils/strings";
-import { Checkbox } from "../../../components/ui/checkbox";
+import { Checkbox as PreviewCardCheckbox } from "../../ui/checkbox";
 import { cn } from "../../../utils/classnames";
 import {
   focusVisibleWhiteRing,
@@ -12,7 +12,7 @@ import {
 } from "../../../styles/classNames";
 import Link from "next/link";
 
-export default function PreviewCard({
+export default function MediaCard({
   data,
   options,
   isChecked,
@@ -21,17 +21,15 @@ export default function PreviewCard({
   data: SupabaseBucketMedia;
   options?: { linkClassname: string };
   isChecked?: boolean;
-  onCheck?: () => void;
+  onCheck?: (checked: boolean) => void;
 }) {
   return (
     <div className="relative">
-      <Checkbox
+      <PreviewCardCheckbox
         className="absolute left-2 top-2 z-10"
         checked={isChecked}
         onCheckedChange={(checked) => {
-          if (checked) {
-            onCheck?.();
-          }
+          onCheck?.(checked === true);
         }}
       />
       <Link
@@ -46,9 +44,9 @@ export default function PreviewCard({
         )}
       >
         <div className="h-full relative">
-          <PreviewCardButtons data={data} />
+          <MediaCardButtonList data={data} />
           <HazardBorder />
-          <Image
+          <NextImage
             src={data.url}
             alt={data.name}
             fill

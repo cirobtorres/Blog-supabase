@@ -8,14 +8,6 @@ const style = {
   backgroundColor: "#171717", // # bg-neutral-900
 };
 
-// export const sonnerToastSuccess = (message: string) => {
-//   return toast.success(message, { style });
-// };
-
-// export const sonnerToastError = (message: string) => {
-//   return toast.error(message, { style });
-// };
-
 export const sonnerToastPromise = (
   promise: Promise<any>,
   success: (data: ArticleActionStateProps) => JSX.Element,

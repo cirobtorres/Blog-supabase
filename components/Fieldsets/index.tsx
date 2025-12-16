@@ -115,7 +115,7 @@ export const FloatingFieldset = ({
       className={cn(
         "relative w-full transition-all duration-300 rounded-xs has-disabled:cursor-not-allowed has-disabled:[&_label]:text-neutral-700 bg-neutral-900 has-disabled:border-neutral-800 has-disabled:bg-neutral-900 border border-neutral-700 group has-[textarea]:p-1",
         focusWithinWhiteRing,
-        error && "border-red-500 has-disabled:border-red-900",
+        error && "border-orange-700 has-disabled:border-orange-900",
         className
       )}
     >
@@ -192,7 +192,7 @@ export const FloatingLabel = ({
       "absolute origin-left top-1/2 z-10 start-1 px-1 font-medium select-none text-sm pointer-events-none bg-transparent bg-opacity-50 transform transition-top duration-100 -translate-y-[18px] scale-75 peer-focus:-translate-y-[18px] peer-focus:scale-75 text-neutral-100 peer-focus:text-neutral-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-placeholder-shown:text-white",
       className,
       error &&
-        "text-red-500 peer-focus:text-red-500 peer-placeholder-shown:text-red-500"
+        "text-orange-700 peer-focus:text-orange-700 peer-placeholder-shown:text-orange-700"
     )}
   >
     {label}

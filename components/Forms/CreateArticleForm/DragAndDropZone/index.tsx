@@ -1,6 +1,6 @@
 import { CancelIcon, PlusIcon } from "../../../../components/Icons";
 import { LoadingSpinning } from "../../../../components/LoadingSpinning";
-import PreviewCard from "../../../../components/Media/PreviewCards";
+import MediaCard from "../../../Media/MediaCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,7 +18,6 @@ import {
   focusVisibleWhiteRing,
 } from "../../../../styles/classNames";
 import { cn } from "../../../../utils/classnames";
-import { useRenderCount } from "../../../../utils/renderCount";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import DragAndDropZoneButtons from "./DragAndDropZoneButtons";
@@ -161,7 +160,7 @@ export default function DragAndDropZone({
           </div>
         </div>
       )}
-      <AlertDialogContent className="h-full max-h-9/12 sm:max-w-5xl overflow-hidden">
+      <AlertDialogContent className="h-full flex flex-col max-h-9/12 sm:max-w-5xl overflow-hidden">
         {loading ? (
           <AlertDialogHeader>
             <AlertDialogTitle className="sr-only">
@@ -182,10 +181,10 @@ export default function DragAndDropZone({
                 </AlertDialogCancel>
               </AlertDialogTitle>
             </AlertDialogHeader>
-            {files && (
-              <div className="grid grid-cols-4 gap-4 p-8 overflow-y-auto scrollbar m-2">
+            {files && files.length > 0 ? (
+              <div className="h-full grid grid-cols-4 gap-4 p-8 m-2 overflow-y-auto scrollbar">
                 {files.map((file) => (
-                  <PreviewCard
+                  <MediaCard
                     key={file.id}
                     data={file}
                     options={{ linkClassname: "h-60" }}
@@ -194,8 +193,14 @@ export default function DragAndDropZone({
                   />
                 ))}
               </div>
+            ) : (
+              <div className="h-full p-8 m-2 flex items-center justify-center pointer-events-none">
+                <p className="text-neutral-500">
+                  Você ainda não possui imagens
+                </p>
+              </div>
             )}
-            <AlertDialogFooter className="relative after:absolute after:top-0 after:left-0 after:right-0 after:h-px after:bg-neutral-700 flex items-center justify-between p-4 gap-2 bg-neutral-950">
+            <AlertDialogFooter className="h-fit relative flex flex-row sm:flex-row justify-between sm:justify-between gap-2 p-4 after:absolute after:top-0 after:left-0 after:right-0 after:h-px after:bg-neutral-700 bg-neutral-950">
               <AlertDialogCancel
                 onClick={() => {
                   setOpenDialog(false);

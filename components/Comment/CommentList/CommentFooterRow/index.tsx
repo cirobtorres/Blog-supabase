@@ -368,10 +368,6 @@ const UserNotSignedInAlertDialog = () => {
           </div>
         </form>
         <ProvidersRowButtons redirectTo={redirectTo} />
-        {/* <AlertDialogFooter className="flex items-center gap-2">
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction>Confirmar</AlertDialogAction>
-          </AlertDialogFooter> */}
       </AlertDialogContent>
     </AlertDialog>
   );
