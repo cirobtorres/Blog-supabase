@@ -1,15 +1,20 @@
 "use client";
 
-import { ReturnToHome, SubmitFormButton } from "@/components/Buttons";
-import { LinkButton, ProvidersRowButtons } from "@/components/Buttons/client";
+import { redirect } from "next/navigation";
+import { User } from "@supabase/supabase-js";
+import { ReturnToHome, SubmitFormButton } from "../../components/Buttons";
+import {
+  LinkButton,
+  ProvidersRowButtons,
+} from "../../components/Buttons/client";
 import {
   FloatingFieldset,
   FloatingInput,
   FloatingLabel,
   FloatingPassTypeBtn,
-} from "@/components/Fieldsets";
-import { signIn, signUp } from "@/services/authentication";
-import { useActionState, useState } from "react";
+} from "../../components/Fieldsets";
+import { signIn, signUp } from "../../services/authentication";
+import { useActionState, useRef, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { AlertCircleIcon } from "lucide-react";
 import {
@@ -18,8 +23,6 @@ import {
   HoverCardTrigger,
 } from "../ui/hover-card";
 import { AlertEditorIcon } from "../Icons";
-import { redirect } from "next/navigation";
-import { User } from "@supabase/supabase-js";
 
 const iniSignUpState: {
   ok: boolean;
@@ -53,6 +56,8 @@ export const SignUpForm = () => {
   const [confirmType, setConfirmType] = useState<"password" | "text">(
     "password"
   );
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="max-w-lg w-full mx-auto p-4 my-[var(--header-height)]">
@@ -106,6 +111,7 @@ export const SignUpForm = () => {
         <FloatingFieldset error={!!state.error.password}>
           <FloatingInput
             id="floating-password-signUp"
+            ref={passwordRef}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             type={type}
@@ -115,7 +121,11 @@ export const SignUpForm = () => {
             label="Senha"
             error={!!state.error.password}
           />
-          <FloatingPassTypeBtn state={type} setState={setType} />
+          <FloatingPassTypeBtn
+            inputRef={passwordRef}
+            state={type}
+            setState={setType}
+          />
         </FloatingFieldset>
         {state.error.password && (
           <ul>
@@ -129,6 +139,7 @@ export const SignUpForm = () => {
         <FloatingFieldset error={!!state.error.passwordConfirm}>
           <FloatingInput
             id="floating-password-signUp-confirmation"
+            ref={confirmPasswordRef}
             type={confirmType}
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
@@ -138,7 +149,11 @@ export const SignUpForm = () => {
             label="Confirmação de Senha"
             error={!!state.error.passwordConfirm}
           />
-          <FloatingPassTypeBtn state={confirmType} setState={setConfirmType} />
+          <FloatingPassTypeBtn
+            inputRef={confirmPasswordRef}
+            state={confirmType}
+            setState={setConfirmType}
+          />
         </FloatingFieldset>
         {state.error.passwordConfirm && (
           <ul>
@@ -203,6 +218,7 @@ export const SignInForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [type, setType] = useState<"password" | "text">("password");
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   const [state, action, isPending] = useActionState(
     async () => {
@@ -247,8 +263,9 @@ export const SignInForm = () => {
         <FloatingFieldset error={!!state.error?.email}>
           <FloatingInput
             id="floating-password-signIn"
-            value={password}
+            ref={passwordRef}
             type={type}
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <FloatingLabel
@@ -256,7 +273,11 @@ export const SignInForm = () => {
             label="Senha"
             error={!!state.error?.email}
           />
-          <FloatingPassTypeBtn state={type} setState={setType} />
+          <FloatingPassTypeBtn
+            inputRef={passwordRef}
+            state={type}
+            setState={setType}
+          />
         </FloatingFieldset>
         {state.error?.password && (
           <ul className="text-sm text-orange-700">

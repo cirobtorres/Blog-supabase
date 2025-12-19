@@ -10,13 +10,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "../../../../components/ui/alert-dialog";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { useProfile } from "@/hooks/useProfile";
+} from "../../../../components/ui/popover";
+import { useProfile } from "../../../../hooks/useProfile";
 import {
   AlertIcon,
   CancelIcon,
@@ -24,13 +24,16 @@ import {
   EditIcon,
   OptionIcon,
   ReportIcon,
-} from "@/components/Icons";
-import { deleteComment, useAsyncFn } from "@/services/comment";
+} from "../../../../components/Icons";
+import { deleteComment, useAsyncFn } from "../../../../services/comment";
 import { toast } from "sonner";
-import { buttonVariants, focusVisibleWhiteRing } from "@/styles/classNames";
-import { convertDateToYouTubeLike } from "@/utils/dates";
-import { useComment } from "@/hooks/useComment";
-import { cn } from "@/utils/classnames";
+import {
+  buttonVariants,
+  focusVisibleWhiteRing,
+} from "../../../../styles/classNames";
+import { convertDateToYouTubeLike } from "../../../../utils/dates";
+import { useComment } from "../../../../hooks/useComment";
+import { cn } from "../../../../utils/classnames";
 
 const CommentAvatarRow = ({
   comment,
@@ -65,7 +68,10 @@ const DatetimeFormater = ({
   return (
     <>
       <span className="text-[#808080]">
-        {useMemo(() => convertDateToYouTubeLike(createdAt), [createdAt])}
+        {useMemo(
+          () => convertDateToYouTubeLike(createdAt),
+          [createdAt, createdAt]
+        )}
       </span>
       <span className="text-[#808080]">
         {updatedAt && updatedAt > createdAt && "(editado)"}

@@ -5,7 +5,7 @@ export const ArticleQuoteBlock = ({
 }) => (
   <div
     className={
-      `relative w-full p-4 border-y-4 border-neutral-800 ` +
+      `relative w-full p-4 mb-8 border-y-4 border-neutral-800 ` +
       `after:w-20 after:bg-theme-color after:h-1 after:absolute after:left-1/2 after:-translate-x-1/2 after:-bottom-1 ` +
       `before:w-20 before:bg-theme-color before:h-1 before:absolute before:left-1/2 before:-translate-x-1/2 before:-top-1 `
     }

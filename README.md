@@ -414,10 +414,9 @@ execute function public.handle_comment_soft_delete();
   <li>MELHORAR: redirecionar usuário recém logado de volta para página de origem;</li>
   <li>MELHORAR: uniformizar os headers. Em /admin, ele deve ser fixed também;</li>
   <li>MELHORAR: uniformizar os types;</li>
+  <li>CORRIGIR (BUG): comentários editados não atualizam o estado do componente. O <span style="color:orange">(editado)</span> não é gerado na mesma sessão;</li>
   <li style="color:#b22222">CORRIGIR (BUG): comentários deletados não atualizam CommentCount na mesma sessão;</li>
-  <li style="color:#b22222">CORRIGIR (BUG): códigos copiados do vscode diretamente para o codeblock não são formatados corretamente para o usuário em articles;</li>
-  <li style="color:#b22222">CORRIGIR (BUG): (REPRODUÇÃO): selecionar checkbox de um card e selecionar e descelecionar o checkbox de todos os cards ainda mantém o checkbox VISUALMENTE selecionado, embora o array de images seja zerado;</li>
-  <li style="color:#b22222">CORRIGIR (BUG): media só aceita formData de até 3mb. Criar um handler para lidar com esse erro em addFile;</li>
+  <li style="color:#b22222">CORRIGIR (BUG): media só aceita formData de até 3mb. Encontrar uma solução;</li>
   <ul>
     <li>ADICIONAR: bloco de vídeos;</li>
     <li>ADICIONAR: bloco de arquivos;</li>
@@ -428,26 +427,3 @@ execute function public.handle_comment_soft_delete();
   <li><span style="font-weight:900;color:orange">&#40;EM TESTE&#41;</span> MELHORAR: a altura hardcoded dos editores, que devem ocupar o espaço máximo definido pelo seu wrapper;</li>
   <li><span style="font-weight:900;color:orange">&#40;EM TESTE&#41;</span> CORRIGIR (BUG): AdminPanel precisa criar o highlight de currentPage seguindo uma ordem de prioridade, da URL mais específica para a mais genérica;</li>
 </ol>
-
-<h2 style="font-weight:500;font-size:30px;color:#9c2f70">Aide</h2>
-
-<h3 style="font-weight:500;font-size:20px;color:#15bf67">Update supabase storage path</h3>
-
-<p style="font-weight:500;font-size:15px">Supabase não fornece uma função que atualize o path de um arquivo. Precisamos copiar em uma nova variável esses dados, deletar o arquivo e então injetar um arquivo novo com os dados copiados nessa variável, mas agora com o path desejado.</p>
-
-<hr/>
-
-<h3 style="font-weight:500;font-size:20px;color:#15bf67">TipTapCodeEditor</h3>
-
-<p style="font-weight:500;font-size:15px;color:#b22222;background-color:#262626;padding:10px;border-radius:6px;width:fit-content;border:1px solid #404040">Está impedido de criar novos nodes.</p>
-
-<p style="font-weight:500;font-size:15px">O comportamento padrão do TipTap CodeBlock Lowlight é o de criar novos &lt;pre&gt;&lt;code&gt; por meio de:</p>
-
-<ol style="font-weight:500;font-size:15px">
-  <li>Triple Enter; ou</li>
-  <li>Arrow Down &#40;ao final de cada code block&#41;;</li>
-</ol>
-
-<p style="font-weight:500;font-size:15px">Esse comportamento foi removido por meio de CustomCodeBlockShiki. <a href="https://github.com/timomeh/tiptap-extension-code-block-shiki" style="color:#1e90ff;text-decoration:underline;">CodeBlockShiki</a> é uma third party extention do tiptap para integração com <a href="https://shiki.matsu.io/" style="color:#1e90ff;text-decoration:underline;">Shiki</a>. O tiptap por padrão trabalha com <a href="https://github.com/wooorm/lowlight" style="color:#1e90ff;text-decoration:underline;">Lowlight</a> por meio de sua extensão nativa CodeBlockLowlight.</p>
-
-<p style="font-weight:500;font-size:15px">O Shiki faz um wrapper &#40;envelopa&#41; do conteúdo por padrão &#40;em tags &lt;pre&gt;&lt;code&gt;&#41;. O TipTap também envelopa o conteúdo nessas tags. Foi optado pela remoção, então, das tags provenientes do TipTap. Ao editor de código TipTapCodeEditor é permitido apenas um pré formatador de code block.</p>

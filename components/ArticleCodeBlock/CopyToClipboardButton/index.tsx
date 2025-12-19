@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { cn } from "@/utils/classnames";
-import { CheckIcon, CopyCodeIcon } from "../Icons";
+import { cn } from "../../../utils/classnames";
+import { CheckIcon, CopyCodeIcon } from "../../Icons";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../ui/tooltip";
+} from "../../ui/tooltip";
 
-export default function ArticleCopyCodeButton({
+export default function CopyToClipboardButton({
   code,
   className,
 }: {
@@ -19,18 +19,15 @@ export default function ArticleCopyCodeButton({
   const [disable, setDisable] = useState(false);
 
   const handleCopy = () => {
-    const codeContent = new DOMParser().parseFromString(code, "text/html").body
-      .innerText;
+    if (!code) return;
 
-    if (codeContent) {
-      navigator.clipboard.writeText(codeContent);
+    navigator.clipboard.writeText(code);
 
-      setCopied(true);
-      setDisable(true);
+    setCopied(true);
+    setDisable(true);
 
-      setTimeout(() => setCopied(false), 2000);
-      setTimeout(() => setDisable(false), 2000);
-    }
+    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setDisable(false), 2000);
   };
 
   return (

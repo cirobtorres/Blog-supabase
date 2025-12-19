@@ -1,14 +1,14 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useComment } from "@/hooks/useComment";
+import { useComment } from "../../hooks/useComment";
 import { CommentEditor } from "./CommentEditor";
 import CommentCount from "./CommentCount";
 import CommentList from "./CommentList";
-import { useProfile } from "@/hooks/useProfile";
+import { useProfile } from "../../hooks/useProfile";
 import LoadMoreButton from "./LoadMoreButton";
 import CommentAvatar from "./CommentAvatar";
-import { createComment, useAsyncFn } from "@/services/comment";
+import { createComment, useAsyncFn } from "../../services/comment";
 import { useCallback } from "react";
 import { toast } from "sonner";
 

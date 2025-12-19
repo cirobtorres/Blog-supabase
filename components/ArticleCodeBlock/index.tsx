@@ -1,7 +1,7 @@
-import { formatCodeBlockLanguage } from "@/utils/strings";
-import ArticleCopyCodeButton from "../ArticleCopyCodeButton";
+import { formatCodeBlockLanguage } from "../../utils/strings";
+import CopyToClipboardButton from "./CopyToClipboardButton";
 import { BundledLanguage } from "shiki";
-import { highlightCodeWithShiki } from "@/utils/shiki";
+import { highlightCodeWithShiki } from "../../utils/shiki";
 import { useEffect, useState } from "react";
 
 export const ArticleCodeBlock = ({
@@ -37,7 +37,7 @@ export const ArticleCodeBlock = ({
           }}
           className="overflow-x-auto max-w-full min-w-0 [&_pre_code]:py-4"
         />
-        <ArticleCopyCodeButton
+        <CopyToClipboardButton
           code={code}
           className="transition-opacity duration-200 absolute top-1 right-1 bg-neutral-900" // opacity-0 group-hover:opacity-100
         />

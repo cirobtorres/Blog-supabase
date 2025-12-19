@@ -1,5 +1,5 @@
 import { labelId, slugify } from "@/utils/strings";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, forwardRef, SetStateAction } from "react";
 import { cn } from "../../utils/classnames";
 import {
   focusVisibleWhiteRing,
@@ -124,28 +124,19 @@ export const FloatingFieldset = ({
   );
 };
 
-export const FloatingInput = ({
-  id,
-  value,
-  onChange,
-  placeholder = " ",
-  className,
-  ...props
-}: React.InputHTMLAttributes<HTMLInputElement> & FloatingInputProps) => (
-  <input
-    id={id}
-    name={id}
-    type="text"
-    autoComplete="off"
-    value={value}
-    onChange={onChange}
-    placeholder={placeholder}
-    {...props}
-    className={cn(
-      "h-full w-full px-2 pt-[18px] pb-1 text-sm font-medium rounded peer transition-all duration-300 appearance-none border-none outline-none placeholder:text-transparent placeholder:select-none text-neutral-400 bg-transparent focus:placeholder:text-neutral-500 disabled:cursor-not-allowed ",
-      className
-    )}
-  />
+export const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
+  (props, ref) => (
+    <input
+      {...props}
+      ref={ref}
+      autoComplete="off"
+      placeholder={props.placeholder ?? ""}
+      className={cn(
+        "h-full w-full px-2 pt-[18px] pb-1 text-sm font-medium rounded peer transition-all duration-300 appearance-none border-none outline-none placeholder:text-transparent placeholder:select-none text-neutral-400 bg-transparent focus:placeholder:text-neutral-500 disabled:cursor-not-allowed",
+        props.className ?? ""
+      )}
+    />
+  )
 );
 
 export const FloatingTextArea = ({
@@ -202,9 +193,11 @@ export const FloatingLabel = ({
 export const FloatingPassTypeBtn = ({
   state,
   setState,
+  inputRef,
 }: {
   state: "password" | "text";
   setState: (value: SetStateAction<"text" | "password">) => void;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
 }) => (
   <button
     type="button"
@@ -212,6 +205,14 @@ export const FloatingPassTypeBtn = ({
       setState((state) => {
         if (state === "password") return "text";
         else return "password";
+      });
+      requestAnimationFrame(() => {
+        const el = inputRef?.current;
+        if (!el) return;
+
+        el.focus();
+        const len = el.value.length;
+        el.setSelectionRange(len, len);
       });
     }}
     className={cn(

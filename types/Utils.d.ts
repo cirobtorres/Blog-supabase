@@ -1,6 +1,7 @@
 // FLOATING FIELDSET
 type ControlledFloatingInputProps = {
   id: string;
+  type?: "password" | "text";
   placeholder?: string;
   className?: string;
   value: string;
@@ -9,6 +10,7 @@ type ControlledFloatingInputProps = {
 
 type UncontrolledFloatingInputProps = {
   id: string;
+  type?: "password" | "text";
   placeholder?: string;
   className?: string;
   value?: undefined;

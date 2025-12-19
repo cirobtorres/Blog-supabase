@@ -38,7 +38,15 @@ export default function TipTapCodeEditor({
         exitOnTripleEnter: false,
       }),
     ],
-    onUpdate: ({ editor }) => setVal(editor.getHTML()),
+    onUpdate: ({ editor }) => {
+      let code = "";
+      editor.state.doc.descendants((node) => {
+        if (node.type.name === "codeBlock") {
+          code = node.textContent;
+        }
+      });
+      setVal(code);
+    },
   });
 
   useEffect(() => {

@@ -312,7 +312,7 @@ export const updateComment = async ({
 }) => {
   const { data: comment, error } = await supabase
     .from("comments")
-    .update({ body })
+    .update({ body, updated_at: new Date().toISOString() })
     .eq("id", id)
     .select(
       `
