@@ -5,11 +5,11 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import History from "@tiptap/extension-history";
 import CharacterCount from "@tiptap/extension-character-count";
-import { useProfile } from "@/hooks/useProfile";
-import { cn } from "@/utils/classnames";
 import Placeholder from "@tiptap/extension-placeholder";
+import { useProfile } from "../../../hooks/useProfile";
+import { cn } from "../../../utils/classnames";
 import { LoadingSpinning } from "../../LoadingSpinning";
-import { buttonVariants } from "@/styles/classNames";
+import { buttonVariants } from "../../../styles/classNames";
 
 export const CommentEditor = ({
   id,

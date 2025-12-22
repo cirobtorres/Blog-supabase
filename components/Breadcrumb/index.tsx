@@ -10,7 +10,7 @@ import {
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
 import { cn } from "../../utils/classnames";
-import { focusVisibleWhiteRing } from "@/styles/classNames";
+import { focusVisibleWhiteRing } from "../../styles/classNames";
 
 export const ArticleBreadcrumb = ({ className }: { className?: string }) => {
   const pathname = usePathname();

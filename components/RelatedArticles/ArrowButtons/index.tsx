@@ -60,7 +60,7 @@ export const PrevButton: React.FC<PropType> = (props) => {
       onPointerDown={() => !disabled && setOnButtonRelease(false)}
       onPointerUp={() => !disabled && setOnButtonRelease(true)}
       onPointerLeave={() => !disabled && setOnButtonRelease(true)}
-      className={`absolute top-1/2 -translate-y-1/2 -left-20 appearance-none [-webkit-appearance:none] [-webkit-tap-highlight-color:rgba(230,230,230,0.5)] touch-manipulation inline-flex no-underline border p-0 m-0 [box-shadow:_inset_0_0_0_0.2rem_var(--detail-medium-contrast)] size-10 z-10 rounded-full justify-center items-center ${
+      className={`absolute top-1/2 -translate-y-1/2 -left-20 appearance-none [-webkit-appearance:none] [-webkit-tap-highlight-color:rgba(230,230,230,0.5)] touch-manipulation inline-flex no-underline border p-0 m-0 [box-shadow:inset_0_0_0_0.2rem_var(--detail-medium-contrast)] size-10 z-10 rounded-full justify-center items-center ${
         onButtonRelease
           ? "transition-[border-color] duration-700 ease-in border-transparent"
           : "border-neutral-800 bg-neutral-700"
@@ -100,7 +100,7 @@ export const NextButton: React.FC<PropType> = (props) => {
       onPointerDown={() => !disabled && setOnButtonRelease(false)}
       onPointerUp={() => !disabled && setOnButtonRelease(true)}
       onPointerLeave={() => !disabled && setOnButtonRelease(true)}
-      className={`absolute top-1/2 -translate-y-1/2 -right-20 appearance-none [-webkit-appearance:none] [-webkit-tap-highlight-color:rgba(230,230,230,0.5)] touch-manipulation inline-flex no-underline border p-0 m-0 [box-shadow:_inset_0_0_0_0.2rem_var(--detail-medium-contrast)] size-10 z-10 rounded-full justify-center items-center ${
+      className={`absolute top-1/2 -translate-y-1/2 -right-20 appearance-none [-webkit-appearance:none] [-webkit-tap-highlight-color:rgba(230,230,230,0.5)] touch-manipulation inline-flex no-underline border p-0 m-0 [box-shadow:inset_0_0_0_0.2rem_var(--detail-medium-contrast)] size-10 z-10 rounded-full justify-center items-center ${
         onButtonRelease
           ? "transition-[border-color] duration-700 ease-in border-transparent"
           : "border-neutral-800 bg-neutral-700"

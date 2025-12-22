@@ -16,6 +16,8 @@ const buttonVariants = cva(
       variant: {
         default:
           "text-neutral-100 border border-neutral-700 bg-neutral-900 hover:border-neutral-600 hover:bg-[#202020] focus-visible:bg-[#202020]",
+        ghost:
+          "text-neutral-100 border-none bg-transparent hover:text-theme-color disabled:hover:text-neutral-100 aria-disabled:hover:text-neutral-100 hover:bg-neutral-800 disabled:hover:bg-transparent aria-disabled:hover:bg-transparent disabled:hover:cursor-default aria-disabled:hover:cursor-default",
         disabled:
           "text-neutral-100 border border-neutral-700 bg-neutral-900 hover:border-neutral-600 hover:bg-[#202020] focus-visible:bg-[#202020] pointer-events-none opacity-50",
         outline:

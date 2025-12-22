@@ -134,10 +134,15 @@ const CommentOptions = ({
     loggedProfile &&
     !comment.is_deleted && (
       <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <PopoverTrigger className={buttonVariants()}>
+        <PopoverTrigger
+          className={cn(
+            "size-10 border-transparent bg-transparent rounded-full hover:bg-neutral-900",
+            isMenuOpen && "bg-neutral-900"
+          )}
+        >
           <OptionIcon />
         </PopoverTrigger>
-        <PopoverContent className="[&_button]:rounded-xs">
+        <PopoverContent className="[&_button]:rounded-lg border-transparent rounded-xl">
           <EditComment
             isEditing={isEditing}
             setIsEditing={setIsEditing}

@@ -11,7 +11,9 @@ import { cn } from "../../utils/classnames";
 export const StaticHeader = ({ profile }: { profile: Profile | null }) => {
   return (
     <header className="w-full h-(--header-height) border-b border-neutral-800 backdrop-blur-sm bg-neutral-950/50">
-      <div className="relative max-w-10/12 mx-auto h-full">
+      <div
+        className="relative mx-8 h-full" // max-w-10/12 mx-auto
+      >
         <HeaderContent profile={profile} />
       </div>
     </header>
@@ -63,10 +65,12 @@ export const FixedHeader = ({ profile }: { profile: Profile | null }) => {
       ref={headerRef}
       id="floating-header"
       data-testid="floating-header"
-      className="fixed top-0 z-10 w-full h-(--header-height) shrink-0 transition-[top] duration-300 border-b border-neutral-800 bg-neutral-950" // bg-neutral-950/50 backdrop-blur-sm
+      className="fixed top-0 z-50 w-full h-(--header-height) shrink-0 transition-[top] duration-300 border-b border-neutral-800 bg-neutral-950" // bg-neutral-950/50 backdrop-blur-sm
       style={{ top: 0 }}
     >
-      <div className="relative max-w-10/12 mx-auto h-full">
+      <div
+        className="relative mx-8 h-full" // max-w-10/12 mx-auto
+      >
         <HeaderContent profile={profile} />
       </div>
       <ProgressBar />
@@ -76,7 +80,7 @@ export const FixedHeader = ({ profile }: { profile: Profile | null }) => {
 
 const HeaderContent = ({ profile }: { profile: Profile | null }) => {
   return (
-    <div className="h-full mx-4 flex-1 flex justify-between">
+    <div className="h-full flex-1 flex justify-between">
       <div className="flex items-center">
         <Link
           href="/"

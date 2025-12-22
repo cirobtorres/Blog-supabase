@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createServerAppClient } from "@/supabase/server";
-import { slugify } from "@/utils/strings";
+import { createServerAppClient } from "../supabase/server";
+import { slugify } from "../utils/strings";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export const getHasUserLiked = async (

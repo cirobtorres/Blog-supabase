@@ -4,7 +4,7 @@ export const HazardBorder = ({ className }: { className?: string }) => {
   return (
     <div
       className={cn(
-        "w-full h-full shrink-0 bg-fixed bg-[image:repeating-linear-gradient(315deg,_#262626_0,_#262626_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px]",
+        "w-full h-full shrink-0 bg-fixed bg-[repeating-linear-gradient(315deg,#262626_0,#262626_1px,transparent_0,transparent_50%)] bg-size-[10px_10px]",
         className
       )}
     />

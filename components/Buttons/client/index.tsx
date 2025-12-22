@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { Provider } from "@supabase/supabase-js";
+import { DraggableAttributes } from "@dnd-kit/core";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +17,6 @@ import {
 } from "../../../components/ui/alert-dialog";
 import { deleteArticle, putPrivateArticle } from "../../../services/article";
 import { SignInOAuth, signOut } from "../../../services/authentication";
-import { Provider } from "@supabase/supabase-js";
 import {
   useActionState,
   useState,
@@ -44,8 +46,7 @@ import {
 import { cn } from "../../../utils/classnames";
 import { usePathname } from "next/navigation";
 import { Lock as LucideLockIcon } from "lucide-react";
-import { DraggableAttributes } from "@dnd-kit/core";
-import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
+import { FloatingFieldset, FloatingInput } from "../../Fieldsets";
 
 export const LogoutButton = ({ label }: { label: string }) => {
   const pathname = usePathname();
@@ -215,7 +216,7 @@ export const DeleteArticleButton = ({ id }: { id: string }) => {
               </span>{" "}
               para confirmar.
             </label>
-            <input
+            {/* <input
               id="delete-article-input"
               type="text"
               placeholder={expectedString}
@@ -223,7 +224,20 @@ export const DeleteArticleButton = ({ id }: { id: string }) => {
               value={inputString}
               onChange={(e) => setInputString(e.target.value)}
               className="px-2 py-1 text-sm rounded outline-none transition-all focus-visible:border-neutral-500/75 focus-visible:ring-neutral-100/10 focus-visible:ring-[3px] border border-neutral-700 placeholder:text-neutral-600 bg-neutral-800"
-            />
+            /> */}
+            <FloatingFieldset>
+              <FloatingInput
+                id="delete-article-input"
+                type="text"
+                placeholder={expectedString}
+                autoComplete="off"
+                value={inputString}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setInputString(e.target.value)
+                }
+                className="py-2"
+              />
+            </FloatingFieldset>
             {state && <p className="text-xs text-warning">{state.error}</p>}
           </fieldset>
         </div>

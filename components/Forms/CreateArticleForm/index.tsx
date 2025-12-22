@@ -71,7 +71,6 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
       formData.set("article_body", JSON.stringify(blocks));
 
       const success = (serverResponse: ArticleActionStateProps) => {
-        // console.log(serverResponse); // DEBUG
         const now = convertToLargeDate(
           new Date(serverResponse.data?.updated_at ?? new Date())
         );
@@ -99,7 +98,6 @@ export const CreateArticleForm = ({ profileId }: { profileId: string }) => {
         );
       };
 
-      // const error = (serverResponse: ArticleActionStateProps) => {
       const error = () => {
         setIsOpenState(true);
         return <p>Artigo não publicado</p>;

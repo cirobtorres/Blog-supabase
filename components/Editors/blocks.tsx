@@ -35,7 +35,6 @@ import {
   ImageCarouselEditorIcon,
   ImageEditorIcon,
   PlusIcon,
-  QuizEditorIcon,
   QuoteEditorIcon,
   TextEditorIcon,
 } from "../Icons";
@@ -94,12 +93,6 @@ const newBlockArray: BlockButton[] = [
     tooltip: "Imagens",
     svg: ImageCarouselEditorIcon,
   },
-  {
-    id: "9",
-    type: "quiz",
-    tooltip: "Quiz",
-    svg: QuizEditorIcon,
-  },
 ];
 
 const BlockItem = memo(function BlockItem({
@@ -148,7 +141,7 @@ const BlockItem = memo(function BlockItem({
                 id={filenameEditorId}
                 placeholder="path/to/my/file.py"
                 value={(block.data as BlogCode)?.filename ?? ""}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   updateBlock(block.id, { filename: e.target.value })
                 }
               />
@@ -185,7 +178,7 @@ const BlockItem = memo(function BlockItem({
                 id={authorEditorId}
                 placeholder="Arthur Schopenhauer"
                 value={(block.data as BlogQuote)?.author ?? ""}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   updateBlock(block.id, { author: e.target.value })
                 }
               />
@@ -271,17 +264,6 @@ const BlockItem = memo(function BlockItem({
               setDefaultType={(val) => updateBlock(block.id, { type: val })}
             />
           </fieldset>
-        </BlockEditorWrapper>
-      );
-    case "quiz": // TODO: incomplete
-      return (
-        <BlockEditorWrapper
-          id={block.id}
-          wrapperLabel={block.id.charAt(0).toUpperCase() + block.id.slice(1)}
-          onRemove={removeBlock}
-          moveToNext={moveToNext}
-        >
-          Quiz
         </BlockEditorWrapper>
       );
     default:
@@ -398,7 +380,6 @@ const BlockList = ({
   return <>{renderedBlocks}</>;
 };
 
-// TODO: quiz
 // TODO: image
 // TODO: imageCarousel
 const createNewBlock = (id: string, type: Block["type"]): Block => {
@@ -442,8 +423,6 @@ const createNewBlock = (id: string, type: Block["type"]): Block => {
         },
       };
     case "imageCarousel":
-      return { id, type, data: {} }; // TODO
-    case "quiz":
       return { id, type, data: {} }; // TODO
 
     default:

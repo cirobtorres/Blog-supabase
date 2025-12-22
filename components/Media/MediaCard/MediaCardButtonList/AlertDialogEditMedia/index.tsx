@@ -67,12 +67,10 @@ export default function AlertDialogEditMedia({
         })
       );
 
-      // const success = (serverResponse: ArticleActionStateProps) => {
       const success = () => {
         return <p>Arquivo editado!</p>;
       };
 
-      // const error = (serverResponse: ArticleActionStateProps) => {
       const error = () => {
         return <p>Arquivo não editado</p>;
       };
@@ -204,7 +202,9 @@ const AlertDialogContentMediaBody = ({
           <FloatingInput
             id="alert-dialog-replace-media-filename"
             value={filename}
-            onChange={(e) => setFilename(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setFilename(e.target.value)
+            }
             placeholder=""
           />
           <FloatingLabel
@@ -217,7 +217,9 @@ const AlertDialogContentMediaBody = ({
             <FloatingInput
               id="alert-dialog-replace-media-alt"
               value={alt}
-              onChange={(e) => setAlt(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setAlt(e.target.value)
+              }
               placeholder=""
             />
             <FloatingLabel
@@ -233,7 +235,9 @@ const AlertDialogContentMediaBody = ({
           <FloatingInput
             id="alert-dialog-replace-media-caption"
             value={caption}
-            onChange={(e) => setCaption(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setCaption(e.target.value)
+            }
           />
           <FloatingLabel
             htmlFor="alert-dialog-replace-media-caption"

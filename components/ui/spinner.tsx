@@ -1,4 +1,4 @@
-import { cn } from "@/utils/classnames";
+import { cn } from "../../utils/classnames";
 import { LoaderIcon } from "lucide-react";
 
 function Spinner({ className, ...props }: React.ComponentProps<"svg">) {

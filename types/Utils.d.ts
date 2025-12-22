@@ -1,21 +1,22 @@
 // FLOATING FIELDSET
-type ControlledFloatingInputProps = {
+type BaseProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "value" | "defaultValue" | "onChange"
+> & {
   id: string;
-  type?: "password" | "text";
-  placeholder?: string;
-  className?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: "password" | "text" | "time";
 };
 
-type UncontrolledFloatingInputProps = {
-  id: string;
-  type?: "password" | "text";
-  placeholder?: string;
-  className?: string;
-  value?: undefined;
-  onChange?: undefined;
+type ControlledFloatingInputProps = BaseProps & {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  defaultValue?: never;
+};
+
+type UncontrolledFloatingInputProps = BaseProps & {
   defaultValue?: string;
+  value?: never;
+  onChange?: never;
 };
 
 type FloatingInputProps =

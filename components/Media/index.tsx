@@ -1,25 +1,12 @@
 "use client";
 
 import { startTransition, useActionState, useState } from "react";
-import { Checkbox as ShadcnUICheckbox } from "../ui/checkbox";
-import MediaCard from "./MediaCard";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { AlertIcon, FiltersIcon } from "../Icons";
-import { cn } from "../../utils/classnames";
-import { buttonVariants, focusVisibleWhiteRing } from "../../styles/classNames";
-import AddFolder from "./AddFolder";
-import AddMedia from "./AddMedia";
 import { deleteFiles } from "../../services/media.server";
+import { buttonVariants } from "../../styles/classNames";
 import { sonnerToastPromise } from "../../toasters";
+import { cn } from "../../utils/classnames";
+import { AlertIcon } from "../Icons";
+import { LoadingSpinning } from "../LoadingSpinning";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,7 +18,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { LoadingSpinning } from "../LoadingSpinning";
+import { Checkbox as ShadcnUICheckbox } from "../ui/checkbox";
+import AddFolder from "./AddFolder";
+import AddMedia from "./AddMedia";
+import MediaCard from "./MediaCard";
+import { SelectComplexFilters, SelectFilters } from "./SelectFilters";
 
 const initState: MediaStateProps = {
   ok: false,
@@ -136,83 +127,13 @@ export default function Media({
                   id="all-checkboxList[]"
                   name="all-checkboxList[]"
                   value="all-checkboxList[]"
-                  className="cursor-pointer"
                   onCheckedChange={handleCheckAll}
                 />
                 <p className="sr-only">Selecionar todas as imagens</p>
               </label>
             </fieldset>
-            <Select>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder="Exemplo" // TODO
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Um Label {/*TODO*/}</SelectLabel>
-                  <SelectItem value="exemplo">Exemplo</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Popover>
-              <PopoverTrigger>
-                <FiltersIcon className="transition-color duration-300 stroke-neutral-500 group-focus-within:stroke-neutral-100" />
-                Filtros
-              </PopoverTrigger>
-              <PopoverContent
-                align="start"
-                className="w-96 flex flex-col gap-2 p-3 bg-neutral-900 border border-neutral-700"
-              >
-                <Select>
-                  <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder="Exemplo" // TODO
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Um Label {/*TODO*/}</SelectLabel>
-                      <SelectItem value="exemplo">Exemplo</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Select>
-                  <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder="Exemplo" // TODO
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Um Label {/*TODO*/}</SelectLabel>
-                      <SelectItem value="exemplo">Exemplo</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Select>
-                  <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder="Exemplo" // TODO
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Um Label {/*TODO*/}</SelectLabel>
-                      <SelectItem value="exemplo">Exemplo</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <button
-                  className={cn(
-                    "cursor-pointer py-2 px-3 text-sm rounded-xs text-theme-color font-medium w-full border border-neutral-700 bg-neutral-900 transition-shadow duration-300 focus-visible:text-theme-color",
-                    focusVisibleWhiteRing
-                  )}
-                >
-                  Aplicar filtros
-                </button>
-              </PopoverContent>
-            </Popover>
+            <SelectFilters />
+            <SelectComplexFilters />
           </div>
           <div className="flex items-center gap-2">
             <div className="rounded-xs size-8 border border-neutral-800 bg-neutral-900"></div>

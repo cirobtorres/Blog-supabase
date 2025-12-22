@@ -436,7 +436,9 @@ export default function TipTapTextEditor({
                     <FloatingInput
                       id="text-link"
                       value={textLinkInput}
-                      onChange={(e) => setTextLinkInput(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setTextLinkInput(e.target.value)
+                      }
                       // placeholder=""
                       // className=""
                       // {...props}
@@ -447,7 +449,9 @@ export default function TipTapTextEditor({
                     <FloatingInput
                       id="text-url"
                       value={linkInput}
-                      onChange={(e) => setLinkInput(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setLinkInput(e.target.value)
+                      }
                       // placeholder=""
                       // className=""
                       // {...props}

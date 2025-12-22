@@ -1,6 +1,6 @@
 import { CreateArticleForm } from "../../../components/Forms/CreateArticleForm";
-import { ArticleBreadcrumb } from "@/components/Breadcrumb";
-import { createServerAppClient } from "@/supabase/server";
+import { ArticleBreadcrumb } from "../../../components/Breadcrumb";
+import { createServerAppClient } from "../../../supabase/server";
 
 export default async function CreateArticlePage() {
   const supabase = await createServerAppClient();

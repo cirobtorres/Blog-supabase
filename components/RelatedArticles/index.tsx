@@ -54,10 +54,10 @@ export const RelatedArticles = () => {
             <h3 className="text-3xl">Leia também</h3>
           </div>
           <div className="overflow-hidden mx-4" ref={emblaRef}>
-            <div className="flex touch-pan-y touch-pinch-zoom ml-[calc(var(--related-articles-carousel-spacing)_*_-1)]">
+            <div className="flex touch-pan-y touch-pinch-zoom ml-[calc(var(--related-articles-carousel-spacing)*-1)]">
               {articles.map((article) => (
                 <div
-                  className="translate-0 sm:flex-[0_0_50%] flex-[0_0_100%] min-w-0 pl-[var(--related-articles-carousel-spacing)]"
+                  className="translate-0 sm:flex-[0_0_50%] flex-[0_0_100%] min-w-0 pl-(--related-articles-carousel-spacing)"
                   key={article.id}
                 >
                   <ArticleGridElement article={article} author={null} />

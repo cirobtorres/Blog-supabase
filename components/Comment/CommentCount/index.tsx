@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useComment } from "@/hooks/useComment";
-import { countCommentsByArticleId } from "@/services/comment";
+import { useComment } from "../../../hooks/useComment";
+import { countCommentsByArticleId } from "../../../services/comment";
 
 const CommentCount = ({ article_id }: { article_id: string }) => {
   const { comments } = useComment();

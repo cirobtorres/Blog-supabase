@@ -60,7 +60,7 @@ export const SignUpForm = () => {
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="max-w-lg w-full mx-auto p-4 my-[var(--header-height)]">
+    <div className="max-w-lg w-full mx-auto p-4 my-(--header-height)">
       <ReturnToHome />
       <h1 className="font-bold text-3xl text-center mb-6">Create Account</h1>
       <form action={action} className="flex flex-col gap-2">
@@ -69,7 +69,9 @@ export const SignUpForm = () => {
             id="floating-displayName-signUp"
             placeholder="Johndoe"
             value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setDisplayName(e.target.value)
+            }
           />
           <FloatingLabel
             htmlFor="floating-displayName-signUp"
@@ -91,7 +93,9 @@ export const SignUpForm = () => {
             id="floating-email-signUp"
             placeholder="johndoe@email.com.br"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
           />
           <FloatingLabel
             htmlFor="floating-email-signUp"
@@ -113,7 +117,9 @@ export const SignUpForm = () => {
             id="floating-password-signUp"
             ref={passwordRef}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setPassword(e.target.value)
+            }
             type={type}
           />
           <FloatingLabel
@@ -142,7 +148,9 @@ export const SignUpForm = () => {
             ref={confirmPasswordRef}
             type={confirmType}
             value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setPasswordConfirm(e.target.value)
+            }
           />
           <FloatingLabel
             htmlFor="floating-password-signUp-confirmation"
@@ -236,7 +244,7 @@ export const SignInForm = () => {
     { ok: false, success: null, error: {}, data: null }
   );
   return (
-    <div className="max-w-lg w-full mx-auto p-4 my-[var(--header-height)]">
+    <div className="max-w-lg w-full mx-auto p-4 my-(--header-height)">
       <ReturnToHome />
       <h1 className="font-bold text-3xl text-center mb-6">Login</h1>
       <form action={action} className="flex flex-col gap-2">
@@ -245,7 +253,9 @@ export const SignInForm = () => {
             id="floating-email-signIn"
             placeholder="johndoe@email.com.br"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
           />
           <FloatingLabel
             htmlFor="floating-email-signIn"
@@ -266,7 +276,9 @@ export const SignInForm = () => {
             ref={passwordRef}
             type={type}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setPassword(e.target.value)
+            }
           />
           <FloatingLabel
             htmlFor="floating-password-signIn"

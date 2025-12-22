@@ -1,6 +1,6 @@
-import { ArticleBreadcrumb } from "@/components/Breadcrumb";
-import { EditArticleForm } from "@/components/Forms/EditArticleForm";
-import { createServerAppClient } from "@/supabase/server";
+import { ArticleBreadcrumb } from "../../../../components/Breadcrumb";
+import { EditArticleForm } from "../../../../components/Forms/EditArticleForm";
+import { createServerAppClient } from "../../../../supabase/server";
 import { notFound } from "next/navigation";
 
 export default async function EditArticle({

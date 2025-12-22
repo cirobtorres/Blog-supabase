@@ -2,9 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { cn } from "@/utils/classnames";
 import { usePathname } from "next/navigation";
-import { MENU_ITEMS } from "@/constants/adminMenu";
+import { cn } from "../../utils/classnames";
+import { MENU_ITEMS } from "../../constants/adminMenu";
 
 export default function AdminMenu() {
   const pathname = usePathname();
@@ -27,7 +27,7 @@ export default function AdminMenu() {
   return (
     <div className="z-20 w-[calc(36px_+_8px_+_1px)]">
       <nav className="z-10 w-12 absolute top-0 bottom-0 bg-neutral-950 border-r border-neutral-800 hover:w-[200px] transition-width duration-100">
-        <ul className="sticky top-0 flex flex-col p-1 gap-1">
+        <ul className="sticky top-(--header-height) flex flex-col p-1 gap-1">
           {MENU_ITEMS.map((item) => {
             const isActive = item.href === activeItem;
             return (

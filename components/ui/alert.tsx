@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/utils/classnames";
+import { cn } from "../../utils/classnames";
 
 // TODO: atualizar as cores
 const alertVariants = cva(

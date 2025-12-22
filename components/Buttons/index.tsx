@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LoadingSpinning } from "../LoadingSpinning";
-import { focusVisibleWhiteRing } from "@/styles/classNames";
-import { cn } from "@/utils/classnames";
+import { focusVisibleWhiteRing } from "../../styles/classNames";
+import { cn } from "../../utils/classnames";
 
 export const SubmitFormButton = ({
   label,

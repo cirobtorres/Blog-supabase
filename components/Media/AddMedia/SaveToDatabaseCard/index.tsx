@@ -90,7 +90,9 @@ export const SaveToDatabaseCard = React.memo(
               disabled={blocked}
               id={`floating-filename-text-${file.name}-${index}`}
               placeholder="Escreva um subtítulo"
-              onChange={(e) => updateFiles(index, { filename: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                updateFiles(index, { filename: e.target.value })
+              }
             />
             <FloatingLabel
               htmlFor={`floating-filename-text-${file.name}-${index}`}
@@ -103,7 +105,9 @@ export const SaveToDatabaseCard = React.memo(
               disabled={blocked}
               id={`floating-caption-text-${file.name}-${index}`}
               placeholder="Escreva uma legenda"
-              onChange={(e) => updateFiles(index, { caption: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                updateFiles(index, { caption: e.target.value })
+              }
             />
             <FloatingLabel
               htmlFor={`floating-caption-text-${file.name}-${index}`}
@@ -116,7 +120,9 @@ export const SaveToDatabaseCard = React.memo(
               disabled={blocked}
               id={`floating-alt-text-${file.name}-${index}`}
               placeholder="Escreva um texto alternativo"
-              onChange={(e) => updateFiles(index, { altText: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                updateFiles(index, { altText: e.target.value })
+              }
             />
             <FloatingLabel
               htmlFor={`floating-alt-text-${file.name}-${index}`}

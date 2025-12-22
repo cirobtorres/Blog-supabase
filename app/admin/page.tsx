@@ -1,8 +1,8 @@
-import { ArticleBreadcrumb } from "@/components/Breadcrumb";
-import { PlusIcon, UserIcon } from "@/components/Icons";
-import { createServerAppClient } from "@/supabase/server";
 import Image from "next/image";
 import Link from "next/link";
+import { ArticleBreadcrumb } from "../../components/Breadcrumb";
+import { PlusIcon, UserIcon } from "../../components/Icons";
+import { createServerAppClient } from "../../supabase/server";
 
 const ADMIN_MAIN_CONTAINER_CLASSES =
   "py-4 px-6 rounded border border-neutral-800 bg-neutral-900";
@@ -32,12 +32,12 @@ export default async function AdminPage() {
     <>
       <ArticleBreadcrumb />
       <h1 className="text-4xl font-extrabold text-neutral-300">Dashboard</h1>
-      <div className="grid grid-cols-3 gap-2">
-        <SectionProfile userAdmin={userAdmin} />
-        <SectionStatistics />
-        <SectionCreateArt />
-        <SectionPublishedArts />
-        <SectionMediaLib />
+      <div className="grid grid-cols-1 gap-2">
+        {/* <SectionProfile userAdmin={userAdmin} /> */}
+        {/* <SectionStatistics /> */}
+        {/* <SectionCreateArt /> */}
+        {/* <SectionPublishedArts /> */}
+        {/* <SectionMediaLib /> */}
       </div>
     </>
   );

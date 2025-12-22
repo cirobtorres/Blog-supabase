@@ -1,3 +1,5 @@
+import { DateRange } from "react-day-picker";
+
 export const comercialDate = (ISOdate: Date) => {
   const day = String(ISOdate.getDate()).padStart(2, "0");
   const month = String(ISOdate.getMonth() + 1).padStart(2, "0");
@@ -83,4 +85,13 @@ export const convertDateToYouTubeLike = (ISOdate: Date) => {
   }
 
   return `há ${diffInMonths} ${diffInMonths === 1 ? "mês" : "meses"}`;
+};
+
+export const formatDateRange = (
+  dateRange: DateRange | undefined,
+  options?: Intl.DateTimeFormatOptions
+) => {
+  const from = dateRange?.from?.toLocaleDateString("pt-BR", options);
+  const to = dateRange?.to?.toLocaleDateString("pt-BR", options);
+  return `${from} — ${to}`;
 };

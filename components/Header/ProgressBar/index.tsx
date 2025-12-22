@@ -50,21 +50,21 @@ export const ProgressBar = () => {
         }
         aria-valuemin={0}
         aria-valuemax={100}
-        className="fixed top-[calc(100%_+_1px)] left-0 h-1 w-full inline-grid"
+        className="fixed top-[calc(100%+1px)] left-0 h-1 w-full inline-grid"
       >
         <div
           ref={progressBarRef}
           id="progress-bar-blur"
           data-testid="progress-bar-blur"
           style={{ width: "0%" }}
-          className="h-full col-start-1 row-start-1 bg-gradient-to-r from-transparent to-theme-color blur-xl rounded-full hidden max-lg:block"
+          className="h-full col-start-1 row-start-1 bg-linear-to-r from-transparent to-theme-color blur-xl rounded-full hidden max-lg:block"
         />
         <div
           ref={progressBarBlurRef}
           id="progress-bar"
           data-testid="progress-bar"
           style={{ width: "0%" }}
-          className="h-full col-start-1 row-start-1 bg-gradient-to-r from-transparent to-theme-color rounded-full hidden max-lg:block"
+          className="h-full col-start-1 row-start-1 bg-linear-to-r from-transparent to-theme-color rounded-full hidden max-lg:block"
         />
         <span id="progressbar-label" className="sr-only">
           Progresso de rolagem da página

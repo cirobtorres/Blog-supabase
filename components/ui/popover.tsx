@@ -12,6 +12,7 @@ function Popover({
 }
 
 function PopoverTrigger({
+  className,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
   return (
@@ -20,7 +21,8 @@ function PopoverTrigger({
       {...props}
       className={cn(
         "cursor-pointer w-fit flex items-center justify-between gap-2 py-2 px-3 text-sm whitespace-nowrap transition-all duration-300 group outline-none text-neutral-500 rounded-xs border border-neutral-700 bg-neutral-900 data-[size=sm]:h-8 disabled:cursor-not-allowed disabled:opacity-50 [&_svg:not([class*='text-'])]:text-neutral-100 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        focusVisibleWhiteRing
+        focusVisibleWhiteRing,
+        className
       )}
     />
   );

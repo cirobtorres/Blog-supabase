@@ -86,7 +86,7 @@ export default function TipTapCodeEditor({
         spellCheck={false}
         onFocus={() => editor.chain().selectTextblockEnd().focus()}
         className={cn(
-          "p-1 flex flex-col transition-all duration-300 rounded-xs border border-neutral-700 [&_.tiptap.ProseMirror]:max-h-[calc(20px_*_20_+_16px_+_8px)] [&_.tiptap.ProseMirror]:min-h-[44px] [&_.tiptap.ProseMirror]:h-full [&_.tiptap.ProseMirror]:overflow-y-auto [&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6 [&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all [&_.tiptap.ProseMirror]:[background-color:rgb(30,30,30)] [background-color:rgb(30,30,30)!important]"
+          "p-1 flex flex-col transition-all duration-300 rounded-xs border border-neutral-700 [&_.tiptap.ProseMirror]:max-h-[calc(20px*20+16px+8px)] [&_.tiptap.ProseMirror]:min-h-11 [&_.tiptap.ProseMirror]:h-full [&_.tiptap.ProseMirror]:overflow-y-auto [&_.tiptap.ProseMirror]:p-2 [&_.tiptap.ProseMirror]:pr-6 [&_.tiptap.ProseMirror]:outline-none [&_.tiptap.ProseMirror]:transition-all [&_.tiptap.ProseMirror]:bg-[rgb(30,30,30)] bg-[rgb(30,30,30)!important]"
         )}
       />
     </div>

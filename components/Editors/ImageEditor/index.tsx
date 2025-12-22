@@ -381,7 +381,9 @@ const ImageDataInput = ({
       <FloatingInput
         id={`input-filename-${filename}`}
         value={filename}
-        onChange={(e) => setFilename(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setFilename(e.target.value)
+        }
       />
       <FloatingLabel
         htmlFor={`input-filename-${filename}`}
@@ -393,7 +395,9 @@ const ImageDataInput = ({
         id={`input-alt-${alt}`}
         value={alt}
         placeholder=""
-        onChange={(e) => setAlt(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setAlt(e.target.value)
+        }
       />
       <FloatingLabel
         htmlFor={`input-filename-${filename}`}
@@ -410,7 +414,9 @@ const ImageDataInput = ({
         id={`input-caption-${caption}`}
         value={caption}
         placeholder=""
-        onChange={(e) => setCaption(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setCaption(e.target.value)
+        }
       />
       <FloatingLabel htmlFor={`input-caption-${caption}`} label="Rodapé" />
     </FloatingFieldset>

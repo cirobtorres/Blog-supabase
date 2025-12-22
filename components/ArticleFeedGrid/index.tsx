@@ -14,7 +14,7 @@ export const ArticleFeedGrid = async ({
 }) => {
   const isTheAuthor: string | undefined = author?.id;
   return articles.length > 0 ? (
-    <ul className="grid gap-2 mx-4 xl:grid-cols-[repeat(3,1fr)] md:grid-cols-[repeat(2,1fr)] ">
+    <ul className="grid gap-2 mx-8 xl:grid-cols-[repeat(4,1fr)] md:grid-cols-[repeat(2,1fr)] ">
       {articles.map(
         (article) =>
           !article.is_private && (

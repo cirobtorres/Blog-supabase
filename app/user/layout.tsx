@@ -1,8 +1,8 @@
-import { Footer } from "@/components/Footer";
-import { StaticHeader } from "@/components/Header";
+import { Footer } from "../../components/Footer";
+import { StaticHeader } from "../../components/Header";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { createServerAppClient } from "@/supabase/server";
+import { createServerAppClient } from "../../supabase/server";
 
 export const metadata: Metadata = {
   title: "User",

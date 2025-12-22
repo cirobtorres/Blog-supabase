@@ -3,8 +3,8 @@
 import * as React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "lucide-react";
-import { cn } from "@/utils/classnames";
-import { focusVisibleWhiteRing } from "@/styles/classNames";
+import { cn } from "../../utils/classnames";
+import { focusVisibleWhiteRing } from "../../styles/classNames";
 
 function ArticleAccordion({
   ...props

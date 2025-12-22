@@ -101,12 +101,10 @@ const AddMedia = React.memo(() => {
         );
       });
 
-      // const success = (serverResponse: ArticleActionStateProps) => {
       const success = () => {
         return <p>Arquivos enviados!</p>;
       };
 
-      // const error = (serverResponse: ArticleActionStateProps) => {
       const error = () => {
         return <p>Falha ao enviar arquivos</p>;
       };
@@ -117,8 +115,10 @@ const AddMedia = React.memo(() => {
 
       await promise;
       setOpenStep(null);
+      setFiles([]);
     } catch (err) {
       console.error(err);
+      setFiles([]);
     } finally {
       setIsPending(false);
     }

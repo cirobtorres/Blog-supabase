@@ -1,7 +1,6 @@
-import { PlusIcon } from "@/components/Icons";
-import { focusVisibleWhiteRing } from "@/styles/classNames";
-import { cn } from "@/utils/classnames";
-import { useRenderCount } from "@/utils/renderCount";
+import { PlusIcon } from "../../../../components/Icons";
+import { focusVisibleWhiteRing } from "../../../../styles/classNames";
+import { cn } from "../../../../utils/classnames";
 import React from "react";
 
 export const DragAndDropZone = ({ onFilesSelected }: DragAndDropZoneProps) => {
@@ -37,8 +36,6 @@ export const DragAndDropZone = ({ onFilesSelected }: DragAndDropZoneProps) => {
   const handleButtonClick = () => {
     inputRef.current?.click();
   };
-
-  useRenderCount("DragAndDropZone"); // DEBUG
 
   return (
     <div className="p-8">

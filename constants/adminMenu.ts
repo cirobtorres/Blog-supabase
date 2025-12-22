@@ -25,9 +25,9 @@ export const MENU_ITEMS = [
     href: "/admin/media",
   },
   {
-    key: "adm-menu-item-about",
+    key: "adm-menu-item-global",
     icon: GlobeIcon,
-    label: "Sobre",
+    label: "Global",
     href: "/admin/global",
   },
 ];

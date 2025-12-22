@@ -1,5 +1,5 @@
-import { labelId, slugify } from "@/utils/strings";
 import { Dispatch, forwardRef, SetStateAction } from "react";
+import { labelId, slugify } from "../../utils/strings";
 import { cn } from "../../utils/classnames";
 import {
   focusVisibleWhiteRing,
@@ -32,22 +32,12 @@ export const TitleFieldset = ({
       spellCheck={false}
       onChange={(e) => setVal(e.target.value)}
       placeholder=""
-      className={
-        `resize-none rounded transition-all outline-none border-none bg-none ` +
-        `peer `
-      }
+      className="resize-none rounded transition-all outline-none border-none bg-none peer"
     />
     <label
       id={labelId("Title")}
       htmlFor={`input-${slugify("title")}`}
-      className={
-        `absolute origin-left select-none pointer-events-none font-medium pl-3 text-neutral-400 ` + // text-theme-color
-        `top-6 transform transition-top duration-100 ` +
-        `left-0 peer-placeholder-shown:left-0 peer-placeholder-shown:translate-x-0 ` +
-        `-translate-y-5 peer-focus:-translate-y-5 peer-placeholder-shown:translate-y-0 ` +
-        `translate-x-0 peer-focus:translate-x-0 ` +
-        `scale-75 peer-focus:scale-75 peer-placeholder-shown:scale-100 ` // peer-placeholder-shown:text-neutral-400
-      }
+      className="absolute origin-left select-none pointer-events-none font-medium pl-3 text-neutral-400 top-6 transform transition-top duration-100 left-0 peer-placeholder-shown:left-0 peer-placeholder-shown:translate-x-0 -translate-y-5 peer-focus:-translate-y-5 peer-placeholder-shown:translate-y-0 translate-x-0 peer-focus:translate-x-0 scale-75 peer-focus:scale-75 peer-placeholder-shown:scale-100"
     >
       Título do Artigo
     </label>
@@ -77,22 +67,12 @@ export const SubtitleFieldset = ({
       spellCheck={false}
       onChange={(e) => setVal(e.target.value)}
       placeholder=""
-      className={
-        `resize-none rounded transition-all outline-none border-none bg-none ` +
-        `peer `
-      }
+      className="resize-none rounded transition-all outline-none border-none bg-none peer"
     />
     <label
       id={labelId("Subtitle")}
       htmlFor={`input-${slugify("subtitle")}`}
-      className={
-        `absolute origin-left select-none pointer-events-none font-medium pl-3 text-neutral-400 ` + // text-theme-color
-        `top-6 transform transition-top duration-100 ` +
-        `left-0 peer-placeholder-shown:left-0 peer-placeholder-shown:translate-x-0 ` +
-        `-translate-y-5 peer-focus:-translate-y-5 peer-placeholder-shown:translate-y-0 ` +
-        `translate-x-0 peer-focus:translate-x-0 ` +
-        `scale-75 peer-focus:scale-75 peer-placeholder-shown:scale-100 ` // peer-placeholder-shown:text-neutral-400
-      }
+      className="absolute origin-left select-none pointer-events-none font-medium pl-3 text-neutral-400 top-6 transform transition-top duration-100 left-0 peer-placeholder-shown:left-0 peer-placeholder-shown:translate-x-0 -translate-y-5 peer-focus:-translate-y-5 peer-placeholder-shown:translate-y-0 translate-x-0 peer-focus:translate-x-0 scale-75 peer-focus:scale-75 peer-placeholder-shown:scale-100"
     >
       Subtítulo do Artigo
     </label>

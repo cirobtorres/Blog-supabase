@@ -51,8 +51,10 @@ export default async function HomePage() {
       <StaticHeader profile={profile} />
       <main className="">
         <ArticleCover />
-        <section className="w-full max-w-7xl mx-auto grid grid-rows-[auto_1fr] items-start py-10">
-          <div className="flex items-center mx-4 pb-10">
+        <section
+          className="w-full grid grid-rows-[auto_1fr] items-start py-10" // max-w-7xl mx-auto
+        >
+          <div className="flex items-center mx-8 pb-10">
             <h1 className="text-3xl font-bold">Últimos Artigos</h1>
           </div>
           <ArticleFeedGrid articles={articles} author={author} />

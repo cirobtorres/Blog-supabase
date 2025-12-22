@@ -21,7 +21,7 @@ export default function AlertTypeSelect({
     <fieldset className="flex items-center gap-2">
       <label
         htmlFor={`accord-select-${id}`}
-        className="text-neutral-500 font-[600]"
+        className="text-neutral-500 font-semibold"
       >
         Tipo
       </label>

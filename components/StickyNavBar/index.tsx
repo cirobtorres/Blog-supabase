@@ -8,6 +8,7 @@ import {
   ArticleAccordionItem,
   ArticleAccordionTrigger,
 } from "../ui/accordion";
+import { cn } from "../../utils/classnames";
 
 export const AnchorTracker = ({ anchors }: { anchors: AnchorTracher }) => {
   const anchorListRef = useRef<HTMLUListElement>(null);
@@ -82,11 +83,10 @@ export const AnchorTracker = ({ anchors }: { anchors: AnchorTracher }) => {
                         >
                           <Link
                             href={`#${id}`}
-                            className={
-                              `flex text-xs transition-all break-words rounded outline-none hover:text-neutral-100` +
-                              ` focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50 ` +
+                            className={cn(
+                              "flex text-xs transition-all wrap-break-word rounded outline-none hover:text-neutral-100 focus-visible:text-neutral-100 focus-visible:ring-neutral-100 focus-visible:ring-[3px] focus-visible:bg-neutral-800/50",
                               generatePaddings(tag)
-                            }
+                            )}
                           >
                             {text}
                           </Link>

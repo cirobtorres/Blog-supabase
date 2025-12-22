@@ -56,7 +56,7 @@ export const EditArticleForm = ({
                   router.push(`/articles/${serverResponse.data?.id}`)
                 }
                 className={cn(
-                  "cursor-pointer size-fit text-theme-color/85 hover:text-theme-color transition-all duration-300 text-xs font-[600] px-2 py-1 rounded border border-neutral-700 bg-neutral-800 hover:border-neutral-600 hover:bg-[#202020]",
+                  "cursor-pointer size-fit text-theme-color/85 hover:text-theme-color transition-all duration-300 text-xs font-semibold px-2 py-1 rounded border border-neutral-700 bg-neutral-800 hover:border-neutral-600 hover:bg-[#202020]",
                   focusVisibleWhiteRing
                 )}
               >
@@ -67,7 +67,6 @@ export const EditArticleForm = ({
         );
       };
 
-      // const error = (serverResponse: ArticleActionStateProps) => {
       const error = () => {
         setIsOpenState(true);
         return <p>Artigo não publicado</p>;
@@ -218,11 +217,6 @@ export const EditArticleForm = ({
             >
               Visitar artigo
             </Link>
-            {/* <div className="min-h-48 p-3 rounded-lg border border-neutral-700">
-              {postState.error && (
-                <p className="text-red-500 font-medium">{postState.error}</p>
-              )}
-            </div> */}
           </div>
         </div>
       </form>

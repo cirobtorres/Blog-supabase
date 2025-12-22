@@ -32,13 +32,13 @@ import OrderedList from "@tiptap/extension-ordered-list";
 import BulletList from "@tiptap/extension-bullet-list";
 import ListItem from "@tiptap/extension-list-item";
 import { validateAllowedAutoLink, validateAllowedUri } from "../utils";
-import { LoadingSpinning } from "@/components/LoadingSpinning";
+import { LoadingSpinning } from "../../../components/LoadingSpinning";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Kbd } from "@/components/ui/kbd";
+} from "../../../components/ui/tooltip";
+import { Kbd } from "../../../components/ui/kbd";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,7 +49,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "../../../components/ui/alert-dialog";
 
 export default function AccordionEditorContent({
   ...blockProps
@@ -118,7 +118,7 @@ export default function AccordionEditorContent({
                   <FloatingInput
                     id={uniqueFloatingTitleId}
                     value={accordion.title}
-                    onChange={(e) =>
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       accordDispatch({
                         type: "UPDATE_TITLE",
                         id: accordion.id,
@@ -131,20 +131,6 @@ export default function AccordionEditorContent({
                     label="Título"
                   />
                 </FloatingFieldset>
-                {/* <FloatingFieldset className="focus-within:ring-0 focus-within:ring-offset-0">
-                  <FloatingTextArea
-                    id={uniqueFloatingMessageId}
-                    value={accordion.message}
-                    onChange={(e) =>
-                      accordDispatch({
-                        type: "UPDATE_MESSAGE",
-                        id: accordion.id,
-                        value: e.target.value,
-                      })
-                    }
-                    placeholder="Mensagem"
-                  /> 
-                </FloatingFieldset> */}
                 <TipTapAccordionEditor
                   id={uniqueFloatingMessageId}
                   defaultBody={accordion.message}
@@ -353,7 +339,7 @@ function TipTapAccordionEditor({
         <div className="w-full flex gap-4 items-center">
           <div
             className={cn(
-              "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-[1px] [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
+              "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-px [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
             )}
           >
             <Tooltip>
@@ -448,7 +434,9 @@ function TipTapAccordionEditor({
                       <FloatingInput
                         id="text-link"
                         value={textLinkInput}
-                        onChange={(e) => setTextLinkInput(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setTextLinkInput(e.target.value)
+                        }
                         // placeholder=""
                         // className=""
                         // {...props}
@@ -459,7 +447,9 @@ function TipTapAccordionEditor({
                       <FloatingInput
                         id="text-url"
                         value={linkInput}
-                        onChange={(e) => setLinkInput(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setLinkInput(e.target.value)
+                        }
                         // placeholder=""
                         // className=""
                         // {...props}
@@ -518,7 +508,7 @@ function TipTapAccordionEditor({
           </div>
           <div
             className={cn(
-              "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-[1px] [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
+              "flex items-center gap-0.5 rounded [&_button]:relative [&_button]:focus-visible:z-10 [&_button]:border [&_button]:first:rounded-l [&_button]:last:rounded-r [&_button]:border-neutral-700 [&_button]:p-px [&_button]:flex [&_button]:justify-center [&_button]:items-center [&_button]:outline-none [&_button]:cursor-pointer [&_button]:focus-within:bg-[#242424]"
             )}
           >
             <Tooltip>
